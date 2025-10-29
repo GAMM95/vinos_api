@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.repository;
 
-import com.gamm.vinos_api.entities.model.Categoria;
+import com.gamm.vinos_api.domain.model.Categoria;
 import com.gamm.vinos_api.utils.ResultadoSP;
 
 import java.util.List;

@@ -1,8 +1,12 @@
-package com.gamm.vinos_api.entities.dto.views;
+package com.gamm.vinos_api.domain.view;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class VinoView {

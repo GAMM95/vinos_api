@@ -1,4 +1,4 @@
-package com.gamm.vinos_api.entities.enums;
+package com.gamm.vinos_api.domain.enums;
 
 public enum EstadoCompra {
     PENDIENTE,

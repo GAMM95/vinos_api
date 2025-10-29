@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.controller;
 
-import com.gamm.vinos_api.entities.dto.ResponseVO;
-import com.gamm.vinos_api.entities.model.Presentacion;
+import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.domain.model.Presentacion;
 import com.gamm.vinos_api.service.PresentacionService;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import lombok.RequiredArgsConstructor;

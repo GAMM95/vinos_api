@@ -1,21 +1,18 @@
 package com.gamm.vinos_api.repository.impl;
 
-import com.gamm.vinos_api.entities.dto.views.VinoView;
-import com.gamm.vinos_api.entities.model.Vino;
+import com.gamm.vinos_api.domain.view.VinoView;
+import com.gamm.vinos_api.domain.model.Vino;
 import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
+import com.gamm.vinos_api.jdbc.rowmapper.VinoRowMapper;
 import com.gamm.vinos_api.repository.VinoRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import jakarta.annotation.PostConstruct;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +22,8 @@ import java.util.Map;
 public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoRepository {
 
   // Consultas SQL
-  private static final String VIEW_VINOS = "SELECT * FROM vw_vinos";
   private static final String SP_VINOS = "sp_vino";
+  private static final String VIEW_VINOS = "SELECT * FROM vw_vinos";
 
   private SimpleJdbcCall spCall;
 
@@ -38,6 +35,7 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
   private void init() {
     // Configuración general del SP
     spCall = new SimpleJdbcCall(jdbcTemplate)
+        .withoutProcedureColumnMetaDataAccess()
         .withProcedureName(SP_VINOS)
         .declareParameters(
             new SqlParameter("pTipo", Types.TINYINT),
@@ -100,7 +98,7 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
   // Listar vinos
   @Override
   public List<VinoView> listarVinos() {
-    return jdbcTemplate.query(VIEW_VINOS, new BeanPropertyRowMapper<>(VinoView.class));
+    return jdbcTemplate.query(VIEW_VINOS, new VinoRowMapper());
   }
 
   /*** Métodos privados auxiliares ***/
@@ -123,16 +121,4 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
     return params;
   }
 
-  // Mapea las filas del ResultSet a objetos VinoView
-  private static class VinoRowMapper implements RowMapper<VinoView> {
-    @Override
-    public VinoView mapRow(ResultSet rs, int rowNum) throws SQLException {
-      return new VinoView(
-          rs.getInt("idVino"),
-          rs.getString("nombreVino"),
-          rs.getString("nombreCategoria"),
-          rs.getDouble("precioVenta")
-      );
-    }
-  }
 }

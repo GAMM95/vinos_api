@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.repository.impl;
 
-import com.gamm.vinos_api.entities.model.Presentacion;
+import com.gamm.vinos_api.domain.model.Presentacion;
 import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.repository.PresentacionRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;
@@ -22,7 +22,7 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
 
   // Consultas sql
   private static final String SP_PRESENTACION = "sp_presentacion";
-  private static final String VIEW_PRESENTACIONES = "SELECT * FROM vw_presentaciones";
+  private static final String VW_PRESENTACIONES = "SELECT * FROM vw_presentaciones";
 
   private SimpleJdbcCall spCall;
 
@@ -33,6 +33,7 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
   @PostConstruct
   private void init() {
     spCall = new SimpleJdbcCall(jdbcTemplate)
+        .withoutProcedureColumnMetaDataAccess()
         .withProcedureName(SP_PRESENTACION)
         .declareParameters(
             new SqlParameter("pTipo", Types.TINYINT),
@@ -70,7 +71,7 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
   // Listar presentaciones
   @Override
   public List<Presentacion> listarPresentaciones() {
-    return jdbcTemplate.query(VIEW_PRESENTACIONES, new BeanPropertyRowMapper<>(Presentacion.class));
+    return jdbcTemplate.query(VW_PRESENTACIONES, new BeanPropertyRowMapper<>(Presentacion.class));
   }
 
   /*** MÉTODOS PRIVADOS AUXILIARES ***/

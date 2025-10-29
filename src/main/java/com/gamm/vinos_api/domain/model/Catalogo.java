@@ -1,6 +1,6 @@
-package com.gamm.vinos_api.entities.model;
+package com.gamm.vinos_api.domain.model;
 
-import com.gamm.vinos_api.entities.enums.EstadoRegistro;
+import com.gamm.vinos_api.domain.enums.EstadoRegistro;
 import lombok.*;
 
 @Data

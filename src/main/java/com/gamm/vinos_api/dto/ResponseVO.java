@@ -1,4 +1,4 @@
-package com.gamm.vinos_api.entities.dto;
+package com.gamm.vinos_api.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

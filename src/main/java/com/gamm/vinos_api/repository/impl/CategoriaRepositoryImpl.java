@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.repository.impl;
 
-import com.gamm.vinos_api.entities.model.Categoria;
+import com.gamm.vinos_api.domain.model.Categoria;
 import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.repository.CategoriaRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;
@@ -20,9 +20,9 @@ import java.util.Map;
 @Repository
 public class CategoriaRepositoryImpl extends SimpleJdbcDAOBase implements CategoriaRepository {
 
-    private static final String procedure_categoria = "sp_categoria";
-    private static final String view_categoria = "SELECT idCategoria, nombre, descripcion FROM vw_categorias";
-    private static final String combo_categorias = "SELECT idCategoria, nombre FROM cbo_categoria";
+    private static final String SP_CATEGORIA = "sp_categoria";
+    private static final String VW_CATEGORIAS = "SELECT idCategoria, nombre, descripcion FROM vw_categorias";
+    private static final String CBO_CATEGORIAS = "SELECT idCategoria, nombre FROM cbo_categoria";
 
     private SimpleJdbcCall spCall;
 
@@ -33,7 +33,8 @@ public class CategoriaRepositoryImpl extends SimpleJdbcDAOBase implements Catego
     @PostConstruct
     private void init() {
         spCall = new SimpleJdbcCall(jdbcTemplate)
-                .withProcedureName(procedure_categoria)
+            .withoutProcedureColumnMetaDataAccess()
+            .withProcedureName(SP_CATEGORIA)
                 .declareParameters(
                         new SqlParameter("pTipo", Types.TINYINT),
                         new SqlParameter("pIdCategoria", Types.TINYINT),
@@ -70,13 +71,13 @@ public class CategoriaRepositoryImpl extends SimpleJdbcDAOBase implements Catego
     // Listar categorias
     @Override
     public List<Categoria> listarCategorias() {
-        return jdbcTemplate.query(view_categoria, new BeanPropertyRowMapper<>(Categoria.class));
+        return jdbcTemplate.query(VW_CATEGORIAS, new BeanPropertyRowMapper<>(Categoria.class));
     }
 
     // Listar combo de categorías
     @Override
     public List<Categoria> comboCategorias() {
-        return jdbcTemplate.query(combo_categorias, new BeanPropertyRowMapper<>(Categoria.class));
+        return jdbcTemplate.query(CBO_CATEGORIAS, new BeanPropertyRowMapper<>(Categoria.class));
     }
 
     /*** MÉTODOS PRIVADOS AUXILIARES ***/

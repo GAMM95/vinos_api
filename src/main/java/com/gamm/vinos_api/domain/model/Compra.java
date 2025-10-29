@@ -1,6 +1,6 @@
-package com.gamm.vinos_api.entities.model;
+package com.gamm.vinos_api.domain.model;
 
-import com.gamm.vinos_api.entities.enums.EstadoCompra;
+import com.gamm.vinos_api.domain.enums.EstadoCompra;
 import lombok.*;
 
 import java.util.Date;

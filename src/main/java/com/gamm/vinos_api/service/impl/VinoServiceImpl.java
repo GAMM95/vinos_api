@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.service.impl;
 
-import com.gamm.vinos_api.entities.dto.views.VinoView;
-import com.gamm.vinos_api.entities.model.Vino;
+import com.gamm.vinos_api.domain.view.VinoView;
+import com.gamm.vinos_api.domain.model.Vino;
 import com.gamm.vinos_api.repository.VinoRepository;
 import com.gamm.vinos_api.service.VinoService;
 import com.gamm.vinos_api.utils.ResultadoSP;
