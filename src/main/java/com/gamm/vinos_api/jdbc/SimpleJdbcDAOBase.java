@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -45,5 +46,10 @@ public abstract class SimpleJdbcDAOBase {
     }
 
     return res;
+  }
+
+  @SuppressWarnings("unchecked")
+  protected <T> List<T> getResultList(ResultadoSP res) {
+    return (List<T>) res.getData();
   }
 }

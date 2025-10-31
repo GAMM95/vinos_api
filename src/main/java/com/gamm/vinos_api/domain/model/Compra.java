@@ -3,21 +3,23 @@ package com.gamm.vinos_api.domain.model;
 import com.gamm.vinos_api.domain.enums.EstadoCompra;
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Compra {
     private Integer idCompra;
-    private String codCompra;
     private Integer idProveedor;
-    private Date fecha;
     private Double costoEmbalaje;
     private Double costoEnvioAgencia;
     private Double costoTransporte;
-    private Double totalCompra;
     private String observaciones;
+    private Integer idCatalogo;
+    private Integer cantidadGalones;
+    private String nombreProveedor;
+    private LocalDate  fechaInicio;
+    private LocalDate  fechaFin;
     private EstadoCompra estado = EstadoCompra.PENDIENTE;
 }
 

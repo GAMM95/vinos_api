@@ -77,20 +77,10 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
     Vino vino = new Vino();
     vino.setNombre(nombre);
 
-    Map<String, Object> params = construirParametros(4, vino);
-    Map<String, Object> resultado = spCall.execute(params);
+    ResultadoSP res = ejecutarSP(4, vino);
 
-    // Recuperar el resultset de la vista
-    @SuppressWarnings("unchecked")
-    List<VinoView> vinos = (List<VinoView>) resultado.get("ResultSet");
-
-    // Crear respuesta unificada
-    ResultadoSP res = new ResultadoSP();
-    res.setCodigoRespuesta(
-        resultado.get("pRespuesta") != null ? ((Number) resultado.get("pRespuesta")).intValue() : 0
-    );
-    res.setMensaje((String) resultado.getOrDefault("pMensaje", "Búsqueda completada."));
-    res.setData(vinos);
+    List<VinoView> lista = getResultList(res);
+    res.setData(lista);
 
     return res;
   }
