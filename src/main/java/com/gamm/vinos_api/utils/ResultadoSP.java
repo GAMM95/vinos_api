@@ -23,9 +23,7 @@ public class ResultadoSP implements Serializable {
     this.mensaje = mensaje;
   }
 
-  /**
-   * Helper: indica si el SP fue exitoso
-   */
+  //Helper: indica si el SP fue exitoso
   public boolean esExitoso() {
     return codigoRespuesta != null && codigoRespuesta == 1;
   }

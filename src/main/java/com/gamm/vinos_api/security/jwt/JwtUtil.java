@@ -34,10 +34,24 @@ public class JwtUtil {
         .setSubject(username)
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + expiracion))
+        .claim("type", "access")
         .signWith(key, SignatureAlgorithm.HS256)
         .compact();
   }
 
+  // Generar Refresh Token
+  public String generarRefreshToken(String username) {
+    long refreshExpiration = 7 * 24 * 60 * 60 * 1000; // 7 días
+    return Jwts.builder()
+        .setSubject(username)
+        .setIssuedAt(new Date())
+        .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
+        .claim("type", "refresh")
+        .signWith(key, SignatureAlgorithm.HS256)
+        .compact();
+  }
+
+  // Obtener username del token
   public String obtenerUsername(String token) {
     return extraerClaims(token).getSubject();
   }

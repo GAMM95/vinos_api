@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -44,10 +46,25 @@ public class AuthController extends AbstractRestController {
         : badRequest(r.getMensaje());
   }
 
+//  @PostMapping("/login")
+//  public ResponseEntity<ResponseVO> login(@RequestBody LoginRequest req) {
+//    var tokens = authService.login(req.username(), req.password());
+//    AuthResponse data = new AuthResponse(tokens.get("accessToken"), tokens.get("refreshToken"), "OK");
+//    return ok(data);
+//  }
   @PostMapping("/login")
   public ResponseEntity<ResponseVO> login(@RequestBody LoginRequest req) {
-    String token = authService.login(req.username(), req.password());
-    AuthResponse data = new AuthResponse(token, "OK");
+    var data = authService.login(req.username(), req.password());
     return ok(data);
   }
+
+  @PostMapping("/refresh")
+  public ResponseEntity<ResponseVO> refresh(@RequestBody Map<String, String> body) {
+    String refreshToken = body.get("refreshToken");
+    String newAccessToken = authService.refreshToken(refreshToken);
+    AuthResponse data = new AuthResponse(newAccessToken, refreshToken, "OK");
+    return ok(data);
+  }
+
+
 }
