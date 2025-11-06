@@ -1,0 +1,19 @@
+package com.gamm.vinos_api.domain.view;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProveedorView {
+ private Integer idProveedor;
+ private String codProveedor;
+ private String nombre;
+ private String contacto;
+ private String ubicacion;
+ private String estado;
+}

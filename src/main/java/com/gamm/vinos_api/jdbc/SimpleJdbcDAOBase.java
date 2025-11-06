@@ -7,11 +7,14 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 @Getter
 public abstract class SimpleJdbcDAOBase {
+
+  private static final String MENSAJE_DEFECTO = "Operación realizada correctamente.";
 
   protected final DataSource dataSource;
   protected final JdbcTemplate jdbcTemplate;
@@ -24,28 +27,45 @@ public abstract class SimpleJdbcDAOBase {
     this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
   }
 
-  /**
-   * Ejecuta un procedimiento almacenado y retorna un objeto ResultadoSP estandarizado.
-   */
-  protected ResultadoSP ejecutarSP(SimpleJdbcCall spCall, Map<String, Object> params) {
-    Map<String, Object> resultado = spCall.execute(params);
+  /// Metodo general para ejecutar SP
+  protected ResultadoSP ejecutarSP(
+      SimpleJdbcCall spCall,
+      Map<String, Object> params,
+      String resultKey
+  ) {
+    try {
+      Map<String, Object> resultado = spCall.execute(params);
 
-    Integer codigo = resultado.get("pRespuesta") != null
-        ? ((Number) resultado.get("pRespuesta")).intValue()
-        : 0;
+      ResultadoSP resultadoSP = new ResultadoSP();
+      resultadoSP.setCodigoRespuesta(
+          resultado.get("pRespuesta") != null
+              ? ((Number) resultado.get("pRespuesta")).intValue()
+              : 0
+      );
+      resultadoSP.setMensaje((String) resultado.getOrDefault("pMensaje", MENSAJE_DEFECTO));
 
-    String mensaje = (String) resultado.getOrDefault("pMensaje", "Operación exitosa.");
-
-    ResultadoSP res = new ResultadoSP();
-    res.setCodigoRespuesta(codigo);
-    res.setMensaje(mensaje);
-
-    // Si el SP devuelve un ResultSet (por ejemplo, en búsquedas o reportes)
-    if (resultado.containsKey("ResultSet")) {
-      res.setData(resultado.get("ResultSet"));
+      if (resultKey != null && resultado.containsKey(resultKey)) {
+        @SuppressWarnings("unchecked")
+        List<Object> data = (List<Object>) resultado.get(resultKey);
+        resultadoSP.setData(data);
+      }
+      return resultadoSP;
+    } catch (Exception e) {
+      ResultadoSP resultadoSP = new ResultadoSP();
+      resultadoSP.setCodigoRespuesta(-1);
+      resultadoSP.setMensaje("Error interno en la base de datos.");
+      if (resultKey != null) resultadoSP.setData(Collections.emptyList());
+      return resultadoSP;
     }
+  }
 
-    return res;
+  /// Metodos por conveniencia
+  protected ResultadoSP ejecutarSP(SimpleJdbcCall spCall, Map<String, Object> params) {
+    return  ejecutarSP(spCall,params,null);
+  }
+
+  protected <T> ResultadoSP ejecutarSPConLista(SimpleJdbcCall spCall, Map<String, Object> params) {
+    return ejecutarSP(spCall, params, "ResultSet");
   }
 
   @SuppressWarnings("unchecked")

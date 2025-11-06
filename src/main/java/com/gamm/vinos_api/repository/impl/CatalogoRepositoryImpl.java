@@ -7,7 +7,6 @@ import com.gamm.vinos_api.jdbc.rowmapper.CatalogoRowMapper;
 import com.gamm.vinos_api.repository.CatalogoRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import jakarta.annotation.PostConstruct;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
@@ -47,18 +46,17 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
             new SqlOutParameter("pRespuesta", Types.TINYINT),
             new SqlOutParameter("pMensaje", Types.VARCHAR)
         )
-        // Agregamos soporte al resultset (para filtros o listados desde SP)
-        .returningResultSet("ResultSet", BeanPropertyRowMapper.newInstance(CatalogoView.class));
+        .returningResultSet("ResultSet", new CatalogoRowMapper());
   }
 
-  /*** MÉTODOS CRUD ***/
+  /// MÉTODOS CRUD
   // Registrar catalogos
   @Override
   public ResultadoSP registrarCatalogo(Catalogo catalogo) {
     return ejecutarSP(1, catalogo);
   }
 
-  // Actualizar categorias
+  // Actualizar catálogos
   @Override
   public ResultadoSP actualizarCatalogo(Catalogo catalogo) {
     return ejecutarSP(2, catalogo);
@@ -75,29 +73,13 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
   public ResultadoSP filtrarPorProveedor(Integer idProveedor) {
     Catalogo catalogo = new Catalogo();
     catalogo.setIdProveedor(idProveedor);
-
-    Map<String, Object> params = construirParametros(3, catalogo);
-    Map<String, Object> resultado = spCall.execute(params);
-
-    @SuppressWarnings("unchecked")
-    List<CatalogoView> catalogos = (List<CatalogoView>) resultado.get("ResultSet");
-
-    // Construir el resultado del SP
-    ResultadoSP res = new ResultadoSP();
-    res.setCodigoRespuesta(
-        resultado.get("pRespuesta") != null ? ((Number) resultado.get("pRespuesta")).intValue() : 0
-    );
-    res.setMensaje((String) resultado.getOrDefault("pMensaje", "Filtro compleado."));
-    res.setData(catalogos);
-
-    return res;
+    return ejecutarSPConLista(spCall, construirParametros(3, catalogo));
   }
 
-  /*** MÉTODOS PRIVADOS AUXILIARES ***/
+  /// MÉTODOS PRIVADOS AUXILIARES
   // Ejecuta el procedimiento almacenado con los parámetros dados
   private ResultadoSP ejecutarSP(int tipo, Catalogo catalogo) {
-    Map<String, Object> params = construirParametros(tipo, catalogo);
-    return ejecutarSP(spCall, params);
+    return ejecutarSP(spCall, construirParametros(tipo, catalogo));
   }
 
   // Arma los parámetros comunes del SP
@@ -112,5 +94,4 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
     params.put("pObservacion", catalogo.getObservacion());
     return params;
   }
-
 }

@@ -12,5 +12,7 @@ public interface PresentacionRepository {
 
   ResultadoSP darBaja(Integer idPresentacion);
 
+  ResultadoSP darAlta(Integer idPresentacion);
+
   List<Presentacion> listarPresentaciones();
 }

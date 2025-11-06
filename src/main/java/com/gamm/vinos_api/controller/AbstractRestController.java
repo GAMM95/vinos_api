@@ -6,11 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 public abstract class AbstractRestController {
 
-  /**
-   * =====================
-   * Métodos para respuestas exitosas
-   * =====================
-   */
+  /**  Métodos para respuestas exitosas */
 
   // 200 OK - con datos
   protected ResponseEntity<ResponseVO> ok(Object data) {
@@ -34,11 +30,7 @@ public abstract class AbstractRestController {
         .body(ResponseVO.success(message, null));
   }
 
-  /**
-   * =====================
-   * Métodos para respuestas de error
-   * =====================
-   */
+  /** Métodos para respuestas de error */
 
   // 400 Bad Request - error de validación o entrada inválida
   protected ResponseEntity<ResponseVO> badRequest(String message) {

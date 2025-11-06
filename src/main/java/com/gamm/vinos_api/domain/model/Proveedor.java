@@ -6,7 +6,6 @@ import lombok.*;
 @Data
 public class Proveedor {
     private Integer idProveedor;
-    private String codProveedor;
     private String nombre;
     private String contacto;
     private String ubicacion;

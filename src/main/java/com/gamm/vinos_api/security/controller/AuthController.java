@@ -46,12 +46,6 @@ public class AuthController extends AbstractRestController {
         : badRequest(r.getMensaje());
   }
 
-//  @PostMapping("/login")
-//  public ResponseEntity<ResponseVO> login(@RequestBody LoginRequest req) {
-//    var tokens = authService.login(req.username(), req.password());
-//    AuthResponse data = new AuthResponse(tokens.get("accessToken"), tokens.get("refreshToken"), "OK");
-//    return ok(data);
-//  }
   @PostMapping("/login")
   public ResponseEntity<ResponseVO> login(@RequestBody LoginRequest req) {
     var data = authService.login(req.username(), req.password());

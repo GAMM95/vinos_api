@@ -2,6 +2,7 @@ package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.dto.ResponseVO;
 import com.gamm.vinos_api.domain.model.Presentacion;
+import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.service.PresentacionService;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ public class PresentacionController extends AbstractRestController {
 
   // Registrar presentacion
   @PostMapping
+  @SoloAdministrador
   public ResponseEntity<ResponseVO> guardarPresentacion(@RequestBody Presentacion presentacion) {
 
     ResultadoSP resultado = presentacionService.guardarPresentacion(presentacion);
@@ -26,6 +28,7 @@ public class PresentacionController extends AbstractRestController {
 
   // Actualizar presentacion
   @PutMapping("/{id}")
+  @SoloAdministrador
   public ResponseEntity<ResponseVO> actualizarPresentacion(@PathVariable Integer id, @RequestBody Presentacion presentacion) {
     presentacion.setIdPresentacion(id);
     ResultadoSP resultado = presentacionService.actualizarPresentacion(presentacion);
@@ -34,16 +37,24 @@ public class PresentacionController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
-  // Dar de baja a presentacion
-  @PatchMapping("/{id}/darBaja")
-  public ResponseEntity<ResponseVO> darBajaPresentacion(@PathVariable Integer id) {
-    ResultadoSP resultado = presentacionService.darBaja(id);
+  // Dar de baja/alta a presentación
+  @PatchMapping("/{idPresentacion}/estado")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> cambiarEstadoPresentacion(
+      @PathVariable Integer idPresentacion,
+      @RequestParam("disponible") boolean disponible) {
+
+    ResultadoSP resultado;
+    if (disponible) {
+      resultado = presentacionService.darAlta(idPresentacion);
+    } else {
+      resultado = presentacionService.darBaja(idPresentacion);
+    }
 
     return resultado.esExitoso()
         ? ok(resultado.getMensaje(), null)
         : badRequest(resultado.getMensaje());
   }
-
   // Listar presentaciones
   @GetMapping
   public ResponseEntity<ResponseVO> listarPresentaciones() {

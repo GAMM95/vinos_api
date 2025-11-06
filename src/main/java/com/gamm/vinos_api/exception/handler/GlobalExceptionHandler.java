@@ -1,4 +1,4 @@
-package com.gamm.vinos_api.exception;
+package com.gamm.vinos_api.exception.handler;
 
 import com.gamm.vinos_api.dto.ResponseVO;
 import org.springframework.http.HttpStatus;
@@ -19,16 +19,9 @@ public class GlobalExceptionHandler {
     return ResponseEntity.badRequest().body(new ResponseVO(mensaje));
   }
 
-  /** ==============================
-   * CUALQUIER OTRA EXCEPCIÓN NO CONTROLADA
-   * ============================== */
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ResponseVO> manejarExcepcionGeneral(Exception ex) {
-    return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(ResponseVO.error("Error interno: " + ex.getMessage()));
+  public ResponseEntity<ResponseVO> errorGeneral(Exception ex) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(ResponseVO.error("Error interno del servidor"));
   }
-
-
-
 }

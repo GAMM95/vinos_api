@@ -77,12 +77,13 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
     Vino vino = new Vino();
     vino.setNombre(nombre);
 
-    ResultadoSP res = ejecutarSP(4, vino);
-
-    List<VinoView> lista = getResultList(res);
-    res.setData(lista);
-
-    return res;
+//    ResultadoSP res = ejecutarSP(4, vino);
+//
+//    List<VinoView> lista = getResultList(res);
+//    res.setData(lista);
+//
+//    return res;
+    return ejecutarSPConLista(spCall, construirParametros(4, vino));
   }
 
   // Listar vinos

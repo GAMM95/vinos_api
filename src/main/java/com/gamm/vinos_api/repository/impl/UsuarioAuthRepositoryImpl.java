@@ -38,7 +38,7 @@ public class UsuarioAuthRepositoryImpl extends BaseUsuarioSPRepository implement
     return ejecutarSP(2, u);
   }
 
-  /** Construye parámetros según el tipo de operación y ejecuta SP */
+  // Parámetros según el tipo de operación y ejecuta SP
   private ResultadoSP ejecutarSP(int tipo, Usuario usuario) {
     Map<String, Object> params = new HashMap<>();
     params.put("pTipo", tipo);

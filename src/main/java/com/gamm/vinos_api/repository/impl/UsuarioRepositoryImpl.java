@@ -46,11 +46,11 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
   public ResultadoSP filtrarUsuario(String terminoBusqueda) {
     Usuario u = new Usuario();
     u.setUsername(terminoBusqueda);
-
-    ResultadoSP res = ejecutarSP(5, u);
-    List<UsuarioView> lista = getResultList(res);
-    res.setData(lista);
-    return res;
+//    ResultadoSP res = ejecutarSP(5, u);
+//    List<UsuarioView> lista = getResultList(res);
+//    res.setData(lista);
+//    return res;
+    return ejecutarSPConLista(spCall,construirParametros(5, u));
   }
 
   @Override
@@ -58,18 +58,34 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
     return jdbcTemplate.query(VIEW_USUARIOS, new UsuarioViewRowMapper());
   }
 
-  /** Construye parámetros y ejecuta el SP */
+  // Construye parámetros y ejecuta el SP
+//  private ResultadoSP ejecutarSP(int tipo, Usuario usuario) {
+//    Map<String, Object> params = new HashMap<>();
+//    params.put("pTipo", tipo);
+//    params.put("pIdUsuario", usuario.getIdUsuario());
+//    params.put("pUsername", usuario.getUsername());
+//    params.put("pNombres", null);
+//    params.put("pApellidoPaterno", null);
+//    params.put("pApellidoMaterno", null);
+//    params.put("pPassword", null);
+//    params.put("pTerminoBusqueda", usuario.getUsername());
+//
+//    return ejecutar(params);
+//  }
   private ResultadoSP ejecutarSP(int tipo, Usuario usuario) {
-    Map<String, Object> params = new HashMap<>();
-    params.put("pTipo", tipo);
-    params.put("pIdUsuario", usuario.getIdUsuario());
-    params.put("pUsername", usuario.getUsername());
-    params.put("pNombres", null);
-    params.put("pApellidoPaterno", null);
-    params.put("pApellidoMaterno", null);
-    params.put("pPassword", null);
-    params.put("pTerminoBusqueda", usuario.getUsername());
-
-    return ejecutar(params);
+    Map<String,Object> params = construirParametros(tipo, usuario);
+    return ejecutarSP(spCall, params);
+  }
+  private Map<String,Object> construirParametros(int tipo, Usuario u) {
+    Map<String,Object> p = new HashMap<>();
+    p.put("pTipo", tipo);
+    p.put("pIdUsuario", u.getIdUsuario());
+    p.put("pUsername", u.getUsername());
+    p.put("pNombres", u.getPersona().getNombres());
+    p.put("pApellidoPaterno", u.getPersona().getApellidoPaterno());
+    p.put("pApellidoMaterno", u.getPersona().getApellidoMaterno());
+    p.put("pPassword", u.getPassword());
+    p.put("pTerminoBusqueda", u.getUsername());
+    return p;
   }
 }

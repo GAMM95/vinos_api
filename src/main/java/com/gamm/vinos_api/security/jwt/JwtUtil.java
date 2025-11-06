@@ -1,10 +1,10 @@
 package com.gamm.vinos_api.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.gamm.vinos_api.exception.security.InvalidRefreshTokenException;
+import com.gamm.vinos_api.exception.security.TokenExpiradoException;
+import com.gamm.vinos_api.exception.security.TokenInvalidoException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -51,16 +51,36 @@ public class JwtUtil {
         .compact();
   }
 
+  // Obtener Claims y lanzar excepciones personalizadas
+  private Claims extraerClaims(String token) {
+    try {
+      return Jwts.parserBuilder()
+          .setSigningKey(key)
+          .build()
+          .parseClaimsJws(token)
+          .getBody();
+    } catch (ExpiredJwtException ex) {
+      throw new TokenExpiradoException("El token ha expirado");
+    } catch (MalformedJwtException | SignatureException | IllegalArgumentException ex) {
+      throw new TokenInvalidoException("Token inválido");
+    } catch (Exception ex) {
+      throw new TokenInvalidoException("Error al procesar el token");
+    }
+  }
+
   // Obtener username del token
   public String obtenerUsername(String token) {
     return extraerClaims(token).getSubject();
   }
 
-  private Claims extraerClaims(String token) {
-    return Jwts.parserBuilder()
-        .setSigningKey(key)
-        .build()
-        .parseClaimsJws(token)
-        .getBody();
+  // Validar tipo refresh
+  public void validarRefreshToken(String token) {
+    Claims claims = extraerClaims(token);
+    String type = claims.get("type", String.class);
+
+    if (!"refresh".equals(type)) {
+      throw new InvalidRefreshTokenException("Este no es un refresh token válido");
+    }
   }
+
 }

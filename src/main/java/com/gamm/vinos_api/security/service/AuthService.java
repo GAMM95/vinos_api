@@ -1,15 +1,12 @@
 package com.gamm.vinos_api.security.service;
 
-
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.security.jwt.JwtUtil;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
+//import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,29 +16,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthService {
 
-  private final AuthenticationManager am;
+//  private final AuthenticationManager am;
   private final JwtUtil jwtUtil;
   private final UsuarioService usuarioService;
   private final PasswordEncoder passwordEncoder;
-
-//  public Map<String, String> login(String username, String password) {
-//    try {
-//      am.authenticate(
-//          new UsernamePasswordAuthenticationToken(username, password)
-//      );
-//    } catch (AuthenticationException ex) {
-//      throw new BadCredentialsException("Usuario o contraseña incorrectos s");
-//    }
-//
-//    // Genera tokens
-//    String accessToken = jwtUtil.generarToken(username);
-//    String refreshToken = jwtUtil.generarRefreshToken(username);
-//
-//    return Map.of(
-//        "accessToken", accessToken,
-//        "refreshToken", refreshToken
-//    );
-//  }
 
   public Map<String, Object> login(String username, String password) {
     ResultadoSP resultado = usuarioService.login(username);
@@ -70,7 +48,6 @@ public class AuthService {
         "usuario", usuario
     );
   }
-
 
   public String refreshToken(String refreshToken) {
     try {

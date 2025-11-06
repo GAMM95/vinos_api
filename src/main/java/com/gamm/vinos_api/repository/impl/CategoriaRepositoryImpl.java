@@ -45,7 +45,7 @@ public class CategoriaRepositoryImpl extends SimpleJdbcDAOBase implements Catego
                 );
     }
 
-    /*** MÉTODOS CRUD ***/
+    /// MÉTODOS CRUD
     // Registrar categorias
     @Override
     public ResultadoSP registrarCategoria(Categoria categoria) {
@@ -80,11 +80,10 @@ public class CategoriaRepositoryImpl extends SimpleJdbcDAOBase implements Catego
         return jdbcTemplate.query(CBO_CATEGORIAS, new BeanPropertyRowMapper<>(Categoria.class));
     }
 
-    /*** MÉTODOS PRIVADOS AUXILIARES ***/
+    /// MÉTODOS PRIVADOS AUXILIARES
     // Ejecuta el procedimiento almacenado con los parámetros dados
     private ResultadoSP ejecutarSP(int tipo, Categoria categoria) {
-        Map<String, Object> params = construirParametros(tipo, categoria);
-        return ejecutarSP(spCall, params);
+        return ejecutarSP(spCall, construirParametros(tipo, categoria));
     }
 
     // Arma los parámetros comunes del SP

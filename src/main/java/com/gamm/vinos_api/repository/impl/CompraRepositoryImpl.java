@@ -91,15 +91,16 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
     return res;
   }
 
+  // Listar compras
   @Override
   public List<CompraView> listarCompras() {
     return jdbcTemplate.query(VW_COMPRAS, new CompraRowMapper());
   }
 
-  /*** Métodos privados auxiliares ***/
+  /// Métodos privados auxiliares
+  // Ejecutar el procedimiento con los parámetros dados
   private ResultadoSP ejecutarSP(int tipo, Compra compra) {
-    Map<String, Object> params = construirParametros(tipo, compra);
-    return ejecutarSP(spCall, params);
+    return ejecutarSP(spCall, construirParametros(tipo, compra));
   }
 
   private Map<String, Object> construirParametros(int tipo, Compra compra) {

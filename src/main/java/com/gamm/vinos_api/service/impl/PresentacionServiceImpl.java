@@ -32,6 +32,11 @@ public class PresentacionServiceImpl implements PresentacionService {
   }
 
   @Override
+  public ResultadoSP darAlta(Integer idPresentacion) {
+    return presentacionRepository.darAlta(idPresentacion);
+  }
+
+  @Override
   public List<Presentacion> listarPresentaciones() {
     return presentacionRepository.listarPresentaciones();
   }

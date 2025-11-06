@@ -45,7 +45,7 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
         );
   }
 
-  /*** MÉTODOS CRUD ***/
+  /// MÉTODOS CRUD
   // Registrar presentaciones de vinos
   @Override
   public ResultadoSP guardarPresentacion(Presentacion presentacion) {
@@ -63,9 +63,15 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
   public ResultadoSP darBaja(Integer idPresentacion) {
     Presentacion presentacion = new Presentacion();
     presentacion.setIdPresentacion(idPresentacion);
-    presentacion.setNombre("");
-    presentacion.setLitrosUnidad(0.0);
     return ejecutarSP(3, presentacion);
+  }
+
+  // Dar de alta
+  @Override
+  public ResultadoSP darAlta(Integer idPresentacion) {
+    Presentacion presentacion = new Presentacion();
+    presentacion.setIdPresentacion(idPresentacion);
+    return ejecutarSP(4, presentacion);
   }
 
   // Listar presentaciones
@@ -74,11 +80,10 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
     return jdbcTemplate.query(VW_PRESENTACIONES, new BeanPropertyRowMapper<>(Presentacion.class));
   }
 
-  /*** MÉTODOS PRIVADOS AUXILIARES ***/
+  /// MÉTODOS PRIVADOS AUXILIARES
   // Ejecuta el SP con los parámetros indicados
   private ResultadoSP ejecutarSP(int tipo, Presentacion presentacion) {
-    Map<String, Object> params = construirParametros(tipo, presentacion);
-    return ejecutarSP(spCall, params);
+    return ejecutarSP(spCall, construirParametros(tipo, presentacion));
   }
 
   // Construye el mapa de parámetros para el SP

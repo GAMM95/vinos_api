@@ -15,13 +15,15 @@ public class CorsConfig {
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowCredentials(true);
-    configuration.setAllowedOrigins(Arrays.asList("http://26.118.48.22:4200", "http://)example.com"));
+    configuration.setAllowedOrigins(Arrays.asList(
+        "http://localhost:4200",      // <-- frontend dev
+        "http://26.118.48.22:4200"   // si quieres acceso remoto
+    ));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("*"));
+
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
-
   }
-
 }
