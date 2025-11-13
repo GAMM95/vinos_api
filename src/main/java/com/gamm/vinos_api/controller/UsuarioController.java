@@ -47,7 +47,6 @@ public class UsuarioController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
-
   // Listar vinos
   @GetMapping
   @SoloAdministrador

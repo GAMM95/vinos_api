@@ -21,7 +21,7 @@ import java.util.Map;
 public class CategoriaRepositoryImpl extends SimpleJdbcDAOBase implements CategoriaRepository {
 
     private static final String SP_CATEGORIA = "sp_categoria";
-    private static final String VW_CATEGORIAS = "SELECT idCategoria, nombre, descripcion FROM vw_categorias";
+    private static final String VW_CATEGORIAS = "SELECT idCategoria, nombre, descripcion, estado FROM vw_categorias";
     private static final String CBO_CATEGORIAS = "SELECT idCategoria, nombre FROM cbo_categoria";
 
     private SimpleJdbcCall spCall;

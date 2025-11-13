@@ -1,4 +1,5 @@
 package com.gamm.vinos_api.security.config;
+import com.gamm.vinos_api.config.CorsConfig;
 
 import com.gamm.vinos_api.security.jwt.JwtAuthenticationEntryPoint;
 import com.gamm.vinos_api.security.service.CustomUserDetailsService;
@@ -8,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -39,13 +39,13 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter, CorsConfigurationSource corsConfigurationSource) throws Exception {
     http
-        .cors(cors -> cors.configurationSource(corsConfigurationSource)) // <-- habilita CORS
+        .cors(cors -> cors.configurationSource(corsConfigurationSource)) // usa el bean del otro config
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/auth/login", "/auth/registrar").permitAll()
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // para CORS (Angular)
-            .requestMatchers("/api/**").authenticated() // Protege todas las rutas /api/
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            .requestMatchers("/api/**").authenticated()
             .anyRequest().authenticated()
         )
         .exceptionHandling(ex -> ex.authenticationEntryPoint(jwt))
@@ -53,6 +53,7 @@ public class SecurityConfig {
 
     return http.build();
   }
+
 
   @Bean
   public PasswordEncoder passwordEncoder() {

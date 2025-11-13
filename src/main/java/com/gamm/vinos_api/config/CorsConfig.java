@@ -19,7 +19,7 @@ public class CorsConfig {
         "http://localhost:4200",      // <-- frontend dev
         "http://26.118.48.22:4200"   // si quieres acceso remoto
     ));
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("*"));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
