@@ -37,7 +37,8 @@ public class ProveedorRepositoryImpl extends SimpleJdbcDAOBase implements Provee
         .declareParameters(
             new SqlParameter("pTipo", Types.TINYINT),
             new SqlParameter("pIdProveedor", Types.TINYINT),
-            new SqlParameter("pNombre", Types.VARCHAR),
+            new SqlParameter("pRazonSocial", Types.VARCHAR),
+            new SqlParameter("pRuc", Types.VARCHAR),
             new SqlParameter("pContacto", Types.VARCHAR),
             new SqlParameter("pUbicacion", Types.VARCHAR),
             new SqlOutParameter("pRespuesta", Types.TINYINT),
@@ -79,7 +80,8 @@ public class ProveedorRepositoryImpl extends SimpleJdbcDAOBase implements Provee
   @Override
   public ResultadoSP filtrarProveedor(String termino) {
     Proveedor proveedor = new Proveedor();
-    proveedor.setNombre(termino);
+    proveedor.setRazonSocial(termino);
+    proveedor.setRuc(termino);
     proveedor.setContacto(termino);
     return ejecutarSPConLista(spCall, construirParametros(5, proveedor));
   }
@@ -98,7 +100,8 @@ public class ProveedorRepositoryImpl extends SimpleJdbcDAOBase implements Provee
     Map<String, Object> params = new HashMap<>();
     params.put("pTipo", tipo);
     params.put("pIdProveedor", proveedor.getIdProveedor());
-    params.put("pNombre", proveedor.getNombre());
+    params.put("pRazonSocial", proveedor.getRazonSocial());
+    params.put("pRuc", proveedor.getRuc());
     params.put("pContacto", proveedor.getContacto());
     params.put("pUbicacion", proveedor.getUbicacion());
     return params;

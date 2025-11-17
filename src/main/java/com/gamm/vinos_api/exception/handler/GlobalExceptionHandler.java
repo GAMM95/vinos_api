@@ -15,13 +15,13 @@ public class GlobalExceptionHandler {
    * ============================== */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ResponseVO> manejarValidacion(MethodArgumentNotValidException exception) {
-    String mensaje = exception.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+    String mensaje = exception.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
     return ResponseEntity.badRequest().body(new ResponseVO(mensaje));
   }
 
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<ResponseVO> errorGeneral(Exception ex) {
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(ResponseVO.error("Error interno del servidor"));
-  }
+//  @ExceptionHandler(Exception.class)
+//  public ResponseEntity<ResponseVO> errorGeneral(Exception ex) {
+//    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//        .body(ResponseVO.error("Error interno del servidor"));
+//  }
 }

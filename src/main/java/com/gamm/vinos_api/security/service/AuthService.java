@@ -16,37 +16,28 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthService {
 
-//  private final AuthenticationManager am;
+  //  private final AuthenticationManager am;
   private final JwtUtil jwtUtil;
   private final UsuarioService usuarioService;
   private final PasswordEncoder passwordEncoder;
 
-  public Map<String, Object> login(String username, String password) {
+  public ResultadoSP login(String username, String password) {
     ResultadoSP resultado = usuarioService.login(username);
     Usuario usuario = (Usuario) resultado.getData();
 
-    if (usuario == null) {
-      throw new BadCredentialsException(resultado.getMensaje());
-    }
+    if (!resultado.esExitoso() || usuario == null)
+      return new ResultadoSP(0, resultado.getMensaje(), null);
 
-    // Validar password usando Spring Security
-    if (!passwordEncoder.matches(password, usuario.getPassword())) {
-      throw new BadCredentialsException("Nombre de usuario o contraseña incorrectos");
-    }
+    if (!passwordEncoder.matches(password, usuario.getPassword()))
+      return new ResultadoSP(0, "Credenciales incorrectas.", null);
 
-    // Generar tokens
-    String accessToken = jwtUtil.generarToken(usuario.getUsername());
-    String refreshToken = jwtUtil.generarRefreshToken(usuario.getUsername());
-
-    // Ocultar password antes de devolver
     usuario.setPassword(null);
-
-    return Map.of(
-        "accessToken", accessToken,
-        "refreshToken", refreshToken,
-        "mensaje", resultado.getMensaje(),
-        "usuario", usuario
+    Map<String, Object> data = Map.of(
+        "usuario", usuario,
+        "accessToken", jwtUtil.generarToken(usuario.getUsername()),
+        "refreshToken", jwtUtil.generarRefreshToken(usuario.getUsername())
     );
+    return new ResultadoSP(1, resultado.getMensaje(), data);
   }
 
   public String refreshToken(String refreshToken) {

@@ -7,8 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Presentacion {
-    private Integer idPresentacion;
-    private String nombre;
-    private Double litrosUnidad;
-    private EstadoPresentacion   estado = EstadoPresentacion.DISPONIBLE;
+  private Integer idPresentacion;
+  private String nombre;
+  private Double litrosUnidad;
+  private EstadoPresentacion estado = EstadoPresentacion.DISPONIBLE;
 }

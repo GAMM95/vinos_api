@@ -16,5 +16,5 @@ public class Usuario {
   private String username;
   private String password;
   private Rol rol = Rol.VENDEDOR;
-  private EstadoRegistro estado = EstadoRegistro.ACTIVO;
+  private EstadoRegistro estado = EstadoRegistro.INACTIVO;
 }

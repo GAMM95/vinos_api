@@ -14,5 +14,7 @@ public interface PresentacionService {
 
   ResultadoSP darAlta(Integer idPresentacion);
 
+  ResultadoSP filtrarPresentacion(String nombre);
+
   List<Presentacion> listarPresentaciones();
 }

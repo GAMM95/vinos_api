@@ -1,6 +1,7 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.Presentacion;
+import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.repository.PresentacionRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;
@@ -72,6 +73,13 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
     Presentacion presentacion = new Presentacion();
     presentacion.setIdPresentacion(idPresentacion);
     return ejecutarSP(4, presentacion);
+  }
+
+  @Override
+  public ResultadoSP filtrarPresentacion(String nombre) {
+    Presentacion p = new Presentacion();
+    p.setNombre(nombre);
+    return ejecutarSPConLista(spCall, construirParametros(5, p));
   }
 
   // Listar presentaciones

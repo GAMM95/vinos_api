@@ -12,7 +12,8 @@ import lombok.Setter;
 public class ProveedorView {
  private Integer idProveedor;
  private String codProveedor;
- private String nombre;
+ private String razonSocial;
+ private String ruc;
  private String contacto;
  private String ubicacion;
  private String estado;

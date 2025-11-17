@@ -55,6 +55,18 @@ public class PresentacionController extends AbstractRestController {
         ? ok(resultado.getMensaje(), null)
         : badRequest(resultado.getMensaje());
   }
+
+  // Filtrar usuarios
+  @GetMapping("/filtrar")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> filtrarPresentaciones(@RequestParam String nombre) {
+    ResultadoSP resultado = presentacionService.filtrarPresentacion(nombre);
+
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), resultado.getData())
+        : badRequest(resultado.getMensaje());
+  }
+
   // Listar presentaciones
   @GetMapping
   public ResponseEntity<ResponseVO> listarPresentaciones() {

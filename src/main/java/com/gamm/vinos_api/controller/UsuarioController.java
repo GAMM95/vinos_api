@@ -25,7 +25,7 @@ public class UsuarioController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
-  // Inactivar usuario
+  // Activar usuario
   @PatchMapping("/{id}/activar")
   @SoloAdministrador
   public ResponseEntity<ResponseVO> activarUsuario(@PathVariable Integer id) {
@@ -47,7 +47,7 @@ public class UsuarioController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
-  // Listar vinos
+  // Listar usuarios
   @GetMapping
   @SoloAdministrador
   public ResponseEntity<ResponseVO> listarUsuarios() {

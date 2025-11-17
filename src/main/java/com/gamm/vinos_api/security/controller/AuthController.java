@@ -48,8 +48,10 @@ public class AuthController extends AbstractRestController {
 
   @PostMapping("/login")
   public ResponseEntity<ResponseVO> login(@RequestBody LoginRequest req) {
-    var data = authService.login(req.username(), req.password());
-    return ok(data);
+    ResultadoSP resultado = authService.login(req.username(), req.password());
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), resultado.getData())
+        : badRequest(resultado.getMensaje());
   }
 
   @PostMapping("/refresh")
@@ -59,6 +61,5 @@ public class AuthController extends AbstractRestController {
     AuthResponse data = new AuthResponse(newAccessToken, refreshToken, "OK");
     return ok(data);
   }
-
 
 }

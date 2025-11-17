@@ -37,6 +37,11 @@ public class PresentacionServiceImpl implements PresentacionService {
   }
 
   @Override
+  public ResultadoSP filtrarPresentacion(String nombre) {
+    return presentacionRepository.filtrarPresentacion(nombre);
+  }
+
+  @Override
   public List<Presentacion> listarPresentaciones() {
     return presentacionRepository.listarPresentaciones();
   }
