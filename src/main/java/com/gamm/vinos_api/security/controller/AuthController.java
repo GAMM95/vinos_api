@@ -4,18 +4,13 @@ import com.gamm.vinos_api.controller.AbstractRestController;
 import com.gamm.vinos_api.domain.model.Persona;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.security.dto.*;
 import com.gamm.vinos_api.security.service.AuthService;
-import com.gamm.vinos_api.security.dto.AuthResponse;
-import com.gamm.vinos_api.security.dto.LoginRequest;
-import com.gamm.vinos_api.security.dto.RegisterRequest;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -60,6 +55,38 @@ public class AuthController extends AbstractRestController {
     String newAccessToken = authService.refreshToken(refreshToken);
     AuthResponse data = new AuthResponse(newAccessToken, refreshToken, "OK");
     return ok(data);
+  }
+
+  @PostMapping("reset-password")
+  public ResponseEntity<ResponseVO> resetPassword(@RequestBody ResetPasswordRequest req) {
+    ResultadoSP resultado = usuarioService.resetearPassword(
+        req.IdUsuario(),
+        req.nuevaPassword()
+    );
+
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje())
+        : badRequest(resultado.getMensaje());
+  }
+
+  @PostMapping ("/change-password")
+  public ResponseEntity<ResponseVO> changePassword (@RequestBody ChangePasswordRequest req){
+    ResultadoSP resultado = usuarioService.cambiarPassword(
+        req.IdUsuario(),
+        req.actual(),
+        req.nueva()
+    );
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje())
+        : badRequest(resultado.getMensaje());
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<ResponseVO> obtenerPerfil(@RequestHeader("Authorization") String bearerToken) {
+    ResultadoSP resultado = authService.obtenerPerfilDesdeToken(bearerToken);
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), resultado.getData())
+        : badRequest(resultado.getMensaje());
   }
 
 }

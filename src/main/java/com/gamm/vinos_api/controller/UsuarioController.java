@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.controller;
 
+import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.ResponseVO;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.service.UsuarioService;
@@ -7,6 +8,7 @@ import com.gamm.vinos_api.utils.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -47,10 +49,30 @@ public class UsuarioController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
+  @PutMapping("/{id}")
+  public ResponseEntity<ResponseVO> actualizarUsuario(
+      @PathVariable Integer id,
+      @RequestBody Usuario usuario) {
+    usuario.setIdUsuario(id);
+    ResultadoSP r = usuarioService.actualizarUsuario(usuario);
+    return r.esExitoso() ? ok(r.getMensaje()) : badRequest(r.getMensaje());
+  }
+
   // Listar usuarios
   @GetMapping
   @SoloAdministrador
   public ResponseEntity<ResponseVO> listarUsuarios() {
     return ok(usuarioService.listarUsuarios());
   }
+
+  @PostMapping("/{id}/foto")
+  public ResponseEntity<ResponseVO> actualizarFoto(
+      @PathVariable Integer id,
+      @RequestParam("foto") MultipartFile foto) {
+    ResultadoSP resultado = usuarioService.actualizarFoto(id, foto);
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), resultado.getData())
+        : badRequest(resultado.getMensaje());
+  }
+
 }

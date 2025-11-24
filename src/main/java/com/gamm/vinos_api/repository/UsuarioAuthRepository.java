@@ -8,4 +8,9 @@ public interface UsuarioAuthRepository {
 
   ResultadoSP login(String username);
 
+  ResultadoSP obtenerDatosPerfil(String username);
+
+  ResultadoSP resetearPassword(Integer idUsuario, String nuevaPassword);
+
+  ResultadoSP cambiarPassword (Integer idUsuario, String actual, String nueva);
 }

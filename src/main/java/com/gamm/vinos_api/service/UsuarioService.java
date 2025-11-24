@@ -3,6 +3,7 @@ package com.gamm.vinos_api.service;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.domain.view.UsuarioView;
 import com.gamm.vinos_api.utils.ResultadoSP;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,6 +18,15 @@ public interface UsuarioService {
 
   ResultadoSP filtrarUsuario(String terminoBusqueda);
 
+  ResultadoSP obtenerPerfil(String username);
+
+  ResultadoSP actualizarUsuario(Usuario usuario);
+
+  ResultadoSP resetearPassword(Integer idUsuario, String nuevaPassword);
+
+  ResultadoSP cambiarPassword(Integer idUsuario, String actual, String nueva);
+
   List<UsuarioView> listarUsuarios();
 
+  ResultadoSP actualizarFoto(Integer idUsuario, MultipartFile foto);
 }

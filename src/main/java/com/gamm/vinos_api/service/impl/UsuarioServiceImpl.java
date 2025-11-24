@@ -4,11 +4,13 @@ import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.domain.view.UsuarioView;
 import com.gamm.vinos_api.repository.UsuarioAuthRepository;
 import com.gamm.vinos_api.repository.UsuarioRepository;
+import com.gamm.vinos_api.service.FotoService;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,28 +21,12 @@ public class UsuarioServiceImpl implements UsuarioService {
   private final UsuarioRepository usuarioRepository;
   private final UsuarioAuthRepository usuarioAuthRepository;
   private final PasswordEncoder passwordEncoder;
+  private final FotoService fotoService;
 
   @Override
   public ResultadoSP registrarUsuario(Usuario usuario) {
-    if (usuario == null) throw new IllegalArgumentException("Usuario no puede ser null");
-    if (usuario.getUsername() == null || usuario.getUsername().isBlank())
-      return new ResultadoSP(0, "Username obligatorio");
-    if (usuario.getPassword() == null || usuario.getPassword().isBlank())
-      return new ResultadoSP(0, "Password obligatorio");
-    if (usuario.getPersona() == null)
-      return new ResultadoSP(0, "Datos de persona obligatorios");
-
-    try {
-      // Encriptar password
-      usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-
-      // Registrar en BD
-      return usuarioAuthRepository.registrarUsuario(usuario);
-
-    } catch (Exception e) {
-      // Manejo genérico de errores
-      return new ResultadoSP(0, "Error al registrar usuario: " + e.getMessage());
-    }
+    usuario.setPassword(passwordEncoder.encode(usuario.getPassword())); // Encriptar contraseña
+    return usuarioAuthRepository.registrarUsuario(usuario);
   }
 
   @Override
@@ -64,7 +50,56 @@ public class UsuarioServiceImpl implements UsuarioService {
   }
 
   @Override
+  public ResultadoSP obtenerPerfil(String username) {
+    return usuarioAuthRepository.obtenerDatosPerfil(username);
+  }
+
+  @Override
+  public ResultadoSP actualizarUsuario(Usuario usuario) {
+     return usuarioRepository.actualizarUsuario(usuario);
+  }
+
+  @Override
+  public ResultadoSP resetearPassword(Integer idUsuario, String nuevaPassword) {
+    String encriptada = passwordEncoder.encode(nuevaPassword); // Encriptar nueva contraseña
+    return usuarioAuthRepository.resetearPassword(idUsuario, encriptada);
+  }
+
+  @Override
+  public ResultadoSP cambiarPassword(Integer idUsuario, String actual, String nueva) {
+    // Primero obtenemos el usuario
+
+    Usuario u = new Usuario();
+    u.getIdUsuario();
+
+    // Validar contraseña actual
+    if (!passwordEncoder.matches(actual, u.getPassword()))
+      return new ResultadoSP(0, "La contraseña actual es incorrecta");
+
+    // Encriptar nueva
+    String nuevaEnc = passwordEncoder.encode(nueva);
+
+    // Enviar al SP
+    return usuarioAuthRepository.cambiarPassword(idUsuario, u.getPassword(), nuevaEnc);
+  }
+
+  @Override
   public List<UsuarioView> listarUsuarios() {
     return usuarioRepository.listarUsuarios();
+  }
+
+  @Override
+  public ResultadoSP actualizarFoto(Integer idUsuario, MultipartFile foto) {
+    try {
+      String ruta = fotoService.guardarFoto(idUsuario, foto);
+      ResultadoSP resultado = usuarioRepository.actualizarFoto(idUsuario, ruta);
+      // Asegurar mensaje claro si la SP devuelve null o vacío
+      String mensaje = (resultado.getMensaje() != null && !resultado.getMensaje().isEmpty())
+          ? resultado.getMensaje()
+          : "Foto actualizada correctamente";
+      return new ResultadoSP(1, mensaje, ruta); // siempre marcar como exitoso si se guardó
+    } catch (Exception e) {
+      return new ResultadoSP(0, "Error al guardar la foto: " + e.getMessage());
+    }
   }
 }

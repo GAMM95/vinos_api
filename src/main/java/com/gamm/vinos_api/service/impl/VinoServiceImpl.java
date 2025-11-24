@@ -36,7 +36,6 @@ public class VinoServiceImpl implements VinoService {
     return vinoRepository.filtrarVinoPorNombre(nombre);
   }
 
-
   @Override
   public List<VinoView> listarVinos() {
     return vinoRepository.listarVinos();

@@ -14,5 +14,6 @@ public class UsuarioView {
   private String username;
   private String nombreCompleto;
   private String celular;
+  private String rutaFoto;
   private String estado;
 }

@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.domain.model;
 
-import com.gamm.vinos_api.domain.enums.EstadoRegistro;
+import com.gamm.vinos_api.domain.enums.EstadoVino;
 import lombok.*;
 
 @Data
@@ -12,6 +12,5 @@ public class Vino {
     private Integer idCategoria;
     private Double precioVenta;
     private String descripcion;
-    private EstadoRegistro estado = EstadoRegistro.ACTIVO;
-
+    private EstadoVino estado = EstadoVino.DISPONIBLE;
 }
