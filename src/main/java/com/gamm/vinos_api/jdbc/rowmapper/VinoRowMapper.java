@@ -12,8 +12,10 @@ public class VinoRowMapper implements RowMapper<VinoView> {
     VinoView view = new VinoView();
     view.setIdVino(rs.getInt("idVino"));
     view.setNombreVino(rs.getString("nombreVino"));
+    view.setIdCategoria(rs.getInt("idCategoria"));
     view.setNombreCategoria(rs.getString("nombreCategoria"));
-    view.setPrecioVenta(rs.getDouble("precioVenta"));
+    view.setDescripcionVino(rs.getString("descripcionVino"));
+    view.setEstadoVino(rs.getString("estadoVino"));
     return view;
   }
 }

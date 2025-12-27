@@ -1,6 +1,7 @@
 package com.gamm.vinos_api.repository;
 
 import com.gamm.vinos_api.domain.model.Presentacion;
+import com.gamm.vinos_api.domain.view.PresentacionView;
 import com.gamm.vinos_api.utils.ResultadoSP;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface PresentacionRepository {
 
   ResultadoSP darAlta(Integer idPresentacion);
 
-  ResultadoSP filtrarPresentacion(String nombre);
+  ResultadoSP filtrarPresentacion(String descripcion);
 
-  List<Presentacion> listarPresentaciones();
+  List<PresentacionView> listarPresentaciones();
 }

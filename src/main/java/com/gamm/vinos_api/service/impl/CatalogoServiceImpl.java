@@ -26,6 +26,16 @@ public class CatalogoServiceImpl implements CatalogoService {
   }
 
   @Override
+  public ResultadoSP darDeBajaCatalogo(Integer idCatalogo) {
+    return catalogoRepository.darDeBajaCatalogo(idCatalogo);
+  }
+
+  @Override
+  public ResultadoSP darDeAltaCatalogo(Integer idCatalogo) {
+    return catalogoRepository.darDeAltaCatalogo(idCatalogo);
+  }
+
+  @Override
   public List<CatalogoView> listarCatalogos() {
     return catalogoRepository.listarCatalogos();
   }

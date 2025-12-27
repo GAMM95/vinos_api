@@ -62,7 +62,23 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
     return ejecutarSP(2, catalogo);
   }
 
-// Listar catalogos
+  // Dar de baja a un catálogo
+  @Override
+  public ResultadoSP darDeBajaCatalogo(Integer idCatalogo) {
+    Catalogo catalogo = new Catalogo();
+    catalogo.setIdCatalogo(idCatalogo);
+    return ejecutarSP(3, catalogo);
+  }
+
+  // Dar de alta a un catálogo
+  @Override
+  public ResultadoSP darDeAltaCatalogo(Integer idCatalogo) {
+    Catalogo catalogo = new Catalogo();
+    catalogo.setIdCatalogo(idCatalogo);
+    return ejecutarSP(4, catalogo);
+  }
+
+  // Listar catalogos
   @Override
   public List<CatalogoView> listarCatalogos() {
       return jdbcTemplate.query(VW_CATALOGOS ,new CatalogoRowMapper());

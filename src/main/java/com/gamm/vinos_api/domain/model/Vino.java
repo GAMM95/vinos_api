@@ -10,7 +10,6 @@ public class Vino {
     private Integer idVino;
     private String nombre;
     private Integer idCategoria;
-    private Double precioVenta;
     private String descripcion;
     private EstadoVino estado = EstadoVino.DISPONIBLE;
 }

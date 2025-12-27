@@ -12,6 +12,10 @@ public interface CatalogoRepository {
 
   ResultadoSP actualizarCatalogo(Catalogo catalogo);
 
+  ResultadoSP darDeBajaCatalogo(Integer idCatalogo);
+
+  ResultadoSP darDeAltaCatalogo(Integer idCatalogo);
+
   List<CatalogoView> listarCatalogos();
 
   ResultadoSP filtrarPorProveedor(Integer idProveedor);

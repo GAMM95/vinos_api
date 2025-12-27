@@ -2,6 +2,7 @@ package com.gamm.vinos_api.service.impl;
 
 
 import com.gamm.vinos_api.domain.model.Presentacion;
+import com.gamm.vinos_api.domain.view.PresentacionView;
 import com.gamm.vinos_api.repository.PresentacionRepository;
 import com.gamm.vinos_api.service.PresentacionService;
 import com.gamm.vinos_api.utils.ResultadoSP;
@@ -37,12 +38,12 @@ public class PresentacionServiceImpl implements PresentacionService {
   }
 
   @Override
-  public ResultadoSP filtrarPresentacion(String nombre) {
-    return presentacionRepository.filtrarPresentacion(nombre);
+  public ResultadoSP filtrarPresentacion(String descripcion) {
+    return presentacionRepository.filtrarPresentacion(descripcion);
   }
 
   @Override
-  public List<Presentacion> listarPresentaciones() {
+  public List<PresentacionView> listarPresentaciones() {
     return presentacionRepository.listarPresentaciones();
   }
 }

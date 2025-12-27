@@ -59,8 +59,8 @@ public class PresentacionController extends AbstractRestController {
   // Filtrar usuarios
   @GetMapping("/filtrar")
   @SoloAdministrador
-  public ResponseEntity<ResponseVO> filtrarPresentaciones(@RequestParam String nombre) {
-    ResultadoSP resultado = presentacionService.filtrarPresentacion(nombre);
+  public ResponseEntity<ResponseVO> filtrarPresentaciones(@RequestParam String descripcion  ) {
+    ResultadoSP resultado = presentacionService.filtrarPresentacion(descripcion);
 
     return resultado.esExitoso()
         ? ok(resultado.getMensaje(), resultado.getData())

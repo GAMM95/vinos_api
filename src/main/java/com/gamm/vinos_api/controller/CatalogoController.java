@@ -27,7 +27,7 @@ public class CatalogoController extends AbstractRestController {
 
   // Actualizar catálogo
   @PutMapping("/{id}")
-  public ResponseEntity<ResponseVO>  actualizarCatalogo(
+  public ResponseEntity<ResponseVO> actualizarCatalogo(
       @PathVariable Integer id,
       @RequestBody Catalogo catalogo) {
 
@@ -35,6 +35,24 @@ public class CatalogoController extends AbstractRestController {
     ResultadoSP resultado = catalogoService.actualizarCatalogo(catalogo);
     return resultado.esExitoso()
         ? created(resultado.getMensaje(), resultado.getData())
+        : badRequest(resultado.getMensaje());
+  }
+
+  // Dar de baja/alta a catálogo
+  @PatchMapping("/{idCatalogo}/estado")
+  public ResponseEntity<ResponseVO> cambiarEstado(
+      @PathVariable Integer idCatalogo,
+      @RequestParam("activo") boolean activo) {
+
+    ResultadoSP resultado;
+    if (activo) {
+      resultado = catalogoService.darDeAltaCatalogo(idCatalogo);
+    } else {
+      resultado = catalogoService.darDeBajaCatalogo(idCatalogo);
+    }
+
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), null)
         : badRequest(resultado.getMensaje());
   }
 
@@ -48,5 +66,3 @@ public class CatalogoController extends AbstractRestController {
     return ok(catalogoService.filtrarPorProveedor(idProveedor));
   }
 }
-
-

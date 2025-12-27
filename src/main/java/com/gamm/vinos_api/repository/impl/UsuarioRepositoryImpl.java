@@ -43,7 +43,6 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
 
   @Override
   public ResultadoSP actualizarUsuario(Usuario usuario) {
-    // tipo 6: actualizar parcialmente, construirParametros enviará NULL para campos no provistos
     return ejecutarSP(construirParametros(6, usuario));
   }
 

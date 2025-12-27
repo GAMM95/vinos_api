@@ -9,11 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class VinoView {
-  private Integer idVino;
-  private String nombreVino;
+public class CategoriaCbo {
   private Integer idCategoria;
   private String nombreCategoria;
-  private String descripcionVino;
-  private String estadoVino;
 }

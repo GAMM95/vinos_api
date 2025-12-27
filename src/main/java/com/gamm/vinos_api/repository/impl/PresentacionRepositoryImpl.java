@@ -2,7 +2,9 @@ package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.Presentacion;
 import com.gamm.vinos_api.domain.model.Usuario;
+import com.gamm.vinos_api.domain.view.PresentacionView;
 import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
+import com.gamm.vinos_api.jdbc.rowmapper.PresentacionRowMapper;
 import com.gamm.vinos_api.repository.PresentacionRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import jakarta.annotation.PostConstruct;
@@ -39,11 +41,13 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
         .declareParameters(
             new SqlParameter("pTipo", Types.TINYINT),
             new SqlParameter("pIdPresentacion", Types.TINYINT),
-            new SqlParameter("pNombre", Types.VARCHAR),
-            new SqlParameter("pLitrosUnidad", Types.DOUBLE),
+            new SqlParameter("pDescripcion", Types.VARCHAR),
+            new SqlParameter("pVolumen", Types.DOUBLE),
+            new SqlParameter("pUnidadVolumen", Types.TINYINT),
             new SqlOutParameter("pRespuesta", Types.TINYINT),
             new SqlOutParameter("pMensaje", Types.VARCHAR)
-        );
+        )
+    .returningResultSet("ResultSet", new PresentacionRowMapper());
   }
 
   /// MÉTODOS CRUD
@@ -76,16 +80,16 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
   }
 
   @Override
-  public ResultadoSP filtrarPresentacion(String nombre) {
+  public ResultadoSP filtrarPresentacion(String descripcion) {
     Presentacion p = new Presentacion();
-    p.setNombre(nombre);
+    p.setDescripcion(descripcion);
     return ejecutarSPConLista(spCall, construirParametros(5, p));
   }
 
   // Listar presentaciones
   @Override
-  public List<Presentacion> listarPresentaciones() {
-    return jdbcTemplate.query(VW_PRESENTACIONES, new BeanPropertyRowMapper<>(Presentacion.class));
+  public List<PresentacionView> listarPresentaciones() {
+    return jdbcTemplate.query(VW_PRESENTACIONES, new PresentacionRowMapper());
   }
 
   /// MÉTODOS PRIVADOS AUXILIARES
@@ -99,8 +103,14 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
     Map<String, Object> params = new HashMap<>();
     params.put("pTipo", tipo);
     params.put("pIdPresentacion", presentacion.getIdPresentacion());
-    params.put("pNombre", presentacion.getNombre());
-    params.put("pLitrosUnidad", presentacion.getLitrosUnidad());
+    params.put("pDescripcion", presentacion.getDescripcion());
+    params.put("pVolumen", presentacion.getVolumen());
+    if (presentacion.getUnidadVolumen() != null) {
+      params.put("pUnidadVolumen", presentacion.getUnidadVolumen().getIdUnidadVolumen());
+    } else {
+      params.put("pUnidadVolumen", null);
+    }
     return params;
   }
+
 }

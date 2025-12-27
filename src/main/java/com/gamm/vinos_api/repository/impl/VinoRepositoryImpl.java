@@ -42,7 +42,6 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
             new SqlParameter("pIdVino", Types.INTEGER),
             new SqlParameter("pNombre", Types.VARCHAR),
             new SqlParameter("pIdCategoria", Types.INTEGER),
-            new SqlParameter("pPrecioVenta", Types.DOUBLE),
             new SqlParameter("pDescripcion", Types.VARCHAR),
             new SqlOutParameter("pRespuesta", Types.TINYINT),
             new SqlOutParameter("pMensaje", Types.VARCHAR)
@@ -100,7 +99,6 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
     params.put("pIdVino", vino.getIdVino());
     params.put("pNombre", vino.getNombre());
     params.put("pIdCategoria", vino.getIdCategoria());
-    params.put("pPrecioVenta", vino.getPrecioVenta());
     params.put("pDescripcion", vino.getDescripcion());
     return params;
   }
