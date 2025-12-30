@@ -39,9 +39,9 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
         .withProcedureName(SP_VINOS)
         .declareParameters(
             new SqlParameter("pTipo", Types.TINYINT),
-            new SqlParameter("pIdVino", Types.INTEGER),
+            new SqlParameter("pIdVino", Types.TINYINT),
             new SqlParameter("pNombre", Types.VARCHAR),
-            new SqlParameter("pIdCategoria", Types.INTEGER),
+            new SqlParameter("pIdCategoria", Types.TINYINT),
             new SqlParameter("pDescripcion", Types.VARCHAR),
             new SqlOutParameter("pRespuesta", Types.TINYINT),
             new SqlOutParameter("pMensaje", Types.VARCHAR)
@@ -73,9 +73,9 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
   // filtrar vinos por nombre
   @Override
   public ResultadoSP filtrarVinoPorNombre(String nombre) {
-    Vino vino = new Vino();
-    vino.setNombre(nombre);
-    return ejecutarSPConLista(spCall, construirParametros(4, vino));
+    Vino v = new Vino();
+    v.setNombre(nombre);
+    return ejecutarSPConLista(spCall, construirParametros(4, v));
   }
 
   // Listar vinos
@@ -85,11 +85,9 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
   }
 
   /*** Métodos privados auxiliares ***/
-
   // Ejecuta el procedimiento almacenado con un tipo de operación
   private ResultadoSP ejecutarSP(int tipo, Vino vino) {
-    Map<String, Object> params = construirParametros(tipo, vino);
-    return ejecutarSP(spCall, params);
+    return ejecutarSP(spCall, construirParametros(tipo, vino));
   }
 
   // Construye los parámetros para enviar al procedimiento
@@ -98,7 +96,9 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
     params.put("pTipo", tipo);
     params.put("pIdVino", vino.getIdVino());
     params.put("pNombre", vino.getNombre());
-    params.put("pIdCategoria", vino.getIdCategoria());
+    params.put("pIdCategoria", vino.getCategoria() != null
+        ? vino.getCategoria().getIdCategoria()
+        : null);
     params.put("pDescripcion", vino.getDescripcion());
     return params;
   }

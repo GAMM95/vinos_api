@@ -79,6 +79,7 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
     return ejecutarSP(4, presentacion);
   }
 
+  // Filtrar presentaciones por descripción
   @Override
   public ResultadoSP filtrarPresentacion(String descripcion) {
     Presentacion p = new Presentacion();

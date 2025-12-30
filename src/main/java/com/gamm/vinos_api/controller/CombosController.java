@@ -25,4 +25,23 @@ public class CombosController extends AbstractRestController {
   public ResponseEntity<ResponseVO> comboCategoria() {
     return ok(combosService.comboCategoria());
   }
+
+  // Llenar el combo de proveedores
+  @GetMapping("/proveedor")
+  public ResponseEntity<ResponseVO> comboProveedor() {
+    return ok(combosService.comboProveedor());
+  }
+
+  // Llenar el combo de presentaciones
+  @GetMapping("/presentacion")
+  public ResponseEntity<ResponseVO> comboPresentacion() {
+    return ok(combosService.comboPresentacion());
+  }
+
+  // Llenar el combo de vinos
+  @GetMapping("/vino")
+  public ResponseEntity<ResponseVO> comboVino() {
+    return ok(combosService.comboVino());
+  }
+
 }

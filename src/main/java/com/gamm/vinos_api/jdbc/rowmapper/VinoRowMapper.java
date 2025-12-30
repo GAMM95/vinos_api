@@ -11,7 +11,7 @@ public class VinoRowMapper implements RowMapper<VinoView> {
   public VinoView mapRow(ResultSet rs, int rowNum) throws SQLException {
     VinoView view = new VinoView();
     view.setIdVino(rs.getInt("idVino"));
-    view.setNombreVino(rs.getString("nombreVino"));
+    view.setNombre(rs.getString("nombre"));
     view.setIdCategoria(rs.getInt("idCategoria"));
     view.setNombreCategoria(rs.getString("nombreCategoria"));
     view.setDescripcionVino(rs.getString("descripcionVino"));

@@ -2,6 +2,7 @@ package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.dto.ResponseVO;
 import com.gamm.vinos_api.domain.model.Catalogo;
+import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.service.CatalogoService;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ public class CatalogoController extends AbstractRestController {
 
   // Registrar catálogo
   @PostMapping
+  @SoloAdministrador
   public ResponseEntity<ResponseVO> registrarCatalogo(@RequestBody Catalogo catalogo) {
     ResultadoSP resultado = catalogoService.registrarCatalogo(catalogo);
 
@@ -27,6 +29,7 @@ public class CatalogoController extends AbstractRestController {
 
   // Actualizar catálogo
   @PutMapping("/{id}")
+  @SoloAdministrador
   public ResponseEntity<ResponseVO> actualizarCatalogo(
       @PathVariable Integer id,
       @RequestBody Catalogo catalogo) {
@@ -56,13 +59,19 @@ public class CatalogoController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
+  @GetMapping("/filtrar")
+  public ResponseEntity<ResponseVO> filtrarPorProveedor(@RequestParam Integer idProveedor) {
+    ResultadoSP resultado = catalogoService.filtrarPorProveedor(idProveedor);
+
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), resultado.getData())
+        : badRequest(resultado.getMensaje());
+  }
+
   @GetMapping
   public ResponseEntity<ResponseVO> listarCatalogos() {
     return ok(catalogoService.listarCatalogos());
   }
 
-  @GetMapping("/filtrar")
-  public ResponseEntity<ResponseVO> filtrarPorProveedor(@RequestParam Integer idProveedor) {
-    return ok(catalogoService.filtrarPorProveedor(idProveedor));
-  }
+
 }

@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.service.impl;
 
-import com.gamm.vinos_api.domain.view.CategoriaCbo;
-import com.gamm.vinos_api.domain.view.UnidadVolumenCbo;
+import com.gamm.vinos_api.domain.cbo.*;
+import com.gamm.vinos_api.domain.view.VinoView;
 import com.gamm.vinos_api.repository.CombosRepository;
 import com.gamm.vinos_api.service.CombosService;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +22,20 @@ public class CombosServiceImpl implements CombosService {
   @Override
   public List<CategoriaCbo> comboCategoria() {
     return combosRepository.comboCategoria();
+  }
+
+  @Override
+  public List<ProveedorCbo> comboProveedor() {
+    return combosRepository.comboProveedor();
+  }
+
+  @Override
+  public List<PresentacionCbo> comboPresentacion() {
+    return combosRepository.comboPresentacion();
+  }
+
+  @Override
+  public List<VinoCbo> comboVino() {
+    return combosRepository.comboVino();
   }
 }

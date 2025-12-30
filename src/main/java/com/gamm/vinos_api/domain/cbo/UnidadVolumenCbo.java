@@ -1,4 +1,4 @@
-package com.gamm.vinos_api.domain.view;
+package com.gamm.vinos_api.domain.cbo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoriaCbo {
-  private Integer idCategoria;
-  private String nombreCategoria;
+public class UnidadVolumenCbo {
+  private Integer idUnidadVolumen;
+  private String unidad;
 }
