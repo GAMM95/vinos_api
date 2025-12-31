@@ -12,8 +12,14 @@ import lombok.Setter;
 public class UsuarioView {
   private Integer idUsuario;
   private String username;
+  private Integer idPersona;
+  private String nombres;
+  private String apellidoPaterno;
+  private String apellidoMaterno;
   private String nombreCompleto;
   private String celular;
+  private String domicilio;
   private String rutaFoto;
+  private String rol;
   private String estado;
 }

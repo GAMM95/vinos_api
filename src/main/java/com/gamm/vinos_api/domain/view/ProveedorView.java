@@ -15,6 +15,7 @@ public class ProveedorView {
  private String razonSocial;
  private String ruc;
  private String contacto;
+ private String origen;
  private String ubicacion;
  private String estado;
 }

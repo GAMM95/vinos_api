@@ -40,6 +40,7 @@ public class ProveedorRepositoryImpl extends SimpleJdbcDAOBase implements Provee
             new SqlParameter("pRazonSocial", Types.VARCHAR),
             new SqlParameter("pRuc", Types.VARCHAR),
             new SqlParameter("pContacto", Types.VARCHAR),
+            new SqlParameter("pOrigen", Types.VARCHAR),
             new SqlParameter("pUbicacion", Types.VARCHAR),
             new SqlOutParameter("pRespuesta", Types.TINYINT),
             new SqlOutParameter("pMensaje", Types.VARCHAR)
@@ -103,6 +104,7 @@ public class ProveedorRepositoryImpl extends SimpleJdbcDAOBase implements Provee
     params.put("pRazonSocial", proveedor.getRazonSocial());
     params.put("pRuc", proveedor.getRuc());
     params.put("pContacto", proveedor.getContacto());
+    params.put("pOrigen", proveedor.getOrigen() != null ? proveedor.getOrigen().name() : null);
     params.put("pUbicacion", proveedor.getUbicacion());
     return params;
   }

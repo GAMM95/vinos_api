@@ -1,5 +1,8 @@
 package com.gamm.vinos_api.repository.impl;
 
+import com.gamm.vinos_api.domain.enums.EstadoRegistro;
+import com.gamm.vinos_api.domain.enums.Rol;
+import com.gamm.vinos_api.domain.model.Persona;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.domain.view.UsuarioView;
 import com.gamm.vinos_api.jdbc.rowmapper.UsuarioViewRowMapper;
@@ -71,19 +74,34 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
     Usuario u = new Usuario();
     u.setIdUsuario(idUsuario);
 
-    ResultadoSP resultado = ejecutarSPConLista(construirParametros(10, u), false);
+    ResultadoSP resultado =
+        ejecutarSPConLista(construirParametros(10, u), false);
 
     if (resultado.getData() == null) return null;
 
-    // Mapear UsuarioView a Usuario
     if (resultado.getData() instanceof UsuarioView uv) {
+
+      Persona p = new Persona();
+      p.setIdPersona(uv.getIdPersona());
+      p.setNombres(uv.getNombres());
+      p.setApellidoPaterno(uv.getApellidoPaterno());
+      p.setApellidoMaterno(uv.getApellidoMaterno());
+      p.setCelular(uv.getCelular());
+      p.setDomicilio(uv.getDomicilio());
+
       Usuario user = new Usuario();
       user.setIdUsuario(uv.getIdUsuario());
       user.setUsername(uv.getUsername());
       user.setRutaFoto(uv.getRutaFoto());
+      user.setRol(Rol.valueOf(uv.getRol().toUpperCase()));
+      user.setEstado(EstadoRegistro.valueOf(uv.getEstado().toUpperCase()));
+      user.setPersona(p);
+
       return user;
     }
+
     return null;
   }
+
 
 }

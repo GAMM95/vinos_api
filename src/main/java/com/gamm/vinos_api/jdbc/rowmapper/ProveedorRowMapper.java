@@ -16,6 +16,7 @@ public class ProveedorRowMapper implements RowMapper<ProveedorView> {
     proveedor.setRazonSocial(rs.getString("razonSocial"));
     proveedor.setRuc(rs.getString("ruc"));
     proveedor.setContacto(rs.getString("contacto"));
+    proveedor.setOrigen(rs.getString("origen"));
     proveedor.setUbicacion(rs.getString("ubicacion"));
     proveedor.setEstado(rs.getString("estado"));
     return proveedor;

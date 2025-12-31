@@ -53,9 +53,12 @@ public class UsuarioController extends AbstractRestController {
   public ResponseEntity<ResponseVO> actualizarUsuario(
       @PathVariable Integer id,
       @RequestBody Usuario usuario) {
+
     usuario.setIdUsuario(id);
-    ResultadoSP r = usuarioService.actualizarUsuario(usuario);
-    return r.esExitoso() ? ok(r.getMensaje()) : badRequest(r.getMensaje());
+    ResultadoSP resultado = usuarioService.actualizarUsuario(usuario);
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), resultado.getData())
+        : badRequest(resultado.getMensaje());
   }
 
   // Listar usuarios

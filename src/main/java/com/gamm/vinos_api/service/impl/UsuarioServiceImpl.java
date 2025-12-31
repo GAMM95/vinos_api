@@ -56,7 +56,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
   @Override
   public ResultadoSP actualizarUsuario(Usuario usuario) {
-     return usuarioRepository.actualizarUsuario(usuario);
+    ResultadoSP r = usuarioRepository.actualizarUsuario(usuario);
+    if (r.esExitoso()) {
+      Usuario actualizado = usuarioRepository.obtenerPorId(usuario.getIdUsuario());
+      r.setData(actualizado);
+    }
+    return r;
   }
 
   @Override
@@ -88,18 +93,35 @@ public class UsuarioServiceImpl implements UsuarioService {
     return usuarioRepository.listarUsuarios();
   }
 
+  //  @Override
+//  public ResultadoSP actualizarFoto(Integer idUsuario, MultipartFile foto) {
+//    try {
+//      String ruta = fotoService.guardarFoto(idUsuario, foto);
+//      ResultadoSP resultado = usuarioRepository.actualizarFoto(idUsuario, ruta);
+//      // Asegurar mensaje claro si la SP devuelve null o vacío
+//      String mensaje = (resultado.getMensaje() != null && !resultado.getMensaje().isEmpty())
+//          ? resultado.getMensaje()
+//          : "Foto actualizada correctamente";
+//      return new ResultadoSP(1, mensaje, ruta); // siempre marcar como exitoso si se guardó
+//    } catch (Exception e) {
+//      return new ResultadoSP(0, "Error al guardar la foto: " + e.getMessage());
+//    }
+//  }
   @Override
   public ResultadoSP actualizarFoto(Integer idUsuario, MultipartFile foto) {
     try {
       String ruta = fotoService.guardarFoto(idUsuario, foto);
+
       ResultadoSP resultado = usuarioRepository.actualizarFoto(idUsuario, ruta);
-      // Asegurar mensaje claro si la SP devuelve null o vacío
-      String mensaje = (resultado.getMensaje() != null && !resultado.getMensaje().isEmpty())
-          ? resultado.getMensaje()
-          : "Foto actualizada correctamente";
-      return new ResultadoSP(1, mensaje, ruta); // siempre marcar como exitoso si se guardó
+      if (!resultado.esExitoso()) {
+        return resultado;
+      }
+      resultado.setData(ruta);
+      return resultado;
+
     } catch (Exception e) {
       return new ResultadoSP(0, "Error al guardar la foto: " + e.getMessage());
     }
   }
+
 }
