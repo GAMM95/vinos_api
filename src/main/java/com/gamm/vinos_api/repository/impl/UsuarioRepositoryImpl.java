@@ -53,7 +53,7 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
   public ResultadoSP filtrarUsuario(String terminoBusqueda) {
     Usuario u = new Usuario();
     u.setUsername(terminoBusqueda);
-    return ejecutarSPConLista(construirParametros(5, u),true);
+    return ejecutarSPConLista(construirParametros(5, u), true);
   }
 
   @Override
@@ -99,9 +99,26 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
 
       return user;
     }
-
     return null;
   }
 
+  @Override
+  public Usuario obtenerUsuarioConPassword(Integer idUsuario) {
+    String sql = """
+        SELECT idUsuario, username, password
+        FROM usuario
+        WHERE idUsuario = ?
+        """;
+
+    return jdbcTemplate.query(sql, rs -> {
+      if (!rs.next()) return null;
+
+      Usuario u = new Usuario();
+      u.setIdUsuario(rs.getInt("idUsuario"));
+      u.setUsername(rs.getString("username"));
+      u.setPassword(rs.getString("password"));
+      return u;
+    }, idUsuario);
+  }
 
 }

@@ -21,4 +21,6 @@ public interface UsuarioRepository {
   ResultadoSP actualizarFoto(Integer idUsuario, String rutaFoto);
 
   Usuario obtenerPorId (Integer idUsuario);
+
+  Usuario obtenerUsuarioConPassword (Integer idUsuario);
 }

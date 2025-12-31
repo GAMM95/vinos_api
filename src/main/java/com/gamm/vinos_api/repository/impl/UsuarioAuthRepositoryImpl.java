@@ -51,11 +51,15 @@ public class UsuarioAuthRepositoryImpl extends BaseUsuarioSPRepository implement
   }
 
   @Override
-  public ResultadoSP cambiarPassword(Integer idUsuario, String actual, String nueva) {
+  public ResultadoSP cambiarPassword(
+      Integer idUsuario,
+      String passwordActual,
+      String passwordNueva
+  ) {
     Usuario u = new Usuario();
     u.setIdUsuario(idUsuario);
-    u.setPassword(actual);
-    u.setPasswordNueva(nueva);
+    u.setPassword(passwordActual);
+    u.setPasswordNueva(passwordNueva);
     return ejecutarSP(construirParametros(8, u));
   }
 }

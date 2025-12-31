@@ -4,6 +4,7 @@ import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.domain.view.UsuarioView;
 import com.gamm.vinos_api.repository.UsuarioAuthRepository;
 import com.gamm.vinos_api.repository.UsuarioRepository;
+import com.gamm.vinos_api.security.util.SecurityUtils;
 import com.gamm.vinos_api.service.FotoService;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.utils.ResultadoSP;
@@ -50,7 +51,8 @@ public class UsuarioServiceImpl implements UsuarioService {
   }
 
   @Override
-  public ResultadoSP obtenerPerfil(String username) {
+  public ResultadoSP obtenerPerfil() {
+    String username = SecurityUtils.getUsername();
     return usuarioAuthRepository.obtenerDatosPerfil(username);
   }
 
@@ -71,23 +73,28 @@ public class UsuarioServiceImpl implements UsuarioService {
   }
 
   @Override
-  public ResultadoSP cambiarPassword(Integer idUsuario, String actual, String nueva) {
-    // Primero obtenemos el usuario desde la BD
-    Usuario u = usuarioRepository.obtenerPorId(idUsuario);
+  public ResultadoSP cambiarPassword(String actual, String nueva) {
+    Integer idUsuario = SecurityUtils.getUserId();
+    if (idUsuario == null) {
+      return new ResultadoSP(0, "Usuario no autenticado");
+    }
+    Usuario u = usuarioRepository.obtenerUsuarioConPassword(idUsuario);
     if (u == null) {
       return new ResultadoSP(0, "Usuario no encontrado");
     }
+    System.out.println("PASSWORD BD = " + u.getPassword());
+    System.out.println("ACTUAL = " + actual);
 
-    // Validar la contraseña actual
     if (!passwordEncoder.matches(actual, u.getPassword())) {
       return new ResultadoSP(0, "La contraseña actual es incorrecta");
     }
 
-    // Encriptar la nueva contraseña
-    String encriptada = passwordEncoder.encode(nueva);
-
-    // Llamar al respositorio
-    return usuarioAuthRepository.cambiarPassword(idUsuario, u.getPassword(), encriptada);
+    String nuevaEncriptada = passwordEncoder.encode(nueva);
+    return usuarioAuthRepository.cambiarPassword(
+        idUsuario,
+        u.getPassword(),
+        nuevaEncriptada
+    );
   }
 
   @Override

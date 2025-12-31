@@ -65,39 +65,6 @@ public class UsuarioController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
-  // Cambiar contraseña (Usuario)
-  @PatchMapping("/password")
-  public ResponseEntity<ResponseVO> cambiarPassword(
-      @RequestBody ChangePasswordRequest request) {
-
-    ResultadoSP resultado = usuarioService.cambiarPassword(
-        request.IdUsuario(),
-        request.actual(),
-        request.nueva()
-    );
-
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
-  }
-
-
-  // Resetear contraseña (admin)
-  @PatchMapping("/password/reset")
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> resetearPassword(
-      @RequestBody ResetPasswordRequest request) {
-
-    ResultadoSP resultado = usuarioService.resetearPassword(
-        request.IdUsuario(),
-        request.nuevaPassword()
-    );
-
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
-  }
-
   // Listar usuarios
   @GetMapping
   @SoloAdministrador

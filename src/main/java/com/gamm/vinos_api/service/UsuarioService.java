@@ -18,13 +18,13 @@ public interface UsuarioService {
 
   ResultadoSP filtrarUsuario(String terminoBusqueda);
 
-  ResultadoSP obtenerPerfil(String username);
+  ResultadoSP obtenerPerfil();
 
   ResultadoSP actualizarUsuario(Usuario usuario);
 
   ResultadoSP resetearPassword(Integer idUsuario, String nuevaPassword);
 
-  ResultadoSP cambiarPassword(Integer idUsuario, String actual, String nueva);
+  ResultadoSP cambiarPassword(String actual, String nueva);
 
   List<UsuarioView> listarUsuarios();
 

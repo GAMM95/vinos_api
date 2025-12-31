@@ -12,5 +12,6 @@ public interface UsuarioAuthRepository {
 
   ResultadoSP resetearPassword(Integer idUsuario, String nuevaPassword);
 
-  ResultadoSP cambiarPassword (Integer idUsuario, String actual, String nueva);
+  ResultadoSP cambiarPassword(Integer idUsuario, String passwordActual, String passwordNueva);
+
 }

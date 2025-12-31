@@ -4,6 +4,7 @@ import com.gamm.vinos_api.controller.AbstractRestController;
 import com.gamm.vinos_api.domain.model.Persona;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.security.dto.*;
 import com.gamm.vinos_api.security.service.AuthService;
 import com.gamm.vinos_api.service.UsuarioService;
@@ -57,22 +58,26 @@ public class AuthController extends AbstractRestController {
     return ok(data);
   }
 
-  @PostMapping("reset-password")
-  public ResponseEntity<ResponseVO> resetPassword(@RequestBody ResetPasswordRequest req) {
-    ResultadoSP resultado = usuarioService.resetearPassword(
-        req.IdUsuario(),
-        req.nuevaPassword()
-    );
+  // Resetear contraseña (admin)
+  @PatchMapping("/password/reset/{id}")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> resetearPassword(
+      @PathVariable Integer id,
+      @RequestBody ResetPasswordRequest req
+  ) {
+    ResultadoSP resultado =
+        usuarioService.resetearPassword(id, req.nuevaPassword());
 
     return resultado.esExitoso()
         ? ok(resultado.getMensaje())
         : badRequest(resultado.getMensaje());
   }
 
-  @PostMapping ("/change-password")
-  public ResponseEntity<ResponseVO> changePassword (@RequestBody ChangePasswordRequest req){
+  @PatchMapping("/password")
+  public ResponseEntity<ResponseVO> changePassword(
+      @RequestBody ChangePasswordRequest req
+  ) {
     ResultadoSP resultado = usuarioService.cambiarPassword(
-        req.IdUsuario(),
         req.actual(),
         req.nueva()
     );
@@ -82,11 +87,10 @@ public class AuthController extends AbstractRestController {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<ResponseVO> obtenerPerfil(@RequestHeader("Authorization") String bearerToken) {
-    ResultadoSP resultado = authService.obtenerPerfilDesdeToken(bearerToken);
+  public ResponseEntity<ResponseVO> obtenerPerfil() {
+    ResultadoSP resultado = authService.obtenerPerfilDesdeToken();
     return resultado.esExitoso()
         ? ok(resultado.getMensaje(), resultado.getData())
         : badRequest(resultado.getMensaje());
   }
-
 }
