@@ -72,20 +72,22 @@ public class UsuarioServiceImpl implements UsuarioService {
 
   @Override
   public ResultadoSP cambiarPassword(Integer idUsuario, String actual, String nueva) {
-    // Primero obtenemos el usuario
+    // Primero obtenemos el usuario desde la BD
+    Usuario u = usuarioRepository.obtenerPorId(idUsuario);
+    if (u == null) {
+      return new ResultadoSP(0, "Usuario no encontrado");
+    }
 
-    Usuario u = new Usuario();
-    u.getIdUsuario();
-
-    // Validar contraseña actual
-    if (!passwordEncoder.matches(actual, u.getPassword()))
+    // Validar la contraseña actual
+    if (!passwordEncoder.matches(actual, u.getPassword())) {
       return new ResultadoSP(0, "La contraseña actual es incorrecta");
+    }
 
-    // Encriptar nueva
-    String nuevaEnc = passwordEncoder.encode(nueva);
+    // Encriptar la nueva contraseña
+    String encriptada = passwordEncoder.encode(nueva);
 
-    // Enviar al SP
-    return usuarioAuthRepository.cambiarPassword(idUsuario, u.getPassword(), nuevaEnc);
+    // Llamar al respositorio
+    return usuarioAuthRepository.cambiarPassword(idUsuario, u.getPassword(), encriptada);
   }
 
   @Override
@@ -93,20 +95,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     return usuarioRepository.listarUsuarios();
   }
 
-  //  @Override
-//  public ResultadoSP actualizarFoto(Integer idUsuario, MultipartFile foto) {
-//    try {
-//      String ruta = fotoService.guardarFoto(idUsuario, foto);
-//      ResultadoSP resultado = usuarioRepository.actualizarFoto(idUsuario, ruta);
-//      // Asegurar mensaje claro si la SP devuelve null o vacío
-//      String mensaje = (resultado.getMensaje() != null && !resultado.getMensaje().isEmpty())
-//          ? resultado.getMensaje()
-//          : "Foto actualizada correctamente";
-//      return new ResultadoSP(1, mensaje, ruta); // siempre marcar como exitoso si se guardó
-//    } catch (Exception e) {
-//      return new ResultadoSP(0, "Error al guardar la foto: " + e.getMessage());
-//    }
-//  }
   @Override
   public ResultadoSP actualizarFoto(Integer idUsuario, MultipartFile foto) {
     try {

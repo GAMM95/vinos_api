@@ -2,7 +2,10 @@ package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.security.annotations.Publico;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
+import com.gamm.vinos_api.security.dto.ChangePasswordRequest;
+import com.gamm.vinos_api.security.dto.ResetPasswordRequest;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +52,7 @@ public class UsuarioController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
+  // Actualizar usuario
   @PutMapping("/{id}")
   public ResponseEntity<ResponseVO> actualizarUsuario(
       @PathVariable Integer id,
@@ -58,6 +62,39 @@ public class UsuarioController extends AbstractRestController {
     ResultadoSP resultado = usuarioService.actualizarUsuario(usuario);
     return resultado.esExitoso()
         ? ok(resultado.getMensaje(), resultado.getData())
+        : badRequest(resultado.getMensaje());
+  }
+
+  // Cambiar contraseña (Usuario)
+  @PatchMapping("/password")
+  public ResponseEntity<ResponseVO> cambiarPassword(
+      @RequestBody ChangePasswordRequest request) {
+
+    ResultadoSP resultado = usuarioService.cambiarPassword(
+        request.IdUsuario(),
+        request.actual(),
+        request.nueva()
+    );
+
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), null)
+        : badRequest(resultado.getMensaje());
+  }
+
+
+  // Resetear contraseña (admin)
+  @PatchMapping("/password/reset")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> resetearPassword(
+      @RequestBody ResetPasswordRequest request) {
+
+    ResultadoSP resultado = usuarioService.resetearPassword(
+        request.IdUsuario(),
+        request.nuevaPassword()
+    );
+
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), null)
         : badRequest(resultado.getMensaje());
   }
 
