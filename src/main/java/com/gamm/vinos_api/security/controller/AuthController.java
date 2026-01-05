@@ -9,6 +9,7 @@ import com.gamm.vinos_api.security.dto.*;
 import com.gamm.vinos_api.security.service.AuthService;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.utils.ResultadoSP;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ public class AuthController extends AbstractRestController {
     p.setNombres(req.nombres());
     p.setApellidoPaterno(req.apellidoPaterno());
     p.setApellidoMaterno(req.apellidoMaterno());
+    p.setEmail(req.email());
 
     Usuario u = new Usuario();
     u.setPersona(p);
@@ -93,4 +95,24 @@ public class AuthController extends AbstractRestController {
         ? ok(resultado.getMensaje(), resultado.getData())
         : badRequest(resultado.getMensaje());
   }
+
+  @PostMapping("/password/recuperar")
+  public ResponseEntity<ResponseVO> solicitarRecuperacion(@Valid @RequestBody EmailRequest request) {
+    String email = request.email();
+    ResultadoSP resultado = authService.generarTokenRecuperacion(email);
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), null) // No enviamos el token al cliente
+        : badRequest(resultado.getMensaje());
+  }
+
+  // Restaurar contraseña usando token
+  @PostMapping("/password/reset/token")
+  public ResponseEntity<ResponseVO> restaurarPassword(@Valid @RequestBody ResetPasswordRequestEmail request) {
+    ResultadoSP resultado = authService.resetearPasswordConToken(request.token(), request.nuevaPassword());
+
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), null)
+        : badRequest(resultado.getMensaje());
+  }
+
 }

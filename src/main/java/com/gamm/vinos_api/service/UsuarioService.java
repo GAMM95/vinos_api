@@ -2,6 +2,7 @@ package com.gamm.vinos_api.service;
 
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.domain.view.UsuarioView;
+import com.gamm.vinos_api.dto.UsuarioEmail;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +33,8 @@ public interface UsuarioService {
 
   ResultadoSP verificarUsername(String username, Integer idUsuario);
 
-  Usuario obtenerPorId (Integer idUsuario);
+  Usuario obtenerPorId(Integer idUsuario);
+
+  Usuario obtenerUsuarioPorEmail(String email);
 
 }

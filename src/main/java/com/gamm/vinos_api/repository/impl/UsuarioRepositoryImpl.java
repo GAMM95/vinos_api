@@ -5,6 +5,7 @@ import com.gamm.vinos_api.domain.enums.Rol;
 import com.gamm.vinos_api.domain.model.Persona;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.domain.view.UsuarioView;
+import com.gamm.vinos_api.dto.UsuarioEmail;
 import com.gamm.vinos_api.jdbc.rowmapper.UsuarioViewRowMapper;
 import com.gamm.vinos_api.repository.UsuarioRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;
@@ -74,32 +75,11 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
     Usuario u = new Usuario();
     u.setIdUsuario(idUsuario);
 
-    ResultadoSP resultado =
-        ejecutarSPConLista(construirParametros(10, u), false);
+    ResultadoSP resultado = ejecutarSPConLista(construirParametros(10, u), false);
 
-    if (resultado.getData() == null) return null;
+    if (!(resultado.getData() instanceof UsuarioView uv)) return null;
 
-    if (resultado.getData() instanceof UsuarioView uv) {
-
-      Persona p = new Persona();
-      p.setIdPersona(uv.getIdPersona());
-      p.setNombres(uv.getNombres());
-      p.setApellidoPaterno(uv.getApellidoPaterno());
-      p.setApellidoMaterno(uv.getApellidoMaterno());
-      p.setCelular(uv.getCelular());
-      p.setDomicilio(uv.getDomicilio());
-
-      Usuario user = new Usuario();
-      user.setIdUsuario(uv.getIdUsuario());
-      user.setUsername(uv.getUsername());
-      user.setRutaFoto(uv.getRutaFoto());
-      user.setRol(Rol.valueOf(uv.getRol().toUpperCase()));
-      user.setEstado(EstadoRegistro.valueOf(uv.getEstado().toUpperCase()));
-      user.setPersona(p);
-
-      return user;
-    }
-    return null;
+    return mapUsuarioViewToUsuario(uv);
   }
 
   @Override
@@ -110,6 +90,36 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
 
     return ejecutarSP(construirParametros(11, u));
   }
+
+
+  @Override
+  public Usuario obtenerUsuarioPorEmail(String email) {
+    String sql = """
+        SELECT idUsuario, email, nombres, apellidoPaterno, apellidoMaterno
+        FROM vw_usuarios
+        WHERE email = ?
+        LIMIT 1
+        """;
+
+    return jdbcTemplate.query(sql, rs -> {
+      if (!rs.next()) return null;
+
+      // Construimos la persona
+      Persona persona = new Persona();
+      persona.setEmail(rs.getString("email"));
+      persona.setNombres(rs.getString("nombres"));
+      persona.setApellidoPaterno(rs.getString("apellidoPaterno"));
+      persona.setApellidoMaterno(rs.getString("apellidoMaterno"));
+
+      // Construimos el usuario
+      Usuario usuario = new Usuario();
+      usuario.setIdUsuario(rs.getInt("idUsuario"));
+      usuario.setPersona(persona);
+
+      return usuario;
+    }, email);
+  }
+
 
   @Override
   public Usuario obtenerUsuarioConPassword(Integer idUsuario) {
@@ -128,6 +138,28 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
       u.setPassword(rs.getString("password"));
       return u;
     }, idUsuario);
+  }
+
+
+  private Usuario mapUsuarioViewToUsuario(UsuarioView uv) {
+    Persona persona = new Persona();
+    persona.setIdPersona(uv.getIdPersona());
+    persona.setNombres(uv.getNombres());
+    persona.setApellidoPaterno(uv.getApellidoPaterno());
+    persona.setApellidoMaterno(uv.getApellidoMaterno());
+    persona.setCelular(uv.getCelular());
+    persona.setEmail(uv.getEmail());
+    persona.setDomicilio(uv.getDomicilio());
+
+    Usuario usuario = new Usuario();
+    usuario.setIdUsuario(uv.getIdUsuario());
+    usuario.setUsername(uv.getUsername());
+    usuario.setRutaFoto(uv.getRutaFoto());
+    usuario.setRol(Rol.valueOf(uv.getRol().toUpperCase()));
+    usuario.setEstado(EstadoRegistro.valueOf(uv.getEstado().toUpperCase()));
+    usuario.setPersona(persona);
+
+    return usuario;
   }
 
 }

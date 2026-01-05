@@ -32,6 +32,7 @@ public abstract class BaseUsuarioSPRepository extends SimpleJdbcDAOBase {
             new SqlParameter("pApellidoPaterno", Types.VARCHAR),
             new SqlParameter("pApellidoMaterno", Types.VARCHAR),
             new SqlParameter("pCelular", Types.VARCHAR),
+            new SqlParameter("pEmail", Types.VARCHAR),
             new SqlParameter("pDomicilio", Types.VARCHAR),
             new SqlParameter("pIdUsuario", Types.INTEGER),
             new SqlParameter("pUsername", Types.VARCHAR),
@@ -66,12 +67,14 @@ public abstract class BaseUsuarioSPRepository extends SimpleJdbcDAOBase {
       p.put("pApellidoPaterno", u.getPersona().getApellidoPaterno());
       p.put("pApellidoMaterno", u.getPersona().getApellidoMaterno());
       p.put("pCelular", u.getPersona().getCelular());
+      p.put("pEmail", u.getPersona().getEmail());
       p.put("pDomicilio", u.getPersona().getDomicilio());
     } else {
       p.put("pNombres", null);
       p.put("pApellidoPaterno", null);
       p.put("pApellidoMaterno", null);
       p.put("pCelular", null);
+      p.put("pEmail", null);
       p.put("pDomicilio", null);
     }
 

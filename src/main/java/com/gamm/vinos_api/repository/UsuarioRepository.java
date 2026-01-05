@@ -2,6 +2,7 @@ package com.gamm.vinos_api.repository;
 
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.domain.view.UsuarioView;
+import com.gamm.vinos_api.dto.UsuarioEmail;
 import com.gamm.vinos_api.utils.ResultadoSP;
 
 import java.util.List;
@@ -25,4 +26,6 @@ public interface UsuarioRepository {
   Usuario obtenerUsuarioConPassword (Integer idUsuario);
 
   ResultadoSP verificarUsername (String username, Integer idUsuario);
+
+  Usuario obtenerUsuarioPorEmail(String email);
 }

@@ -2,17 +2,23 @@ package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.domain.view.UsuarioView;
+import com.gamm.vinos_api.dto.UsuarioEmail;
 import com.gamm.vinos_api.repository.UsuarioAuthRepository;
 import com.gamm.vinos_api.repository.UsuarioRepository;
 import com.gamm.vinos_api.security.util.SecurityUtils;
 import com.gamm.vinos_api.service.FotoService;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.utils.ResultadoSP;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -82,8 +88,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     if (u == null) {
       return new ResultadoSP(0, "Usuario no encontrado");
     }
-    System.out.println("PASSWORD BD = " + u.getPassword());
-    System.out.println("ACTUAL = " + actual);
+//    System.out.println("PASSWORD BD = " + u.getPassword());
+//    System.out.println("ACTUAL = " + actual);
 
     if (!passwordEncoder.matches(actual, u.getPassword())) {
       return new ResultadoSP(0, "La contraseña actual es incorrecta");
@@ -129,4 +135,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     return usuarioRepository.obtenerPorId(idUsuario);
   }
 
+  @Override
+  public Usuario obtenerUsuarioPorEmail(String email) {
+    return usuarioRepository.obtenerUsuarioPorEmail(email);
+  }
 }

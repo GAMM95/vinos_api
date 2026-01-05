@@ -18,6 +18,7 @@ public class UsuarioView {
   private String apellidoMaterno;
   private String nombreCompleto;
   private String celular;
+  private String email;
   private String domicilio;
   private String rutaFoto;
   private String rol;

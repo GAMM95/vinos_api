@@ -44,6 +44,8 @@ public class SecurityConfig {
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/auth/login", "/auth/registrar").permitAll()
+            .requestMatchers("/auth/password/recuperar", "/auth/password/reset/token").permitAll()
+            .requestMatchers("/recuperar-password").permitAll()
             .requestMatchers("/FotosUsuarios/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/usuarios/*/foto").authenticated()
             .requestMatchers(HttpMethod.POST,"/api/usuarios/verificar-username").permitAll()
