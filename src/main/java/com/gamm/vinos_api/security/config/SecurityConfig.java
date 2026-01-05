@@ -46,6 +46,7 @@ public class SecurityConfig {
             .requestMatchers("/auth/login", "/auth/registrar").permitAll()
             .requestMatchers("/FotosUsuarios/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/usuarios/*/foto").authenticated()
+            .requestMatchers(HttpMethod.POST,"/api/usuarios/verificar-username").permitAll()
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers("/api/**").authenticated()
             .anyRequest().authenticated()

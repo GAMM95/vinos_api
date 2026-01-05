@@ -2,10 +2,8 @@ package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.ResponseVO;
-import com.gamm.vinos_api.security.annotations.Publico;
+import com.gamm.vinos_api.dto.UsernameCheckRequest;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
-import com.gamm.vinos_api.security.dto.ChangePasswordRequest;
-import com.gamm.vinos_api.security.dto.ResetPasswordRequest;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import lombok.RequiredArgsConstructor;
@@ -82,4 +80,24 @@ public class UsuarioController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
+  @PostMapping("/verificar-username")
+  public ResponseEntity<ResponseVO> verificarUsername(
+      @RequestBody UsernameCheckRequest request) {
+
+    ResultadoSP resultado = usuarioService.verificarUsername(request.getUsername(), request.getIdUsuario());
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), resultado.getData())
+        : badRequest(resultado.getMensaje());
+  }
+
+  /* Obtener usuario por id */
+  @GetMapping("/{id}")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> obtenerUsuarioPorId(@PathVariable Integer id) {
+    Usuario usuario = usuarioService.obtenerPorId(id);
+    if (usuario == null) {
+      return badRequest("Usuario no encontrado");
+    }
+    return ok("Usuario obtenido correctamente", usuario);
+  }
 }

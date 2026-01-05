@@ -23,4 +23,6 @@ public interface UsuarioRepository {
   Usuario obtenerPorId (Integer idUsuario);
 
   Usuario obtenerUsuarioConPassword (Integer idUsuario);
+
+  ResultadoSP verificarUsername (String username, Integer idUsuario);
 }

@@ -103,6 +103,15 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
   }
 
   @Override
+  public ResultadoSP verificarUsername(String username, Integer idUsuario) {
+    Usuario u = new Usuario();
+    u.setUsername(username);
+    u.setIdUsuario(idUsuario);
+
+    return ejecutarSP(construirParametros(11, u));
+  }
+
+  @Override
   public Usuario obtenerUsuarioConPassword(Integer idUsuario) {
     String sql = """
         SELECT idUsuario, username, password

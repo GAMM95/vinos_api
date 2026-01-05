@@ -119,4 +119,14 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
   }
 
+  @Override
+  public ResultadoSP verificarUsername(String username, Integer idUsuario) {
+    return usuarioRepository.verificarUsername(username, idUsuario);
+  }
+
+  @Override
+  public Usuario obtenerPorId(Integer idUsuario) {
+    return usuarioRepository.obtenerPorId(idUsuario);
+  }
+
 }

@@ -29,4 +29,9 @@ public interface UsuarioService {
   List<UsuarioView> listarUsuarios();
 
   ResultadoSP actualizarFoto(Integer idUsuario, MultipartFile foto);
+
+  ResultadoSP verificarUsername(String username, Integer idUsuario);
+
+  Usuario obtenerPorId (Integer idUsuario);
+
 }

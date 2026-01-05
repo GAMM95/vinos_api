@@ -69,7 +69,7 @@ public class AuthController extends AbstractRestController {
         usuarioService.resetearPassword(id, req.nuevaPassword());
 
     return resultado.esExitoso()
-        ? ok(resultado.getMensaje())
+        ? ok(resultado.getMensaje(), null)
         : badRequest(resultado.getMensaje());
   }
 
@@ -82,7 +82,7 @@ public class AuthController extends AbstractRestController {
         req.nueva()
     );
     return resultado.esExitoso()
-        ? ok(resultado.getMensaje())
+        ? ok(resultado.getMensaje(), null)
         : badRequest(resultado.getMensaje());
   }
 
