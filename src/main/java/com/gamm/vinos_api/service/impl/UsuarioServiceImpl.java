@@ -79,6 +79,11 @@ public class UsuarioServiceImpl implements UsuarioService {
   }
 
   @Override
+  public ResultadoSP resetearPasswordToken(Integer idUsuario, String nuevaPassword) {
+    return usuarioAuthRepository.resetearPassword(idUsuario, nuevaPassword);
+  }
+
+  @Override
   public ResultadoSP cambiarPassword(String actual, String nueva) {
     Integer idUsuario = SecurityUtils.getUserId();
     if (idUsuario == null) {
@@ -88,8 +93,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     if (u == null) {
       return new ResultadoSP(0, "Usuario no encontrado");
     }
-//    System.out.println("PASSWORD BD = " + u.getPassword());
-//    System.out.println("ACTUAL = " + actual);
 
     if (!passwordEncoder.matches(actual, u.getPassword())) {
       return new ResultadoSP(0, "La contraseña actual es incorrecta");

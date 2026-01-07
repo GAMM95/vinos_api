@@ -26,7 +26,7 @@ public class UsuarioRowMapper implements RowMapper<Usuario> {
     u.setPersona(p);
 
     u.setUsername(rs.getString("username"));
-    u.setRutaFoto(rs.getString("foto"));
+    u.setRutaFoto(rs.getString("rutaFoto"));
     u.setPassword(rs.getString("password"));
 
     String rol = rs.getString("rol");

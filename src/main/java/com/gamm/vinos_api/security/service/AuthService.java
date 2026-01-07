@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.Map;
 
 @Service
@@ -28,23 +27,43 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final EmailService emailService;
 
+  @Value("${jwt.secret}")
+  private String jwtSecret;
+
   @Value("${fotosUsuarios.url}")
   private String fotosUsuariosUrl;
 
+  /* Construir url para la foto */
   private String buildFotoUrl(String rutaFoto) {
     if (rutaFoto == null || rutaFoto.trim().isEmpty()) return null;
     rutaFoto = rutaFoto.trim();
     if (rutaFoto.startsWith("http://") || rutaFoto.startsWith("https://")) return rutaFoto;
-    if (rutaFoto.startsWith("/FotosUsuarios/")) rutaFoto = rutaFoto.substring("/FotosUsuarios/".length());
+    if (rutaFoto.startsWith("/FotosUsuarios/")) {
+      rutaFoto = rutaFoto.substring("/FotosUsuarios/".length());
+    }
     return fotosUsuariosUrl + "/FotosUsuarios/" + rutaFoto;
   }
 
+ /* Inicio de sesion */
   public ResultadoSP login(String username, String password) {
+
     ResultadoSP resultado = usuarioService.login(username);
     Usuario usuario = (Usuario) resultado.getData();
-    if (!resultado.esExitoso() || usuario == null) return new ResultadoSP(0, resultado.getMensaje(), null);
-    if (!passwordEncoder.matches(password, usuario.getPassword()))
+
+    if (!resultado.esExitoso() || usuario == null) {
+      System.out.println("Usuario no encontrado para username: " + username);
+      return new ResultadoSP(0, resultado.getMensaje(), null);
+    }
+
+    // Normalizar password
+    String passwordLimpia = password.trim();
+
+    boolean match = passwordEncoder.matches(passwordLimpia, usuario.getPassword());
+    System.out.println("Password match: " + match);
+
+    if (!match) {
       return new ResultadoSP(0, "Credenciales incorrectas.", null);
+    }
 
     usuario.setPassword(null);
     usuario.setRutaFoto(buildFotoUrl(usuario.getRutaFoto()));
@@ -54,9 +73,11 @@ public class AuthService {
         "accessToken", jwtUtil.generarToken(usuario.getUsername()),
         "refreshToken", jwtUtil.generarRefreshToken(usuario.getUsername())
     );
+
     return new ResultadoSP(1, resultado.getMensaje(), data);
   }
 
+  // Refrescar token
   public String refreshToken(String refreshToken) {
     try {
       String username = jwtUtil.obtenerUsername(refreshToken);
@@ -66,6 +87,7 @@ public class AuthService {
     }
   }
 
+  /* Obtener datos de perfil */
   public ResultadoSP obtenerPerfilDesdeToken() {
     ResultadoSP resultado = usuarioService.obtenerPerfil();
     if (!resultado.esExitoso()) return resultado;
@@ -77,74 +99,61 @@ public class AuthService {
     return new ResultadoSP(1, "Perfil obtenido correctamente", usuario);
   }
 
-  // Recuperación de contraseña
+  /* Generar token con email */
   public ResultadoSP generarTokenRecuperacion(String email) {
-    Usuario usuario = usuarioService.obtenerUsuarioPorEmail(email);
-    if (usuario == null) return new ResultadoSP(0, "Email no registrado");
 
-    // Generar token usando JwtUtil
+    Usuario usuario = usuarioService.obtenerUsuarioPorEmail(email);
+    if (usuario == null) {
+      return new ResultadoSP(0, "Email no registrado");
+    }
+
     String token = jwtUtil.generarToken(usuario.getPersona().getEmail());
 
-    // Envío de email
     try {
       emailService.enviarRecuperacion(usuario.getPersona().getEmail(), token);
     } catch (Exception e) {
       return new ResultadoSP(0, "No se pudo enviar el email: " + e.getMessage());
     }
 
-    return new ResultadoSP(1, "Se envió un email con instrucciones", token);
+    return new ResultadoSP(1, "Se envió un email con instrucciones", null);
   }
 
+  /* Resetear password con token enviado al email */
+  public ResultadoSP resetearPasswordConToken(String token, String nuevaPassword) {
 
-//  public ResultadoSP resetearPasswordConToken(String token, String nuevaPassword) {
-//    Integer idUsuario;
-//    try {
-//      byte[] keyBytes = "claveSuperSecreta".getBytes(StandardCharsets.UTF_8);
-//      Claims claims = Jwts.parserBuilder()
-//          .setSigningKey(Keys.hmacShaKeyFor(keyBytes)) // reemplaza setSigningKey(String)
-//          .build()
-//          .parseClaimsJws(token)
-//          .getBody();
-//
-//      idUsuario = Integer.parseInt(claims.getSubject());
-//    } catch (ExpiredJwtException e) {
-//      return new ResultadoSP(0, "Token expirado");
-//    } catch (Exception e) {
-//      return new ResultadoSP(0, "Token inválido");
-//    }
-//
-//    Usuario usuario = usuarioService.obtenerPorId(idUsuario);
-//    if (usuario == null) return new ResultadoSP(0, "Usuario no encontrado");
-//
-//    usuario.setPassword(passwordEncoder.encode(nuevaPassword));
-//    return usuarioService.resetearPassword(idUsuario, usuario.getPassword());
-//  }
-public ResultadoSP resetearPasswordConToken(String token, String nuevaPassword) {
-  String emailUsuario;
-  try {
-    // Usa la misma clave que al generar el token
-    byte[] keyBytes = "claveSuperSecreta".getBytes(StandardCharsets.UTF_8);
-    Claims claims = Jwts.parserBuilder()
-        .setSigningKey(Keys.hmacShaKeyFor(keyBytes))
-        .build()
-        .parseClaimsJws(token)
-        .getBody();
+    String emailUsuario;
 
-    // El subject ahora es el email
-    emailUsuario = claims.getSubject();
-  } catch (ExpiredJwtException e) {
-    return new ResultadoSP(0, "Token expirado");
-  } catch (Exception e) {
-    return new ResultadoSP(0, "Token inválido");
+    try {
+      token = token.trim().replaceAll("\\s+", "");
+
+      byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
+      Claims claims = Jwts.parserBuilder()
+          .setSigningKey(Keys.hmacShaKeyFor(keyBytes))
+          .build()
+          .parseClaimsJws(token)
+          .getBody();
+
+      emailUsuario = claims.getSubject();
+
+    } catch (ExpiredJwtException e) {
+      return new ResultadoSP(0, "Token expirado");
+    } catch (Exception e) {
+      return new ResultadoSP(0, "Token inválido");
+    }
+
+    Usuario usuario = usuarioService.obtenerUsuarioPorEmail(emailUsuario);
+    if (usuario == null) {
+      return new ResultadoSP(0, "Usuario no encontrado");
+    }
+
+    // NORMALIZAR PASSWORD
+    String passwordLimpia = nuevaPassword.trim();
+
+    usuario.setPassword(passwordEncoder.encode(passwordLimpia));
+
+    return usuarioService.resetearPasswordToken(
+        usuario.getIdUsuario(),
+        usuario.getPassword()
+    );
   }
-
-  // Buscar al usuario por email en lugar de ID
-  Usuario usuario = usuarioService.obtenerUsuarioPorEmail(emailUsuario);
-  if (usuario == null) return new ResultadoSP(0, "Usuario no encontrado");
-
-  // Actualizar la contraseña
-  usuario.setPassword(passwordEncoder.encode(nuevaPassword));
-  return usuarioService.resetearPassword(usuario.getIdUsuario(), usuario.getPassword());
-}
-
 }
