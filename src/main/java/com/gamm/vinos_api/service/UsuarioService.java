@@ -24,6 +24,7 @@ public interface UsuarioService {
   ResultadoSP actualizarUsuario(Usuario usuario);
 
   ResultadoSP resetearPassword(Integer idUsuario, String nuevaPassword);
+
   ResultadoSP resetearPasswordToken(Integer idUsuario, String nuevaPassword);
 
   ResultadoSP cambiarPassword(String actual, String nueva);

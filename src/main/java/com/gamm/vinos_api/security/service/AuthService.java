@@ -3,13 +3,11 @@ package com.gamm.vinos_api.security.service;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.security.jwt.JwtUtil;
 import com.gamm.vinos_api.service.EmailService;
+import com.gamm.vinos_api.service.PasswordResetTokenService;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.utils.ResultadoSP;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +25,7 @@ public class AuthService {
   private final UsuarioService usuarioService;
   private final PasswordEncoder passwordEncoder;
   private final EmailService emailService;
+  private final PasswordResetTokenService passwordResetTokenService;
 
   @Value("${jwt.secret}")
   private String jwtSecret;
@@ -44,7 +44,7 @@ public class AuthService {
     return fotosUsuariosUrl + "/FotosUsuarios/" + rutaFoto;
   }
 
- /* Inicio de sesion */
+  /* Inicio de sesion */
   public ResultadoSP login(String username, String password) {
 
     ResultadoSP resultado = usuarioService.login(username);
@@ -99,18 +99,24 @@ public class AuthService {
     return new ResultadoSP(1, "Perfil obtenido correctamente", usuario);
   }
 
-  /* Generar token con email */
+  /* Generar token de recuperacion enviando al email */
   public ResultadoSP generarTokenRecuperacion(String email) {
-
     Usuario usuario = usuarioService.obtenerUsuarioPorEmail(email);
-    if (usuario == null) {
-      return new ResultadoSP(0, "Email no registrado");
-    }
+    if (usuario == null) return new ResultadoSP(0, "Email no registrado");
 
-    String token = jwtUtil.generarToken(usuario.getPersona().getEmail());
+    // Invalidar tokens previos
+    passwordResetTokenService.invalidarPorUsuario(usuario.getIdUsuario());
 
+    // Generar token aleatorio seguro
+    String tokenPlano = UUID.randomUUID().toString();
+
+    // Guardar hash en BD
+    ResultadoSP rsp = passwordResetTokenService.crearToken(usuario.getIdUsuario(), tokenPlano);
+    if (!rsp.esExitoso()) return rsp;
+
+    // Enviar email con token plano
     try {
-      emailService.enviarRecuperacion(usuario.getPersona().getEmail(), token);
+      emailService.enviarRecuperacion(usuario.getPersona().getEmail(), tokenPlano);
     } catch (Exception e) {
       return new ResultadoSP(0, "No se pudo enviar el email: " + e.getMessage());
     }
@@ -118,42 +124,47 @@ public class AuthService {
     return new ResultadoSP(1, "Se envió un email con instrucciones", null);
   }
 
-  /* Resetear password con token enviado al email */
-  public ResultadoSP resetearPasswordConToken(String token, String nuevaPassword) {
+  /* Resetear password con token */
+  public ResultadoSP resetearPasswordConToken(String tokenPlano, String nuevaPassword) {
+    // Generar hash del token
+    String tokenHash = DigestUtils.sha256Hex(tokenPlano);
 
-    String emailUsuario;
+    // Validar token en BD
+    ResultadoSP validacion = passwordResetTokenService.validarToken(tokenPlano);
 
-    try {
-      token = token.trim().replaceAll("\\s+", "");
-
-      byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
-      Claims claims = Jwts.parserBuilder()
-          .setSigningKey(Keys.hmacShaKeyFor(keyBytes))
-          .build()
-          .parseClaimsJws(token)
-          .getBody();
-
-      emailUsuario = claims.getSubject();
-
-    } catch (ExpiredJwtException e) {
-      return new ResultadoSP(0, "Token expirado");
-    } catch (Exception e) {
-      return new ResultadoSP(0, "Token inválido");
+    if (!validacion.esExitoso()) {
+      System.out.println("Token inválido o expirado.");
+      return new ResultadoSP(0, "Token inválido o expirado");
     }
 
-    Usuario usuario = usuarioService.obtenerUsuarioPorEmail(emailUsuario);
-    if (usuario == null) {
-      return new ResultadoSP(0, "Usuario no encontrado");
+    Integer idUsuario = (Integer) validacion.getData();
+    System.out.println("ID usuario obtenido desde token: " + idUsuario);
+
+    if (idUsuario == null) {
+      System.out.println("Error: idUsuario es null después de validar token.");
+      return new ResultadoSP(0, "No se pudo obtener el usuario desde el token.");
     }
 
-    // NORMALIZAR PASSWORD
-    String passwordLimpia = nuevaPassword.trim();
+    // Marcar token como usado
+    ResultadoSP marcado = passwordResetTokenService.marcarComoUsado(tokenPlano);
+    System.out.println("Resultado marcar token como usado: " + marcado);
 
-    usuario.setPassword(passwordEncoder.encode(passwordLimpia));
+    if (!marcado.esExitoso()) {
+      System.out.println("Error: no se pudo marcar el token como usado.");
+      return new ResultadoSP(0, "No se pudo marcar el token como usado");
+    }
 
-    return usuarioService.resetearPasswordToken(
-        usuario.getIdUsuario(),
-        usuario.getPassword()
-    );
+    // 4️ Actualizar contraseña
+    String passwordHash = passwordEncoder.encode(nuevaPassword.trim());
+
+    ResultadoSP cambio = usuarioService.resetearPasswordToken(idUsuario, passwordHash);
+
+    if (!cambio.esExitoso()) {
+      System.out.println("Error al actualizar la contraseña en la BD: " + cambio.getMensaje());
+      return cambio;
+    }
+
+    return new ResultadoSP(1, "Contraseña actualizada correctamente", null);
   }
+
 }
