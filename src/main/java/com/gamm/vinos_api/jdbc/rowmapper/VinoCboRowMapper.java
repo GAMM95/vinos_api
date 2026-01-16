@@ -13,7 +13,6 @@ public class VinoCboRowMapper implements RowMapper<VinoCbo> {
     VinoCbo vinoCbo = new VinoCbo();
     vinoCbo.setIdVino(rs.getInt("idVino"));
     vinoCbo.setNombreVino(rs.getString("nombreVino"));
-
-    return null;
+    return vinoCbo;
   }
 }

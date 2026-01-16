@@ -3,6 +3,7 @@ package com.gamm.vinos_api.jdbc.rowmapper;
 import com.gamm.vinos_api.domain.enums.EstadoRegistro;
 import com.gamm.vinos_api.domain.enums.Rol;
 import com.gamm.vinos_api.domain.model.Persona;
+import com.gamm.vinos_api.domain.model.Sucursal;
 import com.gamm.vinos_api.domain.model.Usuario;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -28,6 +29,11 @@ public class UsuarioRowMapper implements RowMapper<Usuario> {
     u.setUsername(rs.getString("username"));
     u.setRutaFoto(rs.getString("rutaFoto"));
     u.setPassword(rs.getString("password"));
+
+    Sucursal s = new Sucursal();
+    s.setIdSucursal(rs.getInt("idSucursal"));
+    s.setNombre(rs.getString("nombreSucursal"));
+    u.setSucursal(s);
 
     String rol = rs.getString("rol");
     u.setRol(rol != null ? Rol.valueOf(rol.toUpperCase()) : Rol.VENDEDOR);

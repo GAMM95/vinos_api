@@ -31,13 +31,16 @@ public class UsuarioController extends AbstractRestController {
   // Activar usuario
   @PatchMapping("/{id}/activar")
   @SoloAdministrador
-  public ResponseEntity<ResponseVO> activarUsuario(@PathVariable Integer id) {
-    ResultadoSP resultado = usuarioService.activarUsuario(id);
+  public ResponseEntity<ResponseVO> activarUsuario(
+      @PathVariable Integer id,
+      @RequestParam(required = false) Integer idSucursal) {
 
+    ResultadoSP resultado = usuarioService.activarUsuario(id, idSucursal);
     return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
+        ? ResponseEntity.ok(new ResponseVO(true, resultado.getMensaje(), null))
+        : ResponseEntity.badRequest().body(new ResponseVO(false, resultado.getMensaje(), null));
   }
+
 
   // Filtrar usuarios
   @GetMapping("/filtrar")
@@ -69,6 +72,19 @@ public class UsuarioController extends AbstractRestController {
   public ResponseEntity<ResponseVO> listarUsuarios() {
     return ok(usuarioService.listarUsuarios());
   }
+
+  // Listar usuarios con paginación
+  @GetMapping("/paginado")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> listarUsuariosPaginados(
+      @RequestParam(defaultValue = "1") int pagina,
+      @RequestParam(defaultValue = "5") int limite
+  ) {
+    // Llamada al servicio
+    ResponseVO response = usuarioService.listarUsuariosPaginados(pagina, limite);
+    return ResponseEntity.ok(response);
+  }
+
 
   @PostMapping("/{id}/foto")
   public ResponseEntity<ResponseVO> actualizarFoto(

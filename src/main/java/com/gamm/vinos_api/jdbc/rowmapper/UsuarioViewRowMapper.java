@@ -22,6 +22,8 @@ public class UsuarioViewRowMapper implements RowMapper<UsuarioView> {
     u.setCelular(rs.getString("celular"));
     u.setEmail(rs.getString("email"));
     u.setDomicilio(rs.getString("domicilio"));
+    u.setIdSucursal(rs.getInt("idSucursal"));
+    u.setNombreSucursal(rs.getString("nombreSucursal"));
     u.setRutaFoto(rs.getString("rutaFoto"));
     u.setRol(rs.getString("rol"));
     u.setEstado(rs.getString("estado"));

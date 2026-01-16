@@ -42,7 +42,7 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
             new SqlParameter("pIdVino", Types.TINYINT),
             new SqlParameter("pIdPresentacion", Types.TINYINT),
             new SqlParameter("pPrecioUnidad", Types.DECIMAL),
-            new SqlParameter("pObservacion", Types.VARCHAR),
+            new SqlParameter("pTipoVino", Types.VARCHAR),
             new SqlOutParameter("pRespuesta", Types.TINYINT),
             new SqlOutParameter("pMensaje", Types.VARCHAR)
         )
@@ -67,7 +67,7 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
   public ResultadoSP darDeBajaCatalogo(Integer idCatalogo) {
     Catalogo catalogo = new Catalogo();
     catalogo.setIdCatalogo(idCatalogo);
-    return ejecutarSP(3, catalogo);
+    return ejecutarSP(4, catalogo);
   }
 
   // Dar de alta a un catálogo
@@ -75,13 +75,13 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
   public ResultadoSP darDeAltaCatalogo(Integer idCatalogo) {
     Catalogo catalogo = new Catalogo();
     catalogo.setIdCatalogo(idCatalogo);
-    return ejecutarSP(4, catalogo);
+    return ejecutarSP(5, catalogo);
   }
 
   // Listar catalogos
   @Override
   public List<CatalogoView> listarCatalogos() {
-      return jdbcTemplate.query(VW_CATALOGOS ,new CatalogoRowMapper());
+    return jdbcTemplate.query(VW_CATALOGOS, new CatalogoRowMapper());
   }
 
   // Filtrar por codigo de algun proveedor
@@ -107,7 +107,9 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
     params.put("pIdVino", catalogo.getIdVino());
     params.put("pIdPresentacion", catalogo.getIdPresentacion());
     params.put("pPrecioUnidad", catalogo.getPrecioUnidad());
-    params.put("pObservacion", catalogo.getObservacion());
+    params.put("pTipoVino",
+        catalogo.getTipoVino() != null ? catalogo.getTipoVino().getValorBD() : null
+    );
     return params;
   }
 }

@@ -38,4 +38,9 @@ public class CombosServiceImpl implements CombosService {
   public List<VinoCbo> comboVino() {
     return combosRepository.comboVino();
   }
+
+  @Override
+  public List<SucursalCbo> comboSucursal() {
+    return combosRepository.comboSucursal();
+  }
 }

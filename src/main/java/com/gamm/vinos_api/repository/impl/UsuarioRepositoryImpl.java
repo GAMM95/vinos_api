@@ -3,9 +3,11 @@ package com.gamm.vinos_api.repository.impl;
 import com.gamm.vinos_api.domain.enums.EstadoRegistro;
 import com.gamm.vinos_api.domain.enums.Rol;
 import com.gamm.vinos_api.domain.model.Persona;
+import com.gamm.vinos_api.domain.model.Sucursal;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.domain.view.UsuarioView;
 import com.gamm.vinos_api.dto.UsuarioEmail;
+import com.gamm.vinos_api.jdbc.rowmapper.UsuarioRowMapper;
 import com.gamm.vinos_api.jdbc.rowmapper.UsuarioViewRowMapper;
 import com.gamm.vinos_api.repository.UsuarioRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;
@@ -39,9 +41,13 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
   }
 
   @Override
-  public ResultadoSP activarUsuario(Integer idUsuario) {
+  public ResultadoSP activarUsuario(Integer idUsuario, Integer idSucursal) {
     Usuario u = new Usuario();
     u.setIdUsuario(idUsuario);
+    if (idSucursal != null) {
+      u.setSucursal(new Sucursal());
+      u.getSucursal().setIdSucursal(idSucursal);
+    }
     return ejecutarSP(construirParametros(4, u));
   }
 
@@ -60,6 +66,19 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
   @Override
   public List<UsuarioView> listarUsuarios() {
     return jdbcTemplate.query(VIEW_USUARIOS, new UsuarioViewRowMapper());
+  }
+
+  @Override
+  public List<UsuarioView> listarUsuariosPaginados(int pagina, int limite) {
+    int offset = (pagina - 1) * limite;
+    String sql = VIEW_USUARIOS + " LIMIT ? OFFSET ?";
+    return jdbcTemplate.query(sql, new UsuarioViewRowMapper(), limite, offset);
+  }
+
+  @Override
+  public Long contarUsuarios() {
+    String sql = "SELECT  COUNT(*) FROM vw_usuarios";
+    return jdbcTemplate.queryForObject(sql, Long.class);
   }
 
   @Override
@@ -90,7 +109,6 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
 
     return ejecutarSP(construirParametros(11, u));
   }
-
 
   @Override
   public Usuario obtenerUsuarioPorEmail(String email) {

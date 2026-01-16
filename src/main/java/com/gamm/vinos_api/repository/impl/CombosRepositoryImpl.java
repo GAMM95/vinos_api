@@ -15,6 +15,7 @@ public class CombosRepositoryImpl implements CombosRepository {
   private static final String CBO_PROVEEDOR = "SELECT * FROM cbo_proveedor";
   private static final String CBO_PRESENTACION = "SELECT * FROM cbo_presentacion";
   private static final String CBO_VINO = "SELECT * FROM cbo_vino";
+  private static final String CBO_SUCURSAL = "SELECT * FROM cbo_sucursal";
   private final JdbcTemplate jdbcTemplate;
 
   public CombosRepositoryImpl(JdbcTemplate jdbcTemplate) {
@@ -44,5 +45,10 @@ public class CombosRepositoryImpl implements CombosRepository {
   @Override
   public List<VinoCbo> comboVino() {
     return jdbcTemplate.query(CBO_VINO, new VinoCboRowMapper());
+  }
+
+  @Override
+  public List<SucursalCbo> comboSucursal() {
+    return jdbcTemplate.query(CBO_SUCURSAL, new SucursalCboRowMapper());
   }
 }

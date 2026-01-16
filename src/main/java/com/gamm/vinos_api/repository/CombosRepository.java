@@ -16,4 +16,6 @@ public interface CombosRepository {
   List<PresentacionCbo> comboPresentacion();
 
   List<VinoCbo> comboVino();
+
+  List<SucursalCbo> comboSucursal();
 }

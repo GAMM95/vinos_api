@@ -2,6 +2,7 @@ package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.domain.view.UsuarioView;
+import com.gamm.vinos_api.dto.ResponseVO;
 import com.gamm.vinos_api.dto.UsuarioEmail;
 import com.gamm.vinos_api.repository.UsuarioAuthRepository;
 import com.gamm.vinos_api.repository.UsuarioRepository;
@@ -47,8 +48,8 @@ public class UsuarioServiceImpl implements UsuarioService {
   }
 
   @Override
-  public ResultadoSP activarUsuario(Integer idUsuario) {
-    return usuarioRepository.activarUsuario(idUsuario);
+  public ResultadoSP activarUsuario(Integer idUsuario, Integer idSucursal) {
+    return usuarioRepository.activarUsuario(idUsuario, idSucursal);
   }
 
   @Override
@@ -109,6 +110,25 @@ public class UsuarioServiceImpl implements UsuarioService {
   @Override
   public List<UsuarioView> listarUsuarios() {
     return usuarioRepository.listarUsuarios();
+  }
+
+  @Override
+  public ResponseVO listarUsuariosPaginados(int pagina, int limite) {
+    // Obtener la lista de la página
+    List<UsuarioView> usuariosPagina = usuarioRepository.listarUsuariosPaginados(pagina, limite);
+
+    // Obtener total de registros para calcular páginas
+    Long totalRegistros = usuarioRepository.contarUsuarios();
+    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
+
+    // Retornar usando tu ResponseVO con paginación
+    return ResponseVO.paginated(
+        usuariosPagina,   // data
+        pagina,           // página actual
+        limite,           // registros por página
+        totalPaginas,     // total de páginas
+        totalRegistros    // total de registros
+    );
   }
 
   @Override

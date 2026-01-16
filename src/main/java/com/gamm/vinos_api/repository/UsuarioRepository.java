@@ -11,7 +11,7 @@ public interface UsuarioRepository {
 
   ResultadoSP inactivarUsuario(Integer idUsuario);
 
-  ResultadoSP activarUsuario(Integer idUsuario);
+  ResultadoSP activarUsuario(Integer idUsuario, Integer idSucursal);
 
   ResultadoSP actualizarUsuario(Usuario usuario);
 
@@ -19,13 +19,17 @@ public interface UsuarioRepository {
 
   List<UsuarioView> listarUsuarios();
 
+  List<UsuarioView> listarUsuariosPaginados(int pagina, int limite);
+
+  Long contarUsuarios();
+
   ResultadoSP actualizarFoto(Integer idUsuario, String rutaFoto);
 
-  Usuario obtenerPorId (Integer idUsuario);
+  Usuario obtenerPorId(Integer idUsuario);
 
-  Usuario obtenerUsuarioConPassword (Integer idUsuario);
+  Usuario obtenerUsuarioConPassword(Integer idUsuario);
 
-  ResultadoSP verificarUsername (String username, Integer idUsuario);
+  ResultadoSP verificarUsername(String username, Integer idUsuario);
 
   Usuario obtenerUsuarioPorEmail(String email);
 }

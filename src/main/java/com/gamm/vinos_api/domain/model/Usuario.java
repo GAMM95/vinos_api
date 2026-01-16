@@ -17,6 +17,7 @@ public class Usuario {
   private String password;
   private String rutaFoto;
   private String passwordNueva;
+  private Sucursal sucursal;
   private Rol rol = Rol.VENDEDOR;
   private EstadoRegistro estado = EstadoRegistro.INACTIVO;
 }

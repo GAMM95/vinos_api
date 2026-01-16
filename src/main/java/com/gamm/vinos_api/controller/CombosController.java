@@ -44,4 +44,9 @@ public class CombosController extends AbstractRestController {
     return ok(combosService.comboVino());
   }
 
+  // Llenar el combo de sucursales
+  @GetMapping("/sucursal")
+  public ResponseEntity<ResponseVO> comboSucursal(){
+    return ok(combosService.comboSucursal());
+  }
 }

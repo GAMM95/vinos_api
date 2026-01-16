@@ -14,8 +14,13 @@ public class CatalogoView {
   private Integer idProveedor;
   private String codProveedor;
   private String nombreProveedor;
+  private Integer idVino;
   private String nombreVino;
+  private Integer idPresentacion;
   private String nombrePresentacion;
-  private Double litrosUnidad;
+  private Double volumen;
+  private String presentacion;
   private Double precioUnidad;
+  private String tipoVino;
+  private String estadoCatalogo;
 }

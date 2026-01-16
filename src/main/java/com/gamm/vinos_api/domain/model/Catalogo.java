@@ -1,6 +1,7 @@
 package com.gamm.vinos_api.domain.model;
 
 import com.gamm.vinos_api.domain.enums.EstadoRegistro;
+import com.gamm.vinos_api.domain.enums.TipoVino;
 import lombok.*;
 
 @Data
@@ -12,7 +13,7 @@ public class Catalogo {
     private Integer idVino;
     private Integer idPresentacion;
     private Double precioUnidad;
-    private String observacion;
+    private TipoVino tipoVino;
     private EstadoRegistro estado = EstadoRegistro.ACTIVO;
 }
 

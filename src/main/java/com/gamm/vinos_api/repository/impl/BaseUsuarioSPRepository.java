@@ -39,6 +39,7 @@ public abstract class BaseUsuarioSPRepository extends SimpleJdbcDAOBase {
             new SqlParameter("pRutaFoto", Types.VARCHAR),
             new SqlParameter("pPassword", Types.VARCHAR),
             new SqlParameter("pPasswordNueva", Types.VARCHAR),
+            new SqlParameter("pIdSucursal", Types.TINYINT),
             new SqlParameter("pTerminoBusqueda", Types.VARCHAR),
             new SqlOutParameter("pRespuesta", Types.INTEGER),
             new SqlOutParameter("pMensaje", Types.VARCHAR)
@@ -76,6 +77,13 @@ public abstract class BaseUsuarioSPRepository extends SimpleJdbcDAOBase {
       p.put("pCelular", null);
       p.put("pEmail", null);
       p.put("pDomicilio", null);
+    }
+
+    // Agregamos la sucursal si existe
+    if (u.getSucursal() != null && u.getSucursal().getIdSucursal() != null) {
+      p.put("pIdSucursal", u.getSucursal().getIdSucursal());
+    } else {
+      p.put("pIdSucursal", null);
     }
 
     // Ajustes por tipo

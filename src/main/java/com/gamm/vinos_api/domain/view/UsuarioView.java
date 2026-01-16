@@ -20,6 +20,8 @@ public class UsuarioView {
   private String celular;
   private String email;
   private String domicilio;
+  private Integer idSucursal;
+  private String nombreSucursal;
   private String rutaFoto;
   private String rol;
   private String estado;

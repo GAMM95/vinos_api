@@ -2,6 +2,7 @@ package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.dto.ResponseVO;
 import com.gamm.vinos_api.domain.model.Catalogo;
+import com.gamm.vinos_api.security.annotations.Publico;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.service.CatalogoService;
 import com.gamm.vinos_api.utils.ResultadoSP;
@@ -43,6 +44,7 @@ public class CatalogoController extends AbstractRestController {
 
   // Dar de baja/alta a catálogo
   @PatchMapping("/{idCatalogo}/estado")
+  @SoloAdministrador
   public ResponseEntity<ResponseVO> cambiarEstado(
       @PathVariable Integer idCatalogo,
       @RequestParam("activo") boolean activo) {
@@ -60,6 +62,7 @@ public class CatalogoController extends AbstractRestController {
   }
 
   @GetMapping("/filtrar")
+  @Publico
   public ResponseEntity<ResponseVO> filtrarPorProveedor(@RequestParam Integer idProveedor) {
     ResultadoSP resultado = catalogoService.filtrarPorProveedor(idProveedor);
 
@@ -69,9 +72,9 @@ public class CatalogoController extends AbstractRestController {
   }
 
   @GetMapping
+  @Publico
   public ResponseEntity<ResponseVO> listarCatalogos() {
     return ok(catalogoService.listarCatalogos());
   }
-
 
 }
