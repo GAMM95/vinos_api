@@ -2,6 +2,7 @@ package com.gamm.vinos_api.service;
 
 import com.gamm.vinos_api.domain.view.CatalogoView;
 import com.gamm.vinos_api.domain.model.Catalogo;
+import com.gamm.vinos_api.dto.ResponseVO;
 import com.gamm.vinos_api.utils.ResultadoSP;
 
 import java.util.List;
@@ -17,5 +18,9 @@ public interface CatalogoService {
 
   List<CatalogoView> listarCatalogos();
 
+  ResponseVO listarCatalogosPaginadosPorProveedor(Integer idProveedor, int pagina, int limite);
+
   ResultadoSP filtrarPorProveedor(Integer idProveedor);
+
+//  ResultadoSP filtrarPorProveedorYTermino(Integer idProveedor, String termino);
 }

@@ -1,23 +1,24 @@
 package com.gamm.vinos_api.repository;
 
 import com.gamm.vinos_api.domain.model.Compra;
-import com.gamm.vinos_api.domain.view.CompraView;
+import com.gamm.vinos_api.domain.model.DetalleCompra;
+import com.gamm.vinos_api.domain.view.ProductosCarritoView;
 import com.gamm.vinos_api.utils.ResultadoSP;
 
 import java.util.List;
 
 public interface CompraRepository {
-  ResultadoSP crearCompra(Compra compra);
 
-  ResultadoSP confirmarCompra(Compra compra);
+  // Operaciones que modifican el carrito
+  ResultadoSP agregarProductoCarrito(Integer idUsuario, Compra compra, DetalleCompra detalle);
+  ResultadoSP eliminarProductoCarrito(Integer idUsuario, Integer idDetCompra);
+  ResultadoSP actualizarCantidadProductoCarrito(Integer idUsuario, Compra compra, DetalleCompra detalle);
+  ResultadoSP crearCompra(Integer idUsuario, Compra compra);
 
-  ResultadoSP actualizarCompra(Compra compra);
+  // Operaciones que consultan el carrito
+  long contarProductosCarrito(Integer idUsuario, Integer idCompra);
+  List<ProductosCarritoView> listarProductosCarritos(Integer idUsuario, Integer idCompra);
 
-  ResultadoSP anularCompra(Integer idCompra);
-
-  ResultadoSP reactivarCompra(Integer idCompra);
-
-  ResultadoSP buscarCompras(Compra compra);
-
-  List<CompraView> listarCompras();
+  // Obtener carrito pendiente del usuario
+  Compra obtenerCarritoPendiente(Integer idUsuario);
 }

@@ -14,12 +14,12 @@ public enum TipoVino {
     return valorBD;
   }
 
-  public static TipoVino fromBD (String valor){
-    for (TipoVino tipo : values()){
-      if (tipo.valorBD.equalsIgnoreCase(valor)){
-        return tipo;
-      }
-    }
-    throw new IllegalArgumentException("Tipo de vino inválido: " + valor);
-  }
+//  public static TipoVino fromBD (String valor){
+//    for (TipoVino tipo : values()){
+//      if (tipo.valorBD.equalsIgnoreCase(valor)){
+//        return tipo;
+//      }
+//    }
+//    throw new IllegalArgumentException("Tipo de vino inválido: " + valor);
+//  }
 }

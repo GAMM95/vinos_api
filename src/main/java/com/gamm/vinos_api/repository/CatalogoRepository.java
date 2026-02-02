@@ -18,5 +18,12 @@ public interface CatalogoRepository {
 
   List<CatalogoView> listarCatalogos();
 
+  List<CatalogoView> listarCatalogosPaginados(Integer idProveedor, int pagina, int limite);
+
+  Long contarCatalogos(Integer idProveedor);
+
   ResultadoSP filtrarPorProveedor(Integer idProveedor);
+
+
+//  ResultadoSP filtrarPorIDProveedorTermino (Integer idProveedor, String termino);
 }

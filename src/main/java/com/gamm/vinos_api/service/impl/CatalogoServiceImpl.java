@@ -2,6 +2,7 @@ package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.domain.view.CatalogoView;
 import com.gamm.vinos_api.domain.model.Catalogo;
+import com.gamm.vinos_api.dto.ResponseVO;
 import com.gamm.vinos_api.repository.CatalogoRepository;
 import com.gamm.vinos_api.service.CatalogoService;
 import com.gamm.vinos_api.utils.ResultadoSP;
@@ -41,7 +42,31 @@ public class CatalogoServiceImpl implements CatalogoService {
   }
 
   @Override
+  public ResponseVO listarCatalogosPaginadosPorProveedor(Integer idProveedor, int pagina, int limite) {
+    // Obtener la lista de la pagina
+    List<CatalogoView> catalogosPagina = catalogoRepository.listarCatalogosPaginados(idProveedor, pagina, limite);
+    // Obtener el total de registros para calcular paginas
+    Long totalRegistros = catalogoRepository.contarCatalogos(idProveedor);
+    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
+
+    // Retornar usando ResponseVO con paginacion
+    return ResponseVO.paginated(
+        catalogosPagina, //data
+        pagina, // pagina actual
+        limite, // registros por pagina
+        totalPaginas, // total de paginas
+        totalRegistros // total de registros
+    );
+  }
+
+
+  @Override
   public ResultadoSP filtrarPorProveedor(Integer idProveedor) {
     return catalogoRepository.filtrarPorProveedor(idProveedor);
   }
+
+//  @Override
+//  public ResultadoSP filtrarPorProveedorYTermino(Integer idProveedor, String termino) {
+//    return catalogoRepository.filtrarPorIDProveedorTermino(idProveedor, termino);
+//  }
 }

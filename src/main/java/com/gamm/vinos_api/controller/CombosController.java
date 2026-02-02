@@ -46,7 +46,13 @@ public class CombosController extends AbstractRestController {
 
   // Llenar el combo de sucursales
   @GetMapping("/sucursal")
-  public ResponseEntity<ResponseVO> comboSucursal(){
+  public ResponseEntity<ResponseVO> comboSucursal() {
     return ok(combosService.comboSucursal());
+  }
+
+  // Llenar el checkbox de presentaciones
+  @GetMapping("/chkPresentacion")
+  public ResponseEntity<ResponseVO> checkBoxPresentacion() {
+    return ok(combosService.checkBoxPresentacion());
   }
 }

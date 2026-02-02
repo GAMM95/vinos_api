@@ -16,4 +16,6 @@ public interface CombosService {
   List<VinoCbo> comboVino();
 
   List<SucursalCbo> comboSucursal();
+
+  List<PresentacionChk> checkBoxPresentacion();
 }

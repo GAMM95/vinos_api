@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.repository.impl;
 
+import com.gamm.vinos_api.domain.model.Proveedor;
 import com.gamm.vinos_api.domain.view.CatalogoView;
 import com.gamm.vinos_api.domain.model.Catalogo;
 import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
@@ -7,8 +8,11 @@ import com.gamm.vinos_api.jdbc.rowmapper.CatalogoRowMapper;
 import com.gamm.vinos_api.repository.CatalogoRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import jakarta.annotation.PostConstruct;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
@@ -43,6 +47,7 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
             new SqlParameter("pIdPresentacion", Types.TINYINT),
             new SqlParameter("pPrecioUnidad", Types.DECIMAL),
             new SqlParameter("pTipoVino", Types.VARCHAR),
+//            new SqlParameter("pTermino", Types.VARCHAR),
             new SqlOutParameter("pRespuesta", Types.TINYINT),
             new SqlOutParameter("pMensaje", Types.VARCHAR)
         )
@@ -82,6 +87,19 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
   @Override
   public List<CatalogoView> listarCatalogos() {
     return jdbcTemplate.query(VW_CATALOGOS, new CatalogoRowMapper());
+  }
+
+  @Override
+  public List<CatalogoView> listarCatalogosPaginados(Integer idProveedor, int pagina, int limite) {
+    int offset = (pagina - 1) * limite;
+    String sql = VW_CATALOGOS + " WHERE idProveedor = ? ORDER BY vw_catalogo.nombreVino LIMIT ? OFFSET ?";
+    return jdbcTemplate.query(sql, new CatalogoRowMapper(), idProveedor, limite, offset);
+  }
+
+  @Override
+  public Long contarCatalogos(Integer idProveedor) {
+    String sql = "SELECT COUNT(*) FROM vw_catalogo WHERE idProveedor = ?";
+    return jdbcTemplate.queryForObject(sql, Long.class, idProveedor);
   }
 
   // Filtrar por codigo de algun proveedor

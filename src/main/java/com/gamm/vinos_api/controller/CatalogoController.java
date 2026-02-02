@@ -77,4 +77,29 @@ public class CatalogoController extends AbstractRestController {
     return ok(catalogoService.listarCatalogos());
   }
 
+  @GetMapping("/paginado")
+  @Publico
+  public ResponseEntity<ResponseVO> listarCatalogoProveedorPaginado(
+      @RequestParam Integer idProveedor,
+      @RequestParam(defaultValue = "1") int pagina,
+      @RequestParam(defaultValue = "10") int limite
+  ) {
+
+    // Llamada al servicio
+    ResponseVO response = catalogoService.listarCatalogosPaginadosPorProveedor(idProveedor, pagina, limite);
+    return ResponseEntity.ok(response);
+  }
+
+  // Tipo 6 → proveedor + término
+//  @GetMapping("/buscar")
+//  @Publico
+//  public ResponseEntity<ResponseVO> filtrarPorProveedorYTermino(
+//      @RequestParam Integer idProveedor,
+//      @RequestParam String termino) {
+//    ResultadoSP resultado =
+//        catalogoService.filtrarPorProveedorYTermino(idProveedor, termino);
+//    return resultado.esExitoso()
+//        ? ok(resultado.getMensaje(), resultado.getData())
+//        : badRequest(resultado.getMensaje());
+//  }
 }
