@@ -6,8 +6,6 @@ import com.gamm.vinos_api.domain.model.Persona;
 import com.gamm.vinos_api.domain.model.Sucursal;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.domain.view.UsuarioView;
-import com.gamm.vinos_api.dto.UsuarioEmail;
-import com.gamm.vinos_api.jdbc.rowmapper.UsuarioRowMapper;
 import com.gamm.vinos_api.jdbc.rowmapper.UsuarioViewRowMapper;
 import com.gamm.vinos_api.repository.UsuarioRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements UsuarioRepository {

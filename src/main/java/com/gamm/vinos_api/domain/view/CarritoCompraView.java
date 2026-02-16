@@ -12,10 +12,9 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CompraView {
+public class CarritoCompraView {
   private Integer idCompra;
   private String codCompra;
-  private LocalDateTime fechaCompra;
   private LocalDateTime fechaCarrito;
   private String estado;
   private Integer idDetCompra;
@@ -23,12 +22,6 @@ public class CompraView {
   private String presentacion;
   private Integer cantidad;
   private BigDecimal subtotal;
-  private BigDecimal subtotalCalculado;
-  private BigDecimal costoTransporte;
-  private BigDecimal costoEmbalaje;
-  private BigDecimal costoEnvioAgencia;
-  private BigDecimal costoLogistico;
-  private BigDecimal totalCompra;
   private Integer idUsuario;
   private String usuario;
 }

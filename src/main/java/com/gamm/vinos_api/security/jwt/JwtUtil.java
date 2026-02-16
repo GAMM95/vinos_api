@@ -61,7 +61,7 @@ public class JwtUtil {
           .getBody();
     } catch (ExpiredJwtException ex) {
       throw new TokenExpiradoException("El token ha expirado");
-    } catch (MalformedJwtException | SignatureException | IllegalArgumentException ex) {
+    } catch (MalformedJwtException | SecurityException  | IllegalArgumentException ex) {
       throw new TokenInvalidoException("Token inválido");
     } catch (Exception ex) {
       throw new TokenInvalidoException("Error al procesar el token");

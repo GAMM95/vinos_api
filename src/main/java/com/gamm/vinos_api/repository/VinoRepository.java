@@ -1,7 +1,5 @@
 package com.gamm.vinos_api.repository;
 
-
-import com.gamm.vinos_api.domain.view.UsuarioView;
 import com.gamm.vinos_api.domain.view.VinoView;
 import com.gamm.vinos_api.domain.model.Vino;
 import com.gamm.vinos_api.domain.view.VinosCompraView;

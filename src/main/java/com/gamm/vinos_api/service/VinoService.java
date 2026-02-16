@@ -28,7 +28,7 @@ public interface VinoService {
 
   ResultadoSP filtrarVinosParaCompra(String nombre, String proveedores, String categorias, String presentaciones, String tiposVino, String origenVino);
 
-  // 🔹 Nuevo filtrado paginado y conteo
+  // Nuevo filtrado paginado y conteo
   ResponseVO filtrarVinosParaCompraPaginados(
       String nombre,
       String proveedores,

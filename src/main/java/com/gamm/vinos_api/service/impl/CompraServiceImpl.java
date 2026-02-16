@@ -1,7 +1,10 @@
 package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.domain.model.Compra;
+import com.gamm.vinos_api.domain.view.CarritoCompraView;
+import com.gamm.vinos_api.domain.view.CompraView;
 import com.gamm.vinos_api.domain.view.ProductosCarritoView;
+import com.gamm.vinos_api.dto.ResponseVO;
 import com.gamm.vinos_api.repository.CompraRepository;
 import com.gamm.vinos_api.service.CompraService;
 import com.gamm.vinos_api.security.util.SecurityUtils;
@@ -10,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -25,52 +29,221 @@ public class CompraServiceImpl implements CompraService {
     return idUsuario;
   }
 
-  // ===================== Métodos públicos =====================
-  @Override
-  public ResultadoSP agregarProductoCarrito(Integer idUsuario, Compra compra) {
-    if (idUsuario == null) idUsuario = SecurityUtils.getUserId();
-    if (idUsuario == null) return new ResultadoSP(0, "Usuario no logueado", null);
+  private ResponseVO listarDetalleCompra(Integer idCompra, Integer idUsuario) {
+    List<CompraView> detalles =
+        idUsuario != null
+            ? compraRepository.listarDetalleComprasUsuario(idUsuario, idCompra)
+            : compraRepository.listarDetalleCompraAdmin(idCompra);
 
-    return compraRepository.agregarProductoCarrito(idUsuario, compra, compra.getDetalles().get(0));
+    return ResponseVO.success(detalles);
+  }
+
+  private ResponseVO paginar(List<CompraView> data, int pagina, int limite, long totalRegistros) {
+    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
+    return ResponseVO.paginated(data, pagina, limite, totalPaginas, totalRegistros);
   }
 
   @Override
-  public ResultadoSP eliminarProductoCarrito(Integer idUsuario, Integer idDetalleCompra) {
-    if (idUsuario == null) idUsuario = SecurityUtils.getUserId();
-    if (idUsuario == null) return new ResultadoSP(0, "Usuario no logueado", null);
+  public ResultadoSP agregarProductoCarrito(Compra compra) {
+    Integer idUsuario = getUsuario();
+    return compraRepository.agregarProductoCarrito(
+        idUsuario,
+        compra,
+        compra.getDetalles().get(0)
+    );
+  }
 
+  @Override
+  public ResultadoSP eliminarProductoCarrito(Integer idDetalleCompra) {
+    Integer idUsuario = getUsuario();
     return compraRepository.eliminarProductoCarrito(idUsuario, idDetalleCompra);
   }
 
   @Override
-  public ResultadoSP actualizarCantidadProductoCarrito(Integer idUsuario, Compra compra) {
-    if (idUsuario == null) idUsuario = SecurityUtils.getUserId();
-    if (idUsuario == null) return new ResultadoSP(0, "Usuario no logueado", null);
-
-    return compraRepository.actualizarCantidadProductoCarrito(idUsuario, compra, compra.getDetalles().get(0));
+  public ResultadoSP actualizarCantidadProductoCarrito(Compra compra) {
+    Integer idUsuario = getUsuario();
+    return compraRepository.actualizarCantidadProductoCarrito(
+        idUsuario,
+        compra,
+        compra.getDetalles().get(0)
+    );
   }
 
   @Override
-  public ResultadoSP crearCompra(Integer idUsuario, Compra compra) {
-    if (idUsuario == null) idUsuario = SecurityUtils.getUserId();
-    if (idUsuario == null) return new ResultadoSP(0, "Usuario no logueado", null);
+  public ResultadoSP confirmarCompra(Compra compra) {
+    Integer idUsuario = getUsuario();
 
-    return compraRepository.crearCompra(idUsuario, compra);
+    if (compra == null) {
+      compra = new Compra();
+    }
+
+    return compraRepository.confirmarCompra(idUsuario, compra);
   }
 
   @Override
-  public long contarProductosCarrito(Integer idUsuario, Integer idCompra) {
-    idUsuario = idUsuario != null ? idUsuario : getUsuario();
+  public long contarProductosCarritoUsuario() {
+    Integer idUsuario = getUsuario();
     Compra carrito = compraRepository.obtenerCarritoPendiente(idUsuario);
-    return carrito != null ? compraRepository.contarProductosCarrito(idUsuario, carrito.getIdCompra()) : 0L;
+    return carrito != null
+        ? compraRepository.contarProductosCarrito(idUsuario, carrito.getIdCompra())
+        : 0L;
   }
 
   @Override
-  public List<ProductosCarritoView> listarProductosCarrito(Integer idUsuario, Integer idCompra) {
-    idUsuario = idUsuario != null ? idUsuario : getUsuario();
+  public List<ProductosCarritoView> listarProductosCarritoUsuario() {
+    Integer idUsuario = getUsuario();
     Compra carrito = compraRepository.obtenerCarritoPendiente(idUsuario);
     return carrito != null
         ? compraRepository.listarProductosCarritos(idUsuario, carrito.getIdCompra())
         : List.of();
   }
+
+  @Override
+  public ResultadoSP anularCompra(Integer idCompra) {
+    Integer idUsuario = getUsuario();
+    return compraRepository.anularCompra(idUsuario, idCompra);
+  }
+
+  @Override
+  public ResultadoSP revertirCompra(Integer idCompra) {
+    Integer idUsuario = getUsuario();
+    return compraRepository.revertirCompra(idUsuario, idCompra);
+  }
+
+  @Override
+  public ResponseVO filtrarMisComprasPorFechas(LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
+    Integer idUsuario = getUsuario();
+    ResultadoSP resultado = compraRepository.filtrarMisComprasRangoFechas(idUsuario, fechaInicio, fechaFin);
+
+    if (!resultado.esExitoso()) {
+      return ResponseVO.error(resultado.getMensaje());
+    }
+
+    @SuppressWarnings("unchecked")
+    List<CompraView> data = resultado.getData() != null
+        ? (List<CompraView>) resultado.getData()
+        : List.of();
+
+    long totalRegistros = data.size();
+
+    int desde = (pagina - 1) * limite;
+    int hasta = Math.min(desde + limite, data.size());
+
+    List<CompraView> paginaData =
+        desde >= data.size()
+            ? List.of()
+            : data.subList(desde, hasta);
+
+    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
+
+    return ResponseVO.paginated(
+        paginaData,
+        pagina,
+        limite,
+        totalPaginas,
+        totalRegistros
+    );
+  }
+
+  @Override
+  public ResponseVO filtrarComprasPorUsuarioYFechas(Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin) {
+
+    ResultadoSP resultado = compraRepository.filtrarComprasUsuarioFechas(idUsuario, fechaInicio, fechaFin);
+
+    if (!resultado.esExitoso()) {
+      return ResponseVO.error(resultado.getMensaje());
+    }
+
+    @SuppressWarnings("unchecked")
+    List<CompraView> data = resultado.getData() != null
+        ? (List<CompraView>) resultado.getData()
+        : List.of();
+
+    return ResponseVO.success(data);
+  }
+
+  @Override
+  public List<CarritoCompraView> listarCarritosCompra() {
+    return compraRepository.listarCarritosCompra();
+  }
+
+  @Override
+  public ResponseVO listarComprasUsuario(int pagina, int limite) {
+    Integer idUsuario = getUsuario();
+    // Obtener la lista de compras de cada usuario
+    List<CompraView> comprasPagina = compraRepository.listarComprasUsuario(idUsuario, pagina, limite);
+
+    // Obtener el total de registros para calcular las paginas
+    long totalRegistros = compraRepository.contarComprasUsuario(idUsuario);
+    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
+
+    // Retornar usando ResponseVO con paginación
+    return ResponseVO.paginated(
+        comprasPagina,
+        pagina,
+        limite,
+        totalPaginas,
+        totalRegistros
+    );
+  }
+
+  @Override
+  public ResponseVO listarDetalleCompraUsuario(Integer idCompra) {
+    return listarDetalleCompra(idCompra, getUsuario());
+  }
+
+  @Override
+  public ResponseVO listarDetalleCompraAdmin(Integer idCompra) {
+    return listarDetalleCompra(idCompra, null);
+  }
+
+  @Override
+  public ResponseVO listarTotalCompras(int pagina, int limite) {
+    //  Obtener la lista de la pagina
+    List<CompraView> comprasPagina = compraRepository.listarTotalCompras(pagina, limite);
+
+    // Obtener el total de registros para calcular páginas
+    long totalRegistros = compraRepository.contarTotalCompras();
+    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
+
+    // Retornar usando ResponseVO con paginación
+    return ResponseVO.paginated(
+        comprasPagina,
+        pagina,
+        limite,
+        totalPaginas,
+        totalRegistros
+    );
+  }
+
+  @Override
+  public ResponseVO listarComprasConfirmadas(int pagina, int limite) {
+    return paginar(
+        compraRepository.listarComprasConfirmadas(pagina, limite),
+        pagina,
+        limite,
+        compraRepository.contarComprasConfirmadas()
+    );
+  }
+
+  @Override
+  public List<CompraView> listarComprasPendientes() {
+    return compraRepository.listarComprasPendientes();
+  }
+
+  @Override
+  public ResponseVO listarComprasAnuladas(int pagina, int limite) {
+    List<CompraView> comprasPagina = compraRepository.listarComprasAnuladas(pagina, limite);
+
+    long totalRegistros = compraRepository.contarComprasAnuladas();
+    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
+    return ResponseVO.paginated(
+        comprasPagina,
+        pagina,
+        limite,
+        totalPaginas,
+        totalRegistros
+    );
+  }
+
 }

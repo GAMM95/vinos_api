@@ -121,7 +121,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     Long totalRegistros = usuarioRepository.contarUsuarios();
     int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
 
-    // Retornar usando tu ResponseVO con paginación
+    // Retornar usando ResponseVO con paginación
     return ResponseVO.paginated(
         usuariosPagina,   // data
         pagina,           // página actual

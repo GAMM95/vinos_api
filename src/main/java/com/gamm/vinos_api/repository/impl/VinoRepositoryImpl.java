@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository.impl;
 
-import com.gamm.vinos_api.domain.view.VinoView;
 import com.gamm.vinos_api.domain.model.Vino;
+import com.gamm.vinos_api.domain.view.VinoView;
 import com.gamm.vinos_api.domain.view.VinosCompraView;
 import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.VinoRowMapper;
@@ -17,10 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoRepository {
@@ -38,14 +35,15 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
 
   @PostConstruct
   private void init() {
-    spCall = crearSimpleJdbcCall(SP_VINOS, new VinoRowMapper());
-    spCallCompra = crearSimpleJdbcCall(SP_VINOS, new VinosCompraViewMapper());
+    spCall = crearSimpleJdbcCall(new VinoRowMapper());
+    spCallCompra = crearSimpleJdbcCall(new VinosCompraViewMapper());
   }
 
-  private SimpleJdbcCall crearSimpleJdbcCall(String procedureName, RowMapper<?> rowMapper) {
+  // SimpleJdbcCall genérico para SP_VINOS.
+  private SimpleJdbcCall crearSimpleJdbcCall(RowMapper<?> rowMapper) {
     return new SimpleJdbcCall(jdbcTemplate)
         .withoutProcedureColumnMetaDataAccess()
-        .withProcedureName(procedureName)
+        .withProcedureName(SP_VINOS)
         .declareParameters(
             new SqlParameter("pTipo", Types.TINYINT),
             new SqlParameter("pIdVino", Types.TINYINT),
@@ -84,7 +82,7 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
   /*** Consultas simples ***/
   @Override
   public ResultadoSP filtrarVinoPorNombre(String nombre) {
-    return ejecutarSPConLista(spCall, construirParametrosBasicos(4, nombre));
+    return ejecutarSPConLista(spCall, construirParametrosBasicos(nombre));
   }
 
   @Override
@@ -94,8 +92,8 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
 
   @Override
   public List<VinoView> listarVinosPaginados(int pagina, int limite) {
-    return jdbcTemplate.query(VIEW_VINOS + " LIMIT ? OFFSET ?",
-        new VinoRowMapper(), limite, (pagina - 1) * limite);
+    int offset = (pagina - 1) * limite;
+    return jdbcTemplate.query(VIEW_VINOS + " LIMIT ? OFFSET ?", new VinoRowMapper(), limite, offset);
   }
 
   @Override
@@ -111,8 +109,8 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
 
   @Override
   public List<VinosCompraView> listarVinosParaCompraPaginados(int pagina, int limite) {
-    return jdbcTemplate.query(VIEW_VINOS_COMPRA + " LIMIT ? OFFSET ?",
-        new VinosCompraViewMapper(), limite, (pagina - 1) * limite);
+    int offset = (pagina - 1) * limite;
+    return jdbcTemplate.query(VIEW_VINOS_COMPRA + " LIMIT ? OFFSET ?", new VinosCompraViewMapper(), limite, offset);
   }
 
   @Override
@@ -123,8 +121,8 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
   @Override
   public ResultadoSP filtrarVinosParaCompra(String nombre, String proveedores, String categorias,
                                             String presentaciones, String tiposVino, String origenVino) {
-    return ejecutarSPConLista(spCallCompra, construirParametrosCompra(nombre, proveedores,
-        categorias, presentaciones, tiposVino, origenVino));
+    return ejecutarSPConLista(spCallCompra,
+        construirParametrosCompra(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino));
   }
 
   @Override
@@ -151,15 +149,14 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
     return ejecutarSP(spCall, construirParametros(tipo, vino));
   }
 
-  private Map<String, Object> construirParametros(int tipo, Vino vino) {
+  /** Hardcoder tipo = 4 para consultas básicas, eliminando parámetro innecesario */
+  private Map<String, Object> construirParametrosBasicos(String nombre) {
     Map<String, Object> params = new HashMap<>();
-    params.put("pTipo", tipo);
-    params.put("pIdVino", vino.getIdVino());
-    params.put("pNombre", vino.getNombre());
-    params.put("pIdCategoria", vino.getCategoria() != null ? vino.getCategoria().getIdCategoria() : null);
-    params.put("pDescripcion", vino.getDescripcion());
-
-    // Filtros que no aplican para Tipo 1-4
+    params.put("pTipo", 4);
+    params.put("pNombre", nombre);
+    params.put("pIdVino", null);
+    params.put("pIdCategoria", null);
+    params.put("pDescripcion", null);
     params.put("pProveedores", null);
     params.put("pCategorias", null);
     params.put("pPresentaciones", null);
@@ -168,13 +165,14 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
     return params;
   }
 
-  private Map<String, Object> construirParametrosBasicos(int tipo, String nombre) {
+  private Map<String, Object> construirParametros(int tipo, Vino vino) {
     Map<String, Object> params = new HashMap<>();
     params.put("pTipo", tipo);
-    params.put("pNombre", nombre);
-    params.put("pIdVino", null);
-    params.put("pIdCategoria", null);
-    params.put("pDescripcion", null);
+    params.put("pIdVino", vino.getIdVino());
+    params.put("pNombre", vino.getNombre());
+    params.put("pIdCategoria", vino.getCategoria() != null ? vino.getCategoria().getIdCategoria() : null);
+    params.put("pDescripcion", vino.getDescripcion());
+    // Filtros no aplicables
     params.put("pProveedores", null);
     params.put("pCategorias", null);
     params.put("pPresentaciones", null);
@@ -203,13 +201,13 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
     Map<String, Object> out = spCall.execute(params);
     @SuppressWarnings("unchecked")
     List<T> result = (List<T>) out.get("ResultSet");
-    return result != null ? result : new ArrayList<>();
+    return result != null ? result : Collections.emptyList();
   }
 
   private <T> List<T> paginarLista(List<T> lista, int pagina, int limite) {
     int offset = (pagina - 1) * limite;
+    if (offset >= lista.size()) return Collections.emptyList();
     int end = Math.min(offset + limite, lista.size());
-    if (offset > lista.size()) return new ArrayList<>();
     return lista.subList(offset, end);
   }
 }
