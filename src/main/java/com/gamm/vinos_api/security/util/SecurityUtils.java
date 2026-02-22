@@ -26,4 +26,14 @@ public final class SecurityUtils {
     UsuarioPrincipal up = getPrincipal();
     return up != null ? up.getUsername() : null;
   }
+
+  public static Integer getSucursalId() {
+    UsuarioPrincipal up = getPrincipal();
+    return up != null ? up.getIdSucursal() : null;
+  }
+
+  public static String getRol() {
+    UsuarioPrincipal up = getPrincipal();
+    return up != null ? up.getRol() : null;
+  }
 }

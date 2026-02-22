@@ -48,6 +48,23 @@ public class CompraController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
+  // Cerrar y deshacer compra
+  @PatchMapping("/{idCompra}/estado")
+  public ResponseEntity<ResponseVO> cambiarEstadoCompra(
+      @PathVariable Integer idCompra,
+      @RequestParam("cerrada") boolean cerrada
+  ) {
+    ResultadoSP resultado;
+    if (cerrada) {
+      resultado = compraService.cerrarCompra(idCompra);
+    } else {
+      resultado = compraService.deshacerCerrarCompra(idCompra);
+    }
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), null)
+        : badRequest(resultado.getMensaje());
+  }
+
   // Contar productos del carrito
   @GetMapping("/carrito/count")
   public ResponseEntity<ResponseVO> contarProductosCarrito() {
@@ -81,6 +98,7 @@ public class CompraController extends AbstractRestController {
     return ResponseEntity.ok(response);
   }
 
+  // Anular compra
   @PutMapping("/{idCompra}/anular")
   public ResponseEntity<ResponseVO> anularCompra(@PathVariable Integer idCompra) {
     ResultadoSP resultado = compraService.anularCompra(idCompra);
@@ -89,6 +107,7 @@ public class CompraController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
+  // Revertir compra
   @PutMapping("/{idCompra}/revertir")
   public ResponseEntity<ResponseVO> revertirCompra(@PathVariable Integer idCompra) {
     ResultadoSP resultado = compraService.revertirCompra(idCompra);
@@ -98,9 +117,7 @@ public class CompraController extends AbstractRestController {
         : badRequest(resultado.getMensaje());
   }
 
-  /**
-   * TODO: mejorar con paginado
-   */
+  // Filtrar mis compras por rango de fechas
   @GetMapping("/user/filtrar")
   public ResponseEntity<ResponseVO> filtrarMisComprasPorFechas(
       @RequestParam LocalDate fechaInicio,
@@ -125,10 +142,12 @@ public class CompraController extends AbstractRestController {
 
       @RequestParam(required = false)
       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-      LocalDate fechaFin
+      LocalDate fechaFin,
+      @RequestParam(defaultValue = "1") int pagina,
+      @RequestParam(defaultValue = "5") int limite
   ) {
     ResponseVO response =
-        compraService.filtrarComprasPorUsuarioYFechas(idUsuario, fechaInicio, fechaFin);
+        compraService.filtrarComprasPorUsuarioYFechas(idUsuario, fechaInicio, fechaFin, pagina, limite);
     return ResponseEntity.ok(response);
   }
 
@@ -141,6 +160,7 @@ public class CompraController extends AbstractRestController {
     return ResponseEntity.ok(response);
   }
 
+  // Listar detalle de compras de todos los usuarios para el admin
   @GetMapping("/{idCompra}/detalle-admin")
   public ResponseEntity<ResponseVO> detalleCompraAdmin(
       @PathVariable Integer idCompra

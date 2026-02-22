@@ -20,4 +20,6 @@ public interface CombosRepository {
   List<SucursalCbo> comboSucursal();
 
   List<PresentacionChk> checkBoxPresentacion();
+
+  List<UsuarioCbo> comboUsuario();
 }

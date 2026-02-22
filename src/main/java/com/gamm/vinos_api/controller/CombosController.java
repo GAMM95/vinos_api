@@ -55,4 +55,10 @@ public class CombosController extends AbstractRestController {
   public ResponseEntity<ResponseVO> checkBoxPresentacion() {
     return ok(combosService.checkBoxPresentacion());
   }
+
+  // Llamar al combo de usuarios
+  @GetMapping("/usuario")
+  public ResponseEntity<ResponseVO> comboUsuario() {
+    return ok(combosService.comboUsuario());
+  }
 }

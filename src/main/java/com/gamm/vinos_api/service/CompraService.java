@@ -21,6 +21,10 @@ public interface CompraService {
 
   ResultadoSP confirmarCompra(Compra compra);
 
+  ResultadoSP cerrarCompra(Integer idCompra);
+
+  ResultadoSP deshacerCerrarCompra(Integer idCompra);
+
   // Operaciones de consulta
   long contarProductosCarritoUsuario();
 
@@ -32,7 +36,7 @@ public interface CompraService {
 
   ResponseVO filtrarMisComprasPorFechas(LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite);
 
-  ResponseVO filtrarComprasPorUsuarioYFechas(Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin);
+  ResponseVO filtrarComprasPorUsuarioYFechas(Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite);
 
   // Listados
   List<CarritoCompraView> listarCarritosCompra();

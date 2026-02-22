@@ -23,6 +23,7 @@ public class CompraServiceImpl implements CompraService {
   @Autowired
   private CompraRepository compraRepository;
 
+  /* Helpers */
   private Integer getUsuario() {
     Integer idUsuario = SecurityUtils.getUserId();
     if (idUsuario == null) throw new IllegalStateException("Usuario no logueado");
@@ -81,6 +82,16 @@ public class CompraServiceImpl implements CompraService {
   }
 
   @Override
+  public ResultadoSP cerrarCompra(Integer idCompra) {
+    return compraRepository.cerrarCompra(idCompra);
+  }
+
+  @Override
+  public ResultadoSP deshacerCerrarCompra(Integer idCompra) {
+    return compraRepository.deshacerCerrarCompra(idCompra);
+  }
+
+  @Override
   public long contarProductosCarritoUsuario() {
     Integer idUsuario = getUsuario();
     Compra carrito = compraRepository.obtenerCarritoPendiente(idUsuario);
@@ -124,29 +135,16 @@ public class CompraServiceImpl implements CompraService {
         ? (List<CompraView>) resultado.getData()
         : List.of();
 
-    long totalRegistros = data.size();
-
-    int desde = (pagina - 1) * limite;
-    int hasta = Math.min(desde + limite, data.size());
-
-    List<CompraView> paginaData =
-        desde >= data.size()
-            ? List.of()
-            : data.subList(desde, hasta);
-
-    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
-
-    return ResponseVO.paginated(
-        paginaData,
+    return paginar(
+        data,
         pagina,
         limite,
-        totalPaginas,
-        totalRegistros
+        data.size()
     );
   }
 
   @Override
-  public ResponseVO filtrarComprasPorUsuarioYFechas(Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin) {
+  public ResponseVO filtrarComprasPorUsuarioYFechas(Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
 
     ResultadoSP resultado = compraRepository.filtrarComprasUsuarioFechas(idUsuario, fechaInicio, fechaFin);
 
@@ -159,7 +157,7 @@ public class CompraServiceImpl implements CompraService {
         ? (List<CompraView>) resultado.getData()
         : List.of();
 
-    return ResponseVO.success(data);
+    return paginar(data, pagina, limite, data.size());
   }
 
   @Override

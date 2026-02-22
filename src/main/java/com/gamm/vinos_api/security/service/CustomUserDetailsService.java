@@ -30,13 +30,19 @@ public class CustomUserDetailsService implements UserDetailsService {
       throw new UsernameNotFoundException(resultado.getMensaje());
     }
 
+    Integer idSucursal = usuario.getSucursal() != null
+        ? usuario.getSucursal().getIdSucursal()
+        : null;
+
+    String rol = usuario.getRol().name();
+
     return new UsuarioPrincipal(
         usuario.getIdUsuario(),
         usuario.getUsername(),
         usuario.getPassword(),
-        List.of(
-            new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name())
-        )
+        usuario.getSucursal() != null ? usuario.getSucursal().getIdSucursal() : null,
+        usuario.getRol().name(),
+        List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name()))
     );
   }
 }

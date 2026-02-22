@@ -47,7 +47,9 @@ public interface CompraRepository {
 
   ResultadoSP filtrarMisComprasRangoFechas(Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin);
 
-  ResultadoSP cerrarCompra(Integer idUsuario, Integer idCompra);
+  ResultadoSP cerrarCompra(Integer idCompra);
+
+  ResultadoSP deshacerCerrarCompra (Integer idCompra);
 
   ResultadoSP filtrarComprasUsuarioFechas(Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin);
 

@@ -76,6 +76,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
             new SqlParameter("pCostoEmbalaje", Types.DECIMAL),
             new SqlParameter("pCostoEnvioAgencia", Types.DECIMAL),
             new SqlParameter("pCostoTransporte", Types.DECIMAL),
+            new SqlParameter ("pMetodoPago" , Types.VARCHAR),
             new SqlParameter("pObservaciones", Types.VARCHAR),
             new SqlParameter("pIdCatalogo", Types.SMALLINT),
             new SqlParameter("pCantidad", Types.TINYINT),
@@ -98,6 +99,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
     params.put("pCostoEmbalaje", null);
     params.put("pCostoEnvioAgencia", null);
     params.put("pCostoTransporte", null);
+    params.put("pMetodoPago", null);
     params.put("pObservaciones", null);
     params.put("pIdCatalogo", null);
     params.put("pCantidad", null);
@@ -115,6 +117,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
       params.put("pCostoEmbalaje", compra.getCostoEmbalaje());
       params.put("pCostoEnvioAgencia", compra.getCostoEnvioAgencia());
       params.put("pCostoTransporte", compra.getCostoTransporte());
+      params.put("pMetodoPago", compra.getMetodoPago() != null ? compra.getMetodoPago().name() : null);
       params.put("pObservaciones", compra.getObservaciones());
     }
 
@@ -264,7 +267,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
 
   @Override
   public List<CompraView> listarDetalleCompraAdmin(Integer idCompra) {
-    return  jdbcTemplate.query(
+    return jdbcTemplate.query(
         VW_DETALLE_COMPRAS_ADMIN,
         new DetalleCompraUserRowMapper(),
         idCompra
@@ -291,10 +294,17 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
   }
 
   @Override
-  public ResultadoSP cerrarCompra(Integer idUsuario, Integer idCompra) {
+  public ResultadoSP cerrarCompra(Integer idCompra) {
     Compra c = new Compra();
     c.setIdCompra(idCompra);
-    return ejecutarSPBasico(TipoSP.CERRAR.v(), idUsuario, c, null);
+    return ejecutarSPBasico(TipoSP.CERRAR.v(), null, c, null);
+  }
+
+  @Override
+  public ResultadoSP deshacerCerrarCompra(Integer idCompra) {
+    Compra c = new Compra();
+    c.setIdCompra(idCompra);
+    return ejecutarSPBasico(TipoSP.DESHACER_CERRAR.v(), null, c, null);
   }
 
   @Override
@@ -361,7 +371,8 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
     REVERTIR(6),
     FILTRAR_USUARIO(7),
     CERRAR(8),
-    FILTRAR_ADMIN(9);
+    DESHACER_CERRAR(9),
+    FILTRAR_ADMIN(10);
 
     private final int v;
 

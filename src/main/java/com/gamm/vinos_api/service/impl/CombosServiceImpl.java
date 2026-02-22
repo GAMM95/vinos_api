@@ -48,4 +48,9 @@ public class CombosServiceImpl implements CombosService {
   public List<PresentacionChk> checkBoxPresentacion() {
     return combosRepository.checkBoxPresentacion();
   }
+
+  @Override
+  public List<UsuarioCbo> comboUsuario() {
+    return combosRepository.comboUsuario();
+  }
 }
