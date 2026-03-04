@@ -42,8 +42,8 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
             new SqlParameter("pDescripcion", Types.VARCHAR),
             new SqlParameter("pVolumen", Types.DOUBLE),
             new SqlParameter("pUnidadVolumen", Types.TINYINT),
-            new SqlOutParameter("pRespuesta", Types.TINYINT),
-            new SqlOutParameter("pMensaje", Types.VARCHAR)
+            new SqlOutParameter(PARAM_RESPUESTA, Types.TINYINT),
+            new SqlOutParameter(PARAM_MENSAJE, Types.VARCHAR)
         )
     .returningResultSet("ResultSet", new PresentacionRowMapper());
   }

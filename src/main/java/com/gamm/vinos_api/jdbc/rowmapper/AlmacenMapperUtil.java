@@ -15,6 +15,7 @@ public class AlmacenMapperUtil {
 
   // Para la vista detallada del stock del almacen
   public static void mapDetallado(AlmacenView v, ResultSet rs) throws SQLException {
+    v.setIdAlmacen(rs.getInt("idAlmacen"));
     v.setIdCatalogo(rs.getInt("idCatalogo"));
     v.setNombreVino(rs.getString("nombreVino"));
     v.setPresentacion(rs.getString("presentacion"));

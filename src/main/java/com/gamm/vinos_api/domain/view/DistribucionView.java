@@ -5,19 +5,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AlmacenView {
+public class DistribucionView {
+  private Integer idDistribucion;
   private Integer idAlmacen;
-  private Integer idCatalogo;
-  private Integer idVino;
-  private String nombreVino;
+  private Integer idSucursal;
+  private String sucursal;
+  private String vino;
   private String origen;
   private String presentacion;
-  private Integer totalUnidades;
-  private BigDecimal totalLitros;
+  private Integer cantidad;
+  private LocalDateTime fechaDistribucion;
 }

@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CajaServiceImpl implements CajaService {
@@ -102,6 +104,10 @@ public class CajaServiceImpl implements CajaService {
 
     ResultadoSP resultadoSP = cajaRepository.filtrarMisCajasPorRango(idUsuario, fechaInicio, fechaFin, pagina, limite);
 
+    if (!resultadoSP.esExitoso()) {
+      return ResponseVO.error(resultadoSP.getMensaje());
+    }
+
     @SuppressWarnings("unchecked")
     List<CajaView> data = (List<CajaView>) resultadoSP.getData();
 
@@ -116,6 +122,10 @@ public class CajaServiceImpl implements CajaService {
   public ResponseVO filtrarCajasPorUsuarioORango(Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
     ResultadoSP resultadoSP = cajaRepository.filtrarTotalCajasPorRango(idUsuario, fechaInicio, fechaFin, pagina, limite);
 
+    if (!resultadoSP.esExitoso()) {
+      return ResponseVO.error(resultadoSP.getMensaje());
+    }
+
     @SuppressWarnings("unchecked")
     List<CajaView> data = (List<CajaView>) resultadoSP.getData();
 
@@ -129,5 +139,16 @@ public class CajaServiceImpl implements CajaService {
     int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
 
     return ResponseVO.paginated(data, pagina, limite, totalPaginas, totalRegistros);
+  }
+
+  @Override
+  public List<CajaView> mostrarMiUltimaCajaAbierta() {
+    Integer idUsuario = getUsuarioAutenticado();
+    return cajaRepository.mostrarMiUltimaCajaAbierta(idUsuario);
+  }
+
+  @Override
+  public ResultadoSP obtenerSiguienteCodigoCaja() {
+    return cajaRepository.obtenerSiguienteCodigoCaja();
   }
 }

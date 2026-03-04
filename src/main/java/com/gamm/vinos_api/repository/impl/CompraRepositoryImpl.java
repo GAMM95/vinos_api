@@ -39,25 +39,26 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
 
   // Querys para compras de cada usuario
   private static final String COUNT_COMPRAS_USUARIO = "SELECT COUNT(DISTINCT idCompra) FROM vw_compras WHERE idUsuario = ?";
-  private static final String VW_COMPRAS_USUARIO = "SELECT idCompra, codCompra, usuario, fechaCompra, MAX(subtotalCalculado) AS subtotalCalculado, MAX(costoLogistico) AS costoLogistico, MAX(totalCompra) AS totalCompra, estado FROM vw_compras WHERE idUsuario = ? GROUP BY idCompra, codCompra, usuario, fechaCompra, estado";
+//  private static final String VW_COMPRAS_USUARIO = "SELECT idCompra, codCompra, usuario, fechaCompra, MAX(subtotalCalculado) AS subtotalCalculado, MAX(costoLogistico) AS costoLogistico, MAX(totalCompra) AS totalCompra, estado FROM vw_compras WHERE idUsuario = ? GROUP BY idCompra, codCompra, usuario, fechaCompra, estado ORDER BY fechaCompra DESC";
+  private static final String VW_COMPRAS_USUARIO = "SELECT idCompra, codCompra, usuario, fechaCompra, subtotalCalculado, costoLogistico, totalCompra, estado FROM vw_compras_usuario WHERE idUsuario = ?";
   private static final String VW_DETALLE_COMPRAS_USUARIO = "SELECT * FROM vw_compras WHERE idUsuario = ? AND idCompra = ? ORDER BY idDetCompra";
   private static final String VW_DETALLE_COMPRAS_ADMIN = "SELECT * FROM vw_compras WHERE idCompra = ? ORDER BY idDetCompra";
 
   // Queries para todas las compras totales
   private static final String COUNT_TOTAL_COMPRAS = "SELECT COUNT(DISTINCT idCompra) FROM vw_compras";
-  private static final String VW_COMPRAS_TOTAL = "SELECT * FROM vw_compras";
-  private static final String VW_CARRITO_COMPRAS = "SELECT  * FROM vw_carritos_compra";
+  private static final String VW_COMPRAS_TOTAL = "SELECT * FROM vw_compras ORDER BY fechaCompra DESC ";
+  private static final String VW_CARRITO_COMPRAS = "SELECT * FROM vw_carritos_compra";
 
   // Queries para listar todas las compras confirmadas
   private static final String COUNT_CONFIRM_COMPRAS = "SELECT COUNT(DISTINCT idCompra) FROM vw_compras WHERE estado IN ('Confirmada','Cerrada')";
-  private static final String VW_CONFIRM_COMPRAS = "SELECT idCompra, codCompra,idUsuario, usuario, fechaCompra, MAX(subtotalCalculado) AS subtotalCalculado, MAX(costoLogistico) AS costoLogistico, MAX(totalCompra) AS totalCompra, estado FROM vw_compras WHERE estado IN ('Confirmada','Cerrada') GROUP BY idCompra, codCompra, usuario, fechaCompra, estado";
+  private static final String VW_CONFIRM_COMPRAS = "SELECT idCompra, codCompra,idUsuario, usuario, fechaCompra, MAX(subtotalCalculado) AS subtotalCalculado, MAX(costoLogistico) AS costoLogistico, MAX(totalCompra) AS totalCompra, estado FROM vw_compras WHERE estado IN ('Confirmada','Cerrada') GROUP BY idCompra, codCompra, usuario, fechaCompra, estado ORDER BY fechaCompra DESC";
 
   // Queries para listar las compras pendientes
-  private static final String VW_PEND_COMPRAS = "SELECT idCompra, codCompra, idUsuario, usuario, fechaCarrito, MAX(subtotalCalculado) AS subtotalCalculado, MAX(totalCompra) AS totalCompra, estado FROM vw_comprasPendientes GROUP BY idCompra, codCompra, usuario, fechaCarrito, estado";
+  private static final String VW_PEND_COMPRAS = "SELECT idCompra, codCompra, idUsuario, usuario, fechaCarrito, MAX(subtotalCalculado) AS subtotalCalculado, MAX(totalCompra) AS totalCompra, estado FROM vw_comprasPendientes GROUP BY idCompra, codCompra, usuario, fechaCarrito, estado ORDER BY fechaCarrito DESC";
 
   // Queries para listar compras anuladas
   private static final String COUNT_ANULADAS_COMPRAS = "SELECT COUNT(DISTINCT idCompra) FROM vw_compras WHERE estado LIKE 'Anulada'";
-  private static final String VW_ANULADAS_COMPRAS = "SELECT idCompra, codCompra, idUsuario, usuario, fechaCompra, MAX(subtotalCalculado) AS subtotalCalculado, MAX(costoLogistico) AS costoLogistico, MAX(totalCompra) AS totalCompra, estado FROM vw_compras WHERE estado LIKE 'Anulada' GROUP BY idCompra, codCompra, usuario, fechaCompra, estado";
+  private static final String VW_ANULADAS_COMPRAS = "SELECT idCompra, codCompra, idUsuario, usuario, fechaCompra, MAX(subtotalCalculado) AS subtotalCalculado, MAX(costoLogistico) AS costoLogistico, MAX(totalCompra) AS totalCompra, estado FROM vw_compras WHERE estado LIKE 'Anulada' GROUP BY idCompra, codCompra, usuario, fechaCompra, estado ORDER BY fechaCompra DESC";
   private SimpleJdbcCall spCall;
 
   public CompraRepositoryImpl(DataSource dataSource) {

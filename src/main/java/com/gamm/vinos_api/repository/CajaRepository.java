@@ -37,4 +37,7 @@ public interface CajaRepository {
 
   List<CajaView> listarTotalCajas(int pagina, int limite);
 
+  List<CajaView> mostrarMiUltimaCajaAbierta (Integer idUsuario);
+
+  ResultadoSP obtenerSiguienteCodigoCaja();
 }

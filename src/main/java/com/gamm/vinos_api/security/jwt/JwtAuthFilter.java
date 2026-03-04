@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.security.jwt;
 
+import com.gamm.vinos_api.exception.security.TokenExpiradoException;
 import com.gamm.vinos_api.security.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,22 +31,33 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   ) throws ServletException, IOException {
 
     String header = request.getHeader("Authorization");
+    try {
+      if (header != null && header.startsWith("Bearer ")) {
+        String token = header.substring(7);
+        String username = jwtUtil.obtenerUsername(token);
 
-    if (header != null && header.toLowerCase().startsWith("bearer ")) {
-      String token = header.substring(7);
-      String username = jwtUtil.obtenerUsername(token);
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+          UserDetails userDetails =
+              customUserDetailsService.loadUserByUsername(username);
 
-      if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+          UsernamePasswordAuthenticationToken auth =
+              new UsernamePasswordAuthenticationToken(
+                  userDetails, null, userDetails.getAuthorities()
+              );
 
-        // Solo autentica, no lanza excepción de token inválido
-        UsernamePasswordAuthenticationToken auth =
-            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(auth);
+          SecurityContextHolder.getContext().setAuthentication(auth);
+        }
       }
-    }
 
-    filterChain.doFilter(request, response);
+      filterChain.doFilter(request, response);
+
+    } catch (TokenExpiradoException ex) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      response.setContentType("application/json");
+      response.getWriter().write(
+          "{\"success\":false,\"message\":\"Token expirado\"}"
+      );
+    }
   }
 }
 

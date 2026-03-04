@@ -85,4 +85,19 @@ public class CajaController extends AbstractRestController {
     ResponseVO response = cajaService.filtrarCajasPorUsuarioORango(idUsuario, fechaInicio, fechaFin, pagina, limite);
     return ResponseEntity.ok(response);
   }
+
+  // Listar mi ultima caja abierta (cada usuario)
+  @GetMapping("/mi-ultima-caja-abierta")
+  public ResponseEntity<ResponseVO> mostrarMiUltimaCajaAbierta() {
+    return ok(cajaService.mostrarMiUltimaCajaAbierta());
+  }
+
+  // Mostrar siguiente código de caja
+  @GetMapping("/siguiente-codigo")
+  public ResponseEntity<ResponseVO> obtenerSiguienteCodigoCaja() {
+    ResultadoSP resultado = cajaService.obtenerSiguienteCodigoCaja();
+    return resultado.esExitoso()
+        ? ok(resultado.getMensaje(), resultado.getData())
+        : badRequest(resultado.getMensaje());
+  }
 }

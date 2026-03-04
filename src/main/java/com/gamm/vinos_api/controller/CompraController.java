@@ -164,7 +164,7 @@ public class CompraController extends AbstractRestController {
   @GetMapping("/{idCompra}/detalle-admin")
   public ResponseEntity<ResponseVO> detalleCompraAdmin(
       @PathVariable Integer idCompra
-  ) {
+    ) {
     return ResponseEntity.ok(
         compraService.listarDetalleCompraAdmin(idCompra)
     );

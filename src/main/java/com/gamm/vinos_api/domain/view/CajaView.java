@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CajaView {
   private Integer idCaja;
+  private String codCaja;
   private Integer idSucursal;
   private String sucursal;
   private Integer idUsuario;
