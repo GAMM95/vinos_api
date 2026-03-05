@@ -19,15 +19,10 @@ public class CajaRowMapper implements RowMapper<CajaView> {
     cajaView.setSucursal(rs.getString("sucursal"));
     cajaView.setIdUsuario(rs.getInt("idUsuario"));
     cajaView.setUsuario(rs.getString("usuario"));
-//    cajaView.setFechaApertura(rs.getTimestamp("fechaApertura").toLocalDateTime());
-//    cajaView.setFechaCierre(rs.getTimestamp("fechaCierre").toLocalDateTime());
-
     Timestamp fa = rs.getTimestamp("fechaApertura");
     cajaView.setFechaApertura(fa != null ? fa.toLocalDateTime() : null);
-
     Timestamp fc = rs.getTimestamp("fechaCierre");
     cajaView.setFechaCierre(fc != null ? fc.toLocalDateTime() : null);
-
     cajaView.setSaldoInicial(rs.getBigDecimal("saldoInicial"));
     cajaView.setSaldoActual(rs.getBigDecimal("saldoActual"));
     cajaView.setSaldoFinal(rs.getBigDecimal("saldoFinal"));

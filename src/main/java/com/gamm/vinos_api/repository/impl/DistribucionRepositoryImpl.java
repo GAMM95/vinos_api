@@ -1,12 +1,9 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.DistribucionSucursal;
-import com.gamm.vinos_api.domain.view.CajaView;
 import com.gamm.vinos_api.domain.view.DistribucionView;
 import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
-import com.gamm.vinos_api.jdbc.rowmapper.CajaRowMapper;
 import com.gamm.vinos_api.jdbc.rowmapper.DistribucionRowMapper;
-import com.gamm.vinos_api.jdbc.rowmapper.PresentacionRowMapper;
 import com.gamm.vinos_api.repository.DistribucionRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;
 import jakarta.annotation.PostConstruct;
@@ -32,6 +29,7 @@ public class DistribucionRepositoryImpl extends SimpleJdbcDAOBase implements Dis
   private static final String COUNT_REPARTOS = "SELECT COUNT(*) FROM vw_distribucion";
   private static final String VW_DISTRIBUICION = "SELECT * FROM vw_distribucion";
 
+  // Llamada al sp
   private SimpleJdbcCall spCall;
 
   public DistribucionRepositoryImpl(DataSource dataSource) {
@@ -48,6 +46,8 @@ public class DistribucionRepositoryImpl extends SimpleJdbcDAOBase implements Dis
             new SqlParameter("pIdAlmacen", Types.INTEGER),
             new SqlParameter("pIdSucursal", Types.TINYINT),
             new SqlParameter("pCantidad", Types.INTEGER),
+            new SqlParameter("pPagina", Types.INTEGER),
+            new SqlParameter("pLimite", Types.INTEGER),
             new SqlParameter("pFechaInicio", Types.DATE),
             new SqlParameter("pFechaFin", Types.DATE),
             new SqlOutParameter(PARAM_RESPUESTA, Types.TINYINT),
@@ -62,19 +62,18 @@ public class DistribucionRepositoryImpl extends SimpleJdbcDAOBase implements Dis
       Integer idAlmacen,
       Integer idSucursal,
       Integer cantidad,
-      LocalDate fechaInicio,
-      LocalDate fechaFin
+      Integer pagina,
+      Integer limite
   ) {
     Map<String, Object> params = new HashMap<>();
     params.put("pTipo", tipo);
     params.put("pIdAlmacen", idAlmacen);
     params.put("pIdSucursal", idSucursal);
     params.put("pCantidad", cantidad);
-    params.put("pFechaInicio", fechaInicio);
-    params.put("pFechaFin", fechaFin);
+    params.put("pPagina", pagina);
+    params.put("pLimite", limite);
     return params;
   }
-
   @Override
   public ResultadoSP distribuirProducto(DistribucionSucursal distribucionSucursal) {
     Map<String, Object> params = construirParametros(
@@ -86,6 +85,21 @@ public class DistribucionRepositoryImpl extends SimpleJdbcDAOBase implements Dis
         null
     );
     return ejecutarSP(spCall, params);
+  }
+
+  @Override
+  public ResultadoSP filtrarRepartoSucursalRango(Integer idSucursal, LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
+    Map<String, Object> params = construirParametros(2, null, idSucursal, null, pagina, limite);
+    // usar helper
+    addDateRange(params, "pFechaInicio", "pFechaFin", fechaInicio, fechaFin);
+    return ejecutarSPConLista(spCall, params);
+  }
+
+  @Override
+  public long contarRepartosSucursalRango(Integer idSucursal, LocalDate fechaInicio, LocalDate fechaFin) {
+    String sql = COUNT_REPARTOS + " WHERE idSucursal = ? AND vw_distribucion.fechaDistribucion >= ? AND fechaDistribucion < DATE_ADD(?, INTERVAL 1 DAY) ";
+    Long total = jdbcTemplate.queryForObject(sql, Long.class, idSucursal, fechaInicio, fechaFin);
+    return total != null ? total : 0;
   }
 
   @Override
