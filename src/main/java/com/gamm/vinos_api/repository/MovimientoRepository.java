@@ -1,6 +1,5 @@
 package com.gamm.vinos_api.repository;
 
-import com.gamm.vinos_api.domain.view.CompraView;
 import com.gamm.vinos_api.domain.view.MovimientosView;
 import com.gamm.vinos_api.utils.ResultadoSP;
 
@@ -25,11 +24,10 @@ public interface MovimientoRepository {
 
   List<MovimientosView> listarMisMovimientos(Integer idUsuario, int pagina, int limite);
 
-  // Listar todas los movimientos
+  // Listar todos los movimientos
   long contarTotalMovimientos();
 
   List<MovimientosView> listarTotalMovimientos(int pagina, int limite);
-
 
   List<MovimientosView> listarDetalleMovimientoUsuario(Integer idUsuario, Integer idCaja);
 

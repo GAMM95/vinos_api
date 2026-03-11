@@ -7,6 +7,7 @@ import com.gamm.vinos_api.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,9 +26,10 @@ public class StockController extends AbstractRestController {
   }
 
   // Listar stock detallado
-  @GetMapping("/detallado")
-  public ResponseEntity<ResponseVO> listarStockDetallado() {
-    return ResponseEntity.ok(stockService.listarStockSucursalDetallado());
+  @GetMapping("/sucursal/{idSucursal}")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> listarStockDetalladoPorSucursal(@PathVariable Integer idSucursal) {
+    return ResponseEntity.ok(stockService.listarStockSucursalDetalladoPorSucursal(idSucursal));
   }
 
   // Listar stock para cada sucursal

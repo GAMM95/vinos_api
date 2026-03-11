@@ -27,6 +27,7 @@ public class StockMapperUtil {
     v.setOrigen(rs.getString("origen"));
     v.setStockGalones(rs.getBigDecimal("stockGalones"));
     v.setStockLitros(rs.getBigDecimal("stockLitros"));
+    v.setTotalLitros(rs.getBigDecimal("totalLitros"));
     v.setEstado(rs.getString("estado"));
   }
 }

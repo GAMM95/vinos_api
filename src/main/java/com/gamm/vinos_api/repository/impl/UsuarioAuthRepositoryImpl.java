@@ -1,6 +1,7 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.Usuario;
+import com.gamm.vinos_api.jdbc.rowmapper.BaseUsuarioSPRepository;
 import com.gamm.vinos_api.jdbc.rowmapper.UsuarioRowMapper;
 import com.gamm.vinos_api.repository.UsuarioAuthRepository;
 import com.gamm.vinos_api.utils.ResultadoSP;

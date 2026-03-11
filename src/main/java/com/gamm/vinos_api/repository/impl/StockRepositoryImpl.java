@@ -15,7 +15,6 @@ public class StockRepositoryImpl extends SimpleJdbcDAOBase implements StockRepos
 
   // Queries para listar stock
   private static final String VW_STOCK = "SELECT * FROM vw_stock_sucursal";
-  private static final String VW_STOCK_DETALLADO = "SELECT * FROM vw_stock_sucursal_detallado";
 
   private static final String VW_STOCK_SUCURSAL = "SELECT * FROM vw_stock_sucursal_detallado WHERE idSucursal = ?";
 
@@ -29,8 +28,8 @@ public class StockRepositoryImpl extends SimpleJdbcDAOBase implements StockRepos
   }
 
   @Override
-  public List<StockView> listarStockSucursalDetallado() {
-    return jdbcTemplate.query(VW_STOCK_DETALLADO, new StockSucursalDetalladoRowMapper());
+  public List<StockView> listarStockSucursalDetalladoPorSucursal(Integer idSucursal) {
+    return jdbcTemplate.query(VW_STOCK_SUCURSAL, new StockSucursalDetalladoRowMapper(), idSucursal);
   }
 
   @Override

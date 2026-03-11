@@ -9,7 +9,7 @@ public interface StockService {
 
   ResponseVO listarStockSucursal();
 
-  ResponseVO listarStockSucursalDetallado();
+  ResponseVO listarStockSucursalDetalladoPorSucursal(Integer idSucursal);
 
   ResponseVO listarStockPorSucursal();
 }

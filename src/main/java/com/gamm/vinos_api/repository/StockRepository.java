@@ -7,7 +7,7 @@ import java.util.List;
 public interface StockRepository {
   List<StockView> listarStockSucursal();
 
-  List<StockView> listarStockSucursalDetallado();
+  List<StockView> listarStockSucursalDetalladoPorSucursal(Integer idSucursal);
 
   List<StockView> listarStockPorSucursal(Integer idSucursal);
 }

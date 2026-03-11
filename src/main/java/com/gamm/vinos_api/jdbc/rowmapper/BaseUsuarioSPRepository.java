@@ -1,4 +1,4 @@
-package com.gamm.vinos_api.repository.impl;
+package com.gamm.vinos_api.jdbc.rowmapper;
 
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;

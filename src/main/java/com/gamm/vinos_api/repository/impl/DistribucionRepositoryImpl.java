@@ -72,6 +72,9 @@ public class DistribucionRepositoryImpl extends SimpleJdbcDAOBase implements Dis
     params.put("pCantidad", cantidad);
     params.put("pPagina", pagina);
     params.put("pLimite", limite);
+
+    params.put("pFechaInicio", null);
+    params.put("pFechaFin", null);
     return params;
   }
   @Override

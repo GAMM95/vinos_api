@@ -33,8 +33,8 @@ public class StockServiceImpl implements StockService {
   }
 
   @Override
-  public ResponseVO listarStockSucursalDetallado() {
-    List<StockView> data = stockRepository.listarStockSucursalDetallado();
+  public ResponseVO listarStockSucursalDetalladoPorSucursal(Integer idSucursal) {
+    List<StockView> data = stockRepository.listarStockSucursalDetalladoPorSucursal(idSucursal);
     return ResponseVO.success(data);
   }
 
