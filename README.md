@@ -26,7 +26,6 @@ API RESTful desarrollada con Java 17 y Spring Boot, usando MySQL para gestionar 
 
 - 🔒 **API preparada para integración**
 	- Endpoints REST listos para consumir desde frontend (Angular, React, etc.)
-    - 
 
 --- 
 ## 🛠 Tecnologías
