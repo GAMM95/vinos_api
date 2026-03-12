@@ -1,9 +1,8 @@
 package com.gamm.vinos_api.repository;
 
 import com.gamm.vinos_api.domain.model.DistribucionSucursal;
-import com.gamm.vinos_api.domain.view.CajaView;
-import com.gamm.vinos_api.domain.view.DistribucionView;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.dto.view.DistribucionView;
+import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.time.LocalDate;
 import java.util.List;

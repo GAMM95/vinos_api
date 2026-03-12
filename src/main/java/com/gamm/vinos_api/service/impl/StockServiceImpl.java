@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.service.impl;
 
-import com.gamm.vinos_api.domain.view.StockView;
-import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.dto.view.StockView;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.repository.StockRepository;
 import com.gamm.vinos_api.security.util.SecurityUtils;
 import com.gamm.vinos_api.service.StockService;
@@ -41,6 +41,12 @@ public class StockServiceImpl implements StockService {
   @Override
   public ResponseVO listarStockPorSucursal() {
     List<StockView> data = stockRepository.listarStockPorSucursal(getSucursalAutenticado());
+    return ResponseVO.success(data);
+  }
+
+  @Override
+  public ResponseVO listarStockVenta() {
+    List<StockView> data = stockRepository.listarStockVenta(getSucursalAutenticado());
     return ResponseVO.success(data);
   }
 }

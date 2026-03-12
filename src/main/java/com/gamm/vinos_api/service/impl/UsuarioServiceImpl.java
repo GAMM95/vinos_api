@@ -1,25 +1,19 @@
 package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.domain.model.Usuario;
-import com.gamm.vinos_api.domain.view.UsuarioView;
-import com.gamm.vinos_api.dto.ResponseVO;
-import com.gamm.vinos_api.dto.UsuarioEmail;
+import com.gamm.vinos_api.dto.view.UsuarioView;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.repository.UsuarioAuthRepository;
 import com.gamm.vinos_api.repository.UsuarioRepository;
 import com.gamm.vinos_api.security.util.SecurityUtils;
 import com.gamm.vinos_api.service.FotoService;
 import com.gamm.vinos_api.service.UsuarioService;
-import com.gamm.vinos_api.utils.ResultadoSP;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
 import java.util.List;
 
 @Service

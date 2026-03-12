@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.repository;
 
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 
 public interface PasswordResetTokenRepository {
   ResultadoSP invalidateByUser(Integer idUsuario);

@@ -1,10 +1,10 @@
 package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.domain.model.DistribucionSucursal;
-import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.service.DistribucionService;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

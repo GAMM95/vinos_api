@@ -1,8 +1,8 @@
 package com.gamm.vinos_api.service;
 
 import com.gamm.vinos_api.domain.model.Proveedor;
-import com.gamm.vinos_api.domain.view.ProveedorView;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.dto.view.ProveedorView;
+import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.util.List;
 

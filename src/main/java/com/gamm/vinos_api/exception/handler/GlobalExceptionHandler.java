@@ -1,7 +1,6 @@
 package com.gamm.vinos_api.exception.handler;
 
-import com.gamm.vinos_api.dto.ResponseVO;
-import org.springframework.http.HttpStatus;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;

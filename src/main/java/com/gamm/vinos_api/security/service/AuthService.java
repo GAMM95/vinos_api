@@ -5,7 +5,7 @@ import com.gamm.vinos_api.security.jwt.JwtUtil;
 import com.gamm.vinos_api.service.EmailService;
 import com.gamm.vinos_api.service.PasswordResetTokenService;
 import com.gamm.vinos_api.service.UsuarioService;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +13,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 

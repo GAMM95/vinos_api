@@ -1,9 +1,6 @@
 package com.gamm.vinos_api.service;
 
-import com.gamm.vinos_api.domain.view.StockView;
-import com.gamm.vinos_api.dto.ResponseVO;
-
-import java.util.List;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 
 public interface StockService {
 
@@ -12,4 +9,6 @@ public interface StockService {
   ResponseVO listarStockSucursalDetalladoPorSucursal(Integer idSucursal);
 
   ResponseVO listarStockPorSucursal();
+
+  ResponseVO listarStockVenta();
 }

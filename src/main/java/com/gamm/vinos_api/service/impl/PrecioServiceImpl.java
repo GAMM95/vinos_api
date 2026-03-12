@@ -3,11 +3,11 @@ package com.gamm.vinos_api.service.impl;
 import com.gamm.vinos_api.domain.model.PrecioSucursal;
 import com.gamm.vinos_api.domain.model.Sucursal;
 import com.gamm.vinos_api.domain.model.Usuario;
-import com.gamm.vinos_api.domain.view.PrecioView;
+import com.gamm.vinos_api.dto.view.PrecioView;
 import com.gamm.vinos_api.repository.PrecioRepository;
 import com.gamm.vinos_api.security.util.SecurityUtils;
 import com.gamm.vinos_api.service.PrecioService;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

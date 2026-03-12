@@ -2,7 +2,7 @@ package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.repository.PasswordResetTokenRepository;
 import com.gamm.vinos_api.service.PasswordResetTokenService;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;

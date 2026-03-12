@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.service.impl;
 
-import com.gamm.vinos_api.domain.view.AlmacenView;
+import com.gamm.vinos_api.dto.view.AlmacenView;
 import com.gamm.vinos_api.repository.AlmacenRepository;
 import com.gamm.vinos_api.service.AlmacenService;
 import org.springframework.beans.factory.annotation.Autowired;

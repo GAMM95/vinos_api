@@ -2,10 +2,10 @@ package com.gamm.vinos_api.service.impl;
 
 
 import com.gamm.vinos_api.domain.model.Presentacion;
-import com.gamm.vinos_api.domain.view.PresentacionView;
+import com.gamm.vinos_api.dto.view.PresentacionView;
 import com.gamm.vinos_api.repository.PresentacionRepository;
 import com.gamm.vinos_api.service.PresentacionService;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

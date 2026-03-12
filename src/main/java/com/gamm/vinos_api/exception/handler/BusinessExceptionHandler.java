@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.exception.handler;
 
-import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.exception.business.EntityNotFoundException;
 import com.gamm.vinos_api.exception.business.OperationNotAllowedException;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.service;
 
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 
 public interface PasswordResetTokenService {
   ResultadoSP invalidarPorUsuario(Integer idUsuario);

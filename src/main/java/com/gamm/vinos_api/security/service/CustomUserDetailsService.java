@@ -3,7 +3,7 @@ package com.gamm.vinos_api.security.service;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.security.UsuarioPrincipal;
 import com.gamm.vinos_api.service.UsuarioService;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

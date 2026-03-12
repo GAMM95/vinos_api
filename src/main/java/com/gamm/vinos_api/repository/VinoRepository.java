@@ -1,9 +1,9 @@
 package com.gamm.vinos_api.repository;
 
-import com.gamm.vinos_api.domain.view.VinoView;
+import com.gamm.vinos_api.dto.view.VinoView;
 import com.gamm.vinos_api.domain.model.Vino;
-import com.gamm.vinos_api.domain.view.VinosCompraView;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.dto.view.VinosCompraView;
+import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.util.List;
 

@@ -1,11 +1,11 @@
 package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.domain.model.Usuario;
-import com.gamm.vinos_api.dto.ResponseVO;
-import com.gamm.vinos_api.dto.UsernameCheckRequest;
+import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.dto.request.UsernameCheckRequest;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.service.UsuarioService;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -100,13 +100,13 @@ public class UsuarioController extends AbstractRestController {
   public ResponseEntity<ResponseVO> verificarUsername(
       @RequestBody UsernameCheckRequest request) {
 
-    ResultadoSP resultado = usuarioService.verificarUsername(request.getUsername(), request.getIdUsuario());
+    ResultadoSP resultado = usuarioService.verificarUsername(request.username(), request.idUsuario());
     return resultado.esExitoso()
         ? ok(resultado.getMensaje(), resultado.getData())
         : badRequest(resultado.getMensaje());
   }
 
-  /* Obtener usuario por id */
+  /* Obtener usuario por su id */
   @GetMapping("/{id}")
   @SoloAdministrador
   public ResponseEntity<ResponseVO> obtenerUsuarioPorId(@PathVariable Integer id) {

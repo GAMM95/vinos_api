@@ -3,7 +3,7 @@ package com.gamm.vinos_api.service.impl;
 import com.gamm.vinos_api.domain.model.Categoria;
 import com.gamm.vinos_api.repository.CategoriaRepository;
 import com.gamm.vinos_api.service.CategoriaService;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

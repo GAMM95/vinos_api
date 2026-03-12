@@ -1,13 +1,13 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.Vino;
-import com.gamm.vinos_api.domain.view.VinoView;
-import com.gamm.vinos_api.domain.view.VinosCompraView;
-import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
+import com.gamm.vinos_api.dto.view.VinoView;
+import com.gamm.vinos_api.dto.view.VinosCompraView;
+import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.VinoRowMapper;
 import com.gamm.vinos_api.jdbc.rowmapper.VinosCompraViewMapper;
 import com.gamm.vinos_api.repository.VinoRepository;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import jakarta.annotation.PostConstruct;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlOutParameter;

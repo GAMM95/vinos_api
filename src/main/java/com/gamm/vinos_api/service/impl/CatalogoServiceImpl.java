@@ -1,11 +1,11 @@
 package com.gamm.vinos_api.service.impl;
 
-import com.gamm.vinos_api.domain.view.CatalogoView;
+import com.gamm.vinos_api.dto.view.CatalogoView;
 import com.gamm.vinos_api.domain.model.Catalogo;
-import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.repository.CatalogoRepository;
 import com.gamm.vinos_api.service.CatalogoService;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

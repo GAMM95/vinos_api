@@ -1,9 +1,9 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.Categoria;
-import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
+import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.repository.CategoriaRepository;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import jakarta.annotation.PostConstruct;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.SqlOutParameter;

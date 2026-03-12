@@ -1,10 +1,10 @@
 package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.domain.model.Compra;
-import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.service.CompraService;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;

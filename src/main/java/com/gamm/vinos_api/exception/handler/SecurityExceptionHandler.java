@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.exception.handler;
 
-import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.exception.security.InvalidRefreshTokenException;
 import com.gamm.vinos_api.exception.security.TokenExpiradoException;
 import com.gamm.vinos_api.exception.security.TokenInvalidoException;

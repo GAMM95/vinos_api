@@ -1,13 +1,11 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
 
-import com.gamm.vinos_api.domain.view.PrecioView;
+import com.gamm.vinos_api.dto.view.PrecioView;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 public class PrecioMapperUtil {
 

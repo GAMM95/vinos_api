@@ -1,7 +1,6 @@
 package com.gamm.vinos_api.repository;
 
-import com.gamm.vinos_api.domain.model.Almacen;
-import com.gamm.vinos_api.domain.view.AlmacenView;
+import com.gamm.vinos_api.dto.view.AlmacenView;
 
 import java.util.List;
 

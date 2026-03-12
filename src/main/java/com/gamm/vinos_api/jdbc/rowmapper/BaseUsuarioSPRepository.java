@@ -1,8 +1,8 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
 import com.gamm.vinos_api.domain.model.Usuario;
-import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
+import com.gamm.vinos_api.util.ResultadoSP;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;

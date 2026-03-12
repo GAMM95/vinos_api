@@ -1,8 +1,8 @@
 package com.gamm.vinos_api.repository;
 
 import com.gamm.vinos_api.domain.model.Sucursal;
-import com.gamm.vinos_api.domain.view.SucursalView;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.dto.view.SucursalView;
+import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.util.List;
 

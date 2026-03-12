@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.service;
 
-import com.gamm.vinos_api.dto.ResponseVO;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.time.LocalDate;
 

@@ -1,7 +1,6 @@
 package com.gamm.vinos_api.service.impl;
 
-import com.gamm.vinos_api.domain.cbo.*;
-import com.gamm.vinos_api.domain.view.VinoView;
+import com.gamm.vinos_api.dto.cbo.*;
 import com.gamm.vinos_api.repository.CombosRepository;
 import com.gamm.vinos_api.service.CombosService;
 import lombok.RequiredArgsConstructor;

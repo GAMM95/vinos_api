@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.domain.model;
 
+import com.gamm.vinos_api.domain.enums.EstadoVenta;
 import com.gamm.vinos_api.domain.enums.MetodoPago;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,4 +23,11 @@ public class Venta {
   private MetodoPago metodoPago;
   private BigDecimal total;
   private String observacion;
+  private EstadoVenta estado = EstadoVenta.PENDIENTE;
+
+  // Asociar el usuario que vende
+  private Integer idUsuario;
+
+  // Una venta puede tener 1 o varios detalles
+  private List<DetalleVenta> detalles;
 }

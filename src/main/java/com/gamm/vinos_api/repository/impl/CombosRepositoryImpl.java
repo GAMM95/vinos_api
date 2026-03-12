@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.repository.impl;
 
-import com.gamm.vinos_api.domain.cbo.*;
+import com.gamm.vinos_api.dto.cbo.*;
 import com.gamm.vinos_api.jdbc.rowmapper.*;
 import com.gamm.vinos_api.repository.CombosRepository;
 import org.springframework.jdbc.core.JdbcTemplate;

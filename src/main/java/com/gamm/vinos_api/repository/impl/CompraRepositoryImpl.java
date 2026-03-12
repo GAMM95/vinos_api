@@ -3,13 +3,13 @@ package com.gamm.vinos_api.repository.impl;
 import com.gamm.vinos_api.domain.enums.EstadoCompra;
 import com.gamm.vinos_api.domain.model.Compra;
 import com.gamm.vinos_api.domain.model.DetalleCompra;
-import com.gamm.vinos_api.domain.view.CarritoCompraView;
-import com.gamm.vinos_api.domain.view.CompraView;
-import com.gamm.vinos_api.domain.view.ProductosCarritoView;
-import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
+import com.gamm.vinos_api.dto.view.CarritoCompraView;
+import com.gamm.vinos_api.dto.view.CompraView;
+import com.gamm.vinos_api.dto.view.ProductosCarritoView;
+import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.*;
 import com.gamm.vinos_api.repository.CompraRepository;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import jakarta.annotation.PostConstruct;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
@@ -39,7 +39,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
 
   // Querys para compras de cada usuario
   private static final String COUNT_COMPRAS_USUARIO = "SELECT COUNT(DISTINCT idCompra) FROM vw_compras WHERE idUsuario = ?";
-//  private static final String VW_COMPRAS_USUARIO = "SELECT idCompra, codCompra, usuario, fechaCompra, MAX(subtotalCalculado) AS subtotalCalculado, MAX(costoLogistico) AS costoLogistico, MAX(totalCompra) AS totalCompra, estado FROM vw_compras WHERE idUsuario = ? GROUP BY idCompra, codCompra, usuario, fechaCompra, estado ORDER BY fechaCompra DESC";
+  //  private static final String VW_COMPRAS_USUARIO = "SELECT idCompra, codCompra, usuario, fechaCompra, MAX(subtotalCalculado) AS subtotalCalculado, MAX(costoLogistico) AS costoLogistico, MAX(totalCompra) AS totalCompra, estado FROM vw_compras WHERE idUsuario = ? GROUP BY idCompra, codCompra, usuario, fechaCompra, estado ORDER BY fechaCompra DESC";
   private static final String VW_COMPRAS_USUARIO = "SELECT idCompra, codCompra, usuario, fechaCompra, subtotalCalculado, costoLogistico, totalCompra, estado FROM vw_compras_usuario WHERE idUsuario = ?";
   private static final String VW_DETALLE_COMPRAS_USUARIO = "SELECT * FROM vw_compras WHERE idUsuario = ? AND idCompra = ? ORDER BY idDetCompra";
   private static final String VW_DETALLE_COMPRAS_ADMIN = "SELECT * FROM vw_compras WHERE idCompra = ? ORDER BY idDetCompra";
@@ -77,15 +77,15 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
             new SqlParameter("pCostoEmbalaje", Types.DECIMAL),
             new SqlParameter("pCostoEnvioAgencia", Types.DECIMAL),
             new SqlParameter("pCostoTransporte", Types.DECIMAL),
-            new SqlParameter ("pMetodoPago" , Types.VARCHAR),
+            new SqlParameter("pMetodoPago", Types.VARCHAR),
             new SqlParameter("pObservaciones", Types.VARCHAR),
             new SqlParameter("pIdCatalogo", Types.SMALLINT),
             new SqlParameter("pCantidad", Types.TINYINT),
             new SqlParameter("pNombreProveedor", Types.VARCHAR),
             new SqlParameter("pFechaInicio", Types.DATE),
             new SqlParameter("pFechaFin", Types.DATE),
-            new SqlOutParameter("pRespuesta", Types.TINYINT),
-            new SqlOutParameter("pMensaje", Types.VARCHAR)
+            new SqlOutParameter(PARAM_RESPUESTA, Types.TINYINT),
+            new SqlOutParameter(PARAM_MENSAJE, Types.VARCHAR)
         );
   }
 

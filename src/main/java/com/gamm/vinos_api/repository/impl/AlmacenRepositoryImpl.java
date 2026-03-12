@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository.impl;
 
-import com.gamm.vinos_api.domain.view.AlmacenView;
-import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
+import com.gamm.vinos_api.dto.view.AlmacenView;
+import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.AlmacenDetalladoRowMapper;
 import com.gamm.vinos_api.jdbc.rowmapper.AlmacenStockOrigenRowMapper;
 import com.gamm.vinos_api.jdbc.rowmapper.AlmacenStockVinoRowMapper;

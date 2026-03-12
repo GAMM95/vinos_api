@@ -1,12 +1,11 @@
 package com.gamm.vinos_api.controller;
 
-import com.gamm.vinos_api.domain.enums.OrigenVino;
-import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.domain.model.Vino;
 import com.gamm.vinos_api.security.annotations.Publico;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.service.VinoService;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

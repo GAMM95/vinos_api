@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.domain.view.VinoView;
+import com.gamm.vinos_api.dto.view.VinoView;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

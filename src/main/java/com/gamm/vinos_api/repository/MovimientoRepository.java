@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository;
 
-import com.gamm.vinos_api.domain.view.MovimientosView;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.dto.view.MovimientosView;
+import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.time.LocalDate;
 import java.util.List;

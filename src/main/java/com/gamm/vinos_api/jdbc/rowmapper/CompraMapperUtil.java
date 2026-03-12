@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.domain.view.CarritoCompraView;
-import com.gamm.vinos_api.domain.view.CompraView;
+import com.gamm.vinos_api.dto.view.CarritoCompraView;
+import com.gamm.vinos_api.dto.view.CompraView;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

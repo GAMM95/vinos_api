@@ -1,10 +1,10 @@
 package com.gamm.vinos_api.repository.impl;
 
-import com.gamm.vinos_api.domain.view.MovimientosView;
-import com.gamm.vinos_api.jdbc.SimpleJdbcDAOBase;
+import com.gamm.vinos_api.dto.view.MovimientosView;
+import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.MovimientosRowMapper;
 import com.gamm.vinos_api.repository.MovimientoRepository;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import jakarta.annotation.PostConstruct;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;

@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.controller;
 
-import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

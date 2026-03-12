@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.domain.cbo.UnidadVolumenCbo;
+import com.gamm.vinos_api.dto.cbo.UnidadVolumenCbo;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

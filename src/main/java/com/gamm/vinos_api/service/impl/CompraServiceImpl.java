@@ -1,14 +1,14 @@
 package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.domain.model.Compra;
-import com.gamm.vinos_api.domain.view.CarritoCompraView;
-import com.gamm.vinos_api.domain.view.CompraView;
-import com.gamm.vinos_api.domain.view.ProductosCarritoView;
-import com.gamm.vinos_api.dto.ResponseVO;
+import com.gamm.vinos_api.dto.view.CarritoCompraView;
+import com.gamm.vinos_api.dto.view.CompraView;
+import com.gamm.vinos_api.dto.view.ProductosCarritoView;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.repository.CompraRepository;
 import com.gamm.vinos_api.service.CompraService;
 import com.gamm.vinos_api.security.util.SecurityUtils;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

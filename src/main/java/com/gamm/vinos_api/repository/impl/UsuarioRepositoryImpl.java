@@ -5,11 +5,11 @@ import com.gamm.vinos_api.domain.enums.Rol;
 import com.gamm.vinos_api.domain.model.Persona;
 import com.gamm.vinos_api.domain.model.Sucursal;
 import com.gamm.vinos_api.domain.model.Usuario;
-import com.gamm.vinos_api.domain.view.UsuarioView;
+import com.gamm.vinos_api.dto.view.UsuarioView;
 import com.gamm.vinos_api.jdbc.rowmapper.BaseUsuarioSPRepository;
 import com.gamm.vinos_api.jdbc.rowmapper.UsuarioViewRowMapper;
 import com.gamm.vinos_api.repository.UsuarioRepository;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 

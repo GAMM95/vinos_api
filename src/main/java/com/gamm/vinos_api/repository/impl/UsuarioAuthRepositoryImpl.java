@@ -4,7 +4,7 @@ import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.jdbc.rowmapper.BaseUsuarioSPRepository;
 import com.gamm.vinos_api.jdbc.rowmapper.UsuarioRowMapper;
 import com.gamm.vinos_api.repository.UsuarioAuthRepository;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.util.ResultadoSP;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 

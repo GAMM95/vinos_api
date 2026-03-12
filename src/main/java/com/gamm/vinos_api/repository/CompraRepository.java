@@ -2,10 +2,10 @@ package com.gamm.vinos_api.repository;
 
 import com.gamm.vinos_api.domain.model.Compra;
 import com.gamm.vinos_api.domain.model.DetalleCompra;
-import com.gamm.vinos_api.domain.view.CarritoCompraView;
-import com.gamm.vinos_api.domain.view.CompraView;
-import com.gamm.vinos_api.domain.view.ProductosCarritoView;
-import com.gamm.vinos_api.utils.ResultadoSP;
+import com.gamm.vinos_api.dto.view.CarritoCompraView;
+import com.gamm.vinos_api.dto.view.CompraView;
+import com.gamm.vinos_api.dto.view.ProductosCarritoView;
+import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.time.LocalDate;
 import java.util.List;
