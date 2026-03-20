@@ -57,4 +57,24 @@ public class VentaServiceImpl implements VentaService {
 
     return ventaRepository.agregarProductoCarrito(idUsuario, venta, detalle);
   }
+
+  @Override
+  public ResultadoSP confirmarVenta(Integer idVenta, String metodoPago) {
+    ResultadoSP resultado = ventaRepository.confirmarVenta(getUsuarioAutenticado(), idVenta, metodoPago);
+
+    if (resultado.getCodigoRespuesta() == 0) {
+      throw new RuntimeException(resultado.getMensaje());
+    }
+
+    return resultado;
+  }
+
+  @Override
+  public ResultadoSP retirarProductoCarrito(Integer idVenta, Integer idVino) {
+    ResultadoSP resultado = ventaRepository.retirarProductoCarrito(getUsuarioAutenticado(), idVenta, idVino);
+    if (resultado.getCodigoRespuesta() == 0) {
+      throw new RuntimeException(resultado.getMensaje());
+    }
+    return resultado;
+  }
 }

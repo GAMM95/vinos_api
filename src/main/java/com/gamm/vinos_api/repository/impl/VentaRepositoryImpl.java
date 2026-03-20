@@ -3,8 +3,11 @@ package com.gamm.vinos_api.repository.impl;
 import com.gamm.vinos_api.domain.model.DetalleVenta;
 import com.gamm.vinos_api.domain.model.Venta;
 import com.gamm.vinos_api.dto.view.CarritoVentaView;
+import com.gamm.vinos_api.dto.view.CompraView;
+import com.gamm.vinos_api.dto.view.VentaView;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.CarritoVentaRowMapper;
+import com.gamm.vinos_api.jdbc.rowmapper.CompraUserRowMapper;
 import com.gamm.vinos_api.repository.VentaRepository;
 import com.gamm.vinos_api.util.ResultadoSP;
 import jakarta.annotation.PostConstruct;
@@ -27,6 +30,10 @@ public class VentaRepositoryImpl extends SimpleJdbcDAOBase implements VentaRepos
   private static final String SP_VENTA = "sp_venta";
   // Query para listar el carrito de ventas para cada usuario
   private static final String VW_CARRITO_VENTAS = "SELECT * FROM vw_carrito_venta";
+
+  private static final String COUNT_VENTAS_USUARIO = "SELECT COUNT(DISTINCT idVenta) FROM vw_ventas WHERE idUsuario = ?";
+
+  private static final String VW_VENTAS = "SELECT * FROM vw_ventas";
 
   private SimpleJdbcCall spCall;
 
@@ -74,6 +81,28 @@ public class VentaRepositoryImpl extends SimpleJdbcDAOBase implements VentaRepos
   }
 
   @Override
+  public long contarVentasUsuario(Integer idUsuario) {
+    Long total = jdbcTemplate.queryForObject(
+        COUNT_VENTAS_USUARIO,
+        Long.class,
+        idUsuario
+    );
+    return total != null ? total : 0;
+  }
+
+//  @Override
+//  public List<VentaView> listarVentasUsuario(Integer idUsuario, int pagina, int limite){
+//    int offset = (pagina - 1) * limite;
+//    return jdbcTemplate.query(
+//        VW_VENTAS + " LIMIT ? OFFSET ?",
+//        new CompraUserRowMapper(),
+//        idUsuario,
+//        limite,
+//        offset
+//    );
+//  }
+
+  @Override
   public List<CarritoVentaView> listarCarritoVentaUsuario(Integer idUsuario) {
     String sql = VW_CARRITO_VENTAS + " WHERE idUsuario = ? AND estado = 'Pendiente'";
     return jdbcTemplate.query(sql, new CarritoVentaRowMapper(), idUsuario);
@@ -95,6 +124,34 @@ public class VentaRepositoryImpl extends SimpleJdbcDAOBase implements VentaRepos
         detalle.getIdVino(),
         null,
         detalle.getCantidadLitros());
+    return ejecutarSP(spCall, params);
+  }
+
+  @Override
+  public ResultadoSP confirmarVenta(Integer idUsuario, Integer idVenta, String metodoPago) {
+    Map<String, Object> params = construirParametros(
+        5,
+        idUsuario,
+        idVenta,
+        null,
+        null,
+        metodoPago,
+        null
+    );
+    return ejecutarSP(spCall, params);
+  }
+
+  @Override
+  public ResultadoSP retirarProductoCarrito(Integer idUsuario, Integer idVenta, Integer idVino) {
+    Map<String, Object> params = construirParametros(
+        3,
+        idUsuario,
+        idVenta,
+        null,
+        idVino,
+        null,
+        null
+    );
     return ejecutarSP(spCall, params);
   }
 }

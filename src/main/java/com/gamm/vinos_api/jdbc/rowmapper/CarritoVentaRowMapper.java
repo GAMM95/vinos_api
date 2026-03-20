@@ -11,6 +11,7 @@ public class CarritoVentaRowMapper implements RowMapper<CarritoVentaView> {
   public CarritoVentaView mapRow(ResultSet rs, int rowNum) throws SQLException {
     CarritoVentaView v = new CarritoVentaView();
     v.setIdDetalleVenta(rs.getInt("idDetalleVenta"));
+    v.setIdVenta(rs.getInt("idVenta"));
     v.setIdVino(rs.getInt("idVino"));
     v.setNombreVino(rs.getString("nombreVino"));
     v.setOrigen(rs.getString("origen"));

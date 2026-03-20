@@ -12,5 +12,9 @@ public interface VentaService {
   List<CarritoVentaView> listarCarritoVentaAdmin(Integer idVenta);
 
   ResultadoSP agregarCarritoVenta(Venta venta);
+
+  ResultadoSP confirmarVenta(Integer idVenta, String metodoPago);
+
+  ResultadoSP retirarProductoCarrito(Integer idVenta, Integer idVino);
 }
 

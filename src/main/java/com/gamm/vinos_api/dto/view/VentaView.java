@@ -6,20 +6,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CarritoVentaView {
-  private Integer idDetalleVenta;
+public class VentaView {
   private Integer idVenta;
-  private Integer idVino;
-  private String nombreVino;
-  private String origen;
-  private BigDecimal cantidadLitros;
-  private BigDecimal precioLitro;
-  private BigDecimal subTotal;
+  private String codVenta;
+  private Integer idSucursal;
+  private String sucursal;
+  private LocalDate fechaVenta;
+  private String metodoPago;
+  private BigDecimal total;
   private Integer idUsuario;
   private String usuario;
+  private String estado;
 }
