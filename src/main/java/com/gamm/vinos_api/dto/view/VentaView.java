@@ -19,6 +19,7 @@ public class VentaView {
   private String sucursal;
   private LocalDate fechaVenta;
   private String metodoPago;
+  private BigDecimal descuento;
   private BigDecimal total;
   private Integer idUsuario;
   private String usuario;

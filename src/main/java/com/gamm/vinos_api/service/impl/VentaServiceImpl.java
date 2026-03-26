@@ -2,6 +2,7 @@ package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.domain.model.DetalleVenta;
 import com.gamm.vinos_api.domain.model.Venta;
+import com.gamm.vinos_api.dto.view.CajaView;
 import com.gamm.vinos_api.dto.view.CarritoVentaView;
 import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.repository.VentaRepository;
@@ -11,6 +12,8 @@ import com.gamm.vinos_api.util.ResultadoSP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -59,22 +62,14 @@ public class VentaServiceImpl implements VentaService {
   }
 
   @Override
-  public ResultadoSP confirmarVenta(Integer idVenta, String metodoPago) {
-    ResultadoSP resultado = ventaRepository.confirmarVenta(getUsuarioAutenticado(), idVenta, metodoPago);
-
-    if (resultado.getCodigoRespuesta() == 0) {
-      throw new RuntimeException(resultado.getMensaje());
-    }
-
-    return resultado;
+  public ResultadoSP confirmarVenta(Integer idVenta, String metodoPago, BigDecimal descuento) {
+    Integer idUsuario = getUsuarioAutenticado();
+    return ventaRepository.confirmarVenta(idUsuario, idVenta, metodoPago, descuento);
   }
 
   @Override
   public ResultadoSP retirarProductoCarrito(Integer idVenta, Integer idVino) {
-    ResultadoSP resultado = ventaRepository.retirarProductoCarrito(getUsuarioAutenticado(), idVenta, idVino);
-    if (resultado.getCodigoRespuesta() == 0) {
-      throw new RuntimeException(resultado.getMensaje());
-    }
-    return resultado;
+    Integer idUsuario = getUsuarioAutenticado();
+    return ventaRepository.retirarProductoCarrito(idUsuario, idVenta, idVino);
   }
 }

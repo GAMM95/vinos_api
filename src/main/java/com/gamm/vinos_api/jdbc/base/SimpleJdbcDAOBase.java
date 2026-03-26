@@ -61,7 +61,7 @@ public abstract class SimpleJdbcDAOBase {
     } catch (Exception e) {
       ResultadoSP resultadoSP = new ResultadoSP();
       resultadoSP.setCodigoRespuesta(-1);
-      resultadoSP.setMensaje("Error interno en la base de datos.");
+      resultadoSP.setMensaje("Error interno en la base de datos." + e.getMessage());
       if (resultKey != null) resultadoSP.setData(Collections.emptyList());
       return resultadoSP;
     }

@@ -21,6 +21,7 @@ public class Venta {
   private Sucursal sucursal;
   private LocalDateTime fecha;
   private MetodoPago metodoPago;
+  private BigDecimal descuento;
   private BigDecimal total;
   private String observacion;
   private EstadoVenta estado = EstadoVenta.PENDIENTE;

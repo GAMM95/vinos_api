@@ -43,14 +43,23 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
+            // 🔓 Swagger (IMPORTANTE)
+            .requestMatchers(
+                "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html"
+            ).permitAll()
+            // 🔓 públicos
             .requestMatchers("/auth/login", "/auth/registrar").permitAll()
             .requestMatchers("/auth/password/recuperar", "/auth/password/reset/token").permitAll()
             .requestMatchers("/recuperar-password").permitAll()
             .requestMatchers("/FotosUsuarios/**").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/usuarios/*/foto").authenticated()
             .requestMatchers(HttpMethod.POST,"/api/usuarios/verificar-username").permitAll()
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            // 🔐 protegidos
+            .requestMatchers(HttpMethod.POST, "/api/usuarios/*/foto").authenticated()
             .requestMatchers("/api/**").authenticated()
+            // 🔐 todo lo demás
             .anyRequest().authenticated()
         )
         .exceptionHandling(ex -> ex.authenticationEntryPoint(jwt))
@@ -58,7 +67,6 @@ public class SecurityConfig {
 
     return http.build();
   }
-
 
   @Bean
   public PasswordEncoder passwordEncoder() {
