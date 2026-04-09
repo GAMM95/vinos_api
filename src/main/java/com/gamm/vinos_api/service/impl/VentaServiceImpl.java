@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.service.impl;
 
+import com.gamm.vinos_api.config.WebSocketService;
 import com.gamm.vinos_api.domain.model.DetalleVenta;
 import com.gamm.vinos_api.domain.model.Venta;
 import com.gamm.vinos_api.dto.view.CajaView;
@@ -21,6 +22,8 @@ public class VentaServiceImpl implements VentaService {
 
   @Autowired
   private VentaRepository ventaRepository;
+  @Autowired
+  private WebSocketService webSocketService;
 
   /* helpers */
   private Integer getUsuarioAutenticado() {
@@ -57,14 +60,19 @@ public class VentaServiceImpl implements VentaService {
     DetalleVenta detalle = venta.getDetalles().stream()
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException("Debe enviar un producto"));
-
     return ventaRepository.agregarProductoCarrito(idUsuario, venta, detalle);
   }
 
   @Override
   public ResultadoSP confirmarVenta(Integer idVenta, String metodoPago, BigDecimal descuento) {
     Integer idUsuario = getUsuarioAutenticado();
-    return ventaRepository.confirmarVenta(idUsuario, idVenta, metodoPago, descuento);
+
+    ResultadoSP resultado = ventaRepository.confirmarVenta(idUsuario, idVenta, metodoPago, descuento);
+    if (resultado.esExitoso()) {
+      webSocketService.notifyDashboardUpdate();
+      webSocketService.notifyVentaUpdate();
+    }
+    return resultado;
   }
 
   @Override

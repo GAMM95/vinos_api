@@ -17,10 +17,11 @@ public class DashboardAdminView {
   private VentasTotalAdminDTO totales;
   private LitrosVendidosAdminDTO litrosVendidos;
 
-  private List<StockLitrosSucursalDTO>  stockLitrosSucursal;
+  private List<StockLitrosSucursalDTO> stockLitrosSucursal;
   private List<StockVinoSucursalDTO> stockVinoSucursal;
   private StockLitrosAlmacenDTO stockLitrosAlmacen;
   private List<CantidadVentasMensualAdminDTO> cantidadVentasMensual;
   private List<CantidadComprasMensualAdminDTO> cantidadComprasMensual;
-private List<BalanceNetoDiarioDTO> balanceNetoDiario;
+  private List<BalanceNetoDiarioDTO> balanceNetoDiario;
+  private BalanceGlobalDTO balanceGlobal;
 }

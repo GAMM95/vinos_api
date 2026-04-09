@@ -174,9 +174,9 @@ public class CajaRepositoryImpl extends SimpleJdbcDAOBase implements CajaReposit
   }
 
   @Override
-  public ResultadoSP obtenerSiguienteCodigoCaja() {
+  public ResultadoSP obtenerSiguienteCodigoCaja(Integer idSucursal) {
     Map<String, Object> params = crearParametros(
-        5, null, null, null,
+        5, null, idSucursal, null,
         null, null, null, null, null
     );
 

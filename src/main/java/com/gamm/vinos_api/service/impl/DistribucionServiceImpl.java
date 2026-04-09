@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.service.impl;
 
+import com.gamm.vinos_api.config.WebSocketService;
 import com.gamm.vinos_api.domain.model.DistribucionSucursal;
 import com.gamm.vinos_api.dto.view.DistribucionView;
 import com.gamm.vinos_api.dto.response.ResponseVO;
@@ -17,10 +18,18 @@ public class DistribucionServiceImpl implements DistribucionService {
 
   @Autowired
   private DistribucionRepository repository;
+  @Autowired
+  private WebSocketService webSocketService;
 
   @Override
   public ResultadoSP distribuirProducto(DistribucionSucursal distribucionSucursal) {
-    return repository.distribuirProducto(distribucionSucursal);
+    ResultadoSP resultado = repository.distribuirProducto(distribucionSucursal);
+
+    if (resultado.esExitoso()) {
+      webSocketService.notifyDashboardUpdate();
+      webSocketService.notifyMercaderiaUpdate();
+    }
+    return resultado;
   }
 
   @Override

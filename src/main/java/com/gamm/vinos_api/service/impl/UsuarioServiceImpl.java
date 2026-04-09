@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.service.impl;
 
+import com.gamm.vinos_api.config.WebSocketService;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.view.UsuarioView;
 import com.gamm.vinos_api.dto.response.ResponseVO;
@@ -24,6 +25,7 @@ public class UsuarioServiceImpl implements UsuarioService {
   private final UsuarioAuthRepository usuarioAuthRepository;
   private final PasswordEncoder passwordEncoder;
   private final FotoService fotoService;
+  private final WebSocketService webSocketService;
 
   @Override
   public ResultadoSP registrarUsuario(Usuario usuario) {
@@ -63,6 +65,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     if (r.esExitoso()) {
       Usuario actualizado = usuarioRepository.obtenerPorId(usuario.getIdUsuario());
       r.setData(actualizado);
+      webSocketService.notifyUsuarioUpdate();
     }
     return r;
   }
@@ -129,11 +132,11 @@ public class UsuarioServiceImpl implements UsuarioService {
   public ResultadoSP actualizarFoto(Integer idUsuario, MultipartFile foto) {
     try {
       String ruta = fotoService.guardarFoto(idUsuario, foto);
-
       ResultadoSP resultado = usuarioRepository.actualizarFoto(idUsuario, ruta);
       if (!resultado.esExitoso()) {
-        return resultado;
+        return resultado; // error, no emitir
       }
+      webSocketService.notifyUsuarioUpdate();
       resultado.setData(ruta);
       return resultado;
 

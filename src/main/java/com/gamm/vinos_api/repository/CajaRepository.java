@@ -39,5 +39,5 @@ public interface CajaRepository {
 
   List<CajaView> mostrarMiUltimaCajaAbierta (Integer idUsuario);
 
-  ResultadoSP obtenerSiguienteCodigoCaja();
+  ResultadoSP obtenerSiguienteCodigoCaja(Integer idSucursal);
 }

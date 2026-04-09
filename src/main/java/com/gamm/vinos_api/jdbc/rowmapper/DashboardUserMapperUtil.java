@@ -34,6 +34,15 @@ public class DashboardUserMapperUtil {
     v.setTotalRecaudado(rs.getBigDecimal("total_recaudado"));
   }
 
+  public static void mapBalanceNetoMensual(BalanceNetoMensualUserDTO v, ResultSet rs) throws SQLException {
+    v.setIdUsuario(rs.getInt("idUsuario"));
+    v.setMes(rs.getString("mes"));
+    v.setBalanceNeto(rs.getBigDecimal("balance_neto"));
+    v.setIngresos(rs.getBigDecimal("ingresos"));
+    v.setEgresos(rs.getBigDecimal("egresos"));
+    v.setReversos(rs.getBigDecimal("reversos"));
+  }
+
   // 🔹 Mapea vw_ventas_litros_user
   public static void mapVentasLitros(VentasLitrosUserDTO v, ResultSet rs) throws SQLException {
     v.setIdUsuario(rs.getInt("idUsuario"));

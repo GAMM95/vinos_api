@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.service.impl;
 
+import com.gamm.vinos_api.config.WebSocketService;
 import com.gamm.vinos_api.domain.model.PrecioSucursal;
 import com.gamm.vinos_api.domain.model.Sucursal;
 import com.gamm.vinos_api.domain.model.Usuario;
@@ -18,6 +19,8 @@ public class PrecioServiceImpl implements PrecioService {
 
   @Autowired
   private PrecioRepository precioRepository;
+  @Autowired
+  private WebSocketService webSocketService;
 
   /* Helpers */
   private Integer getUsuarioAutenticado() {
@@ -65,7 +68,12 @@ public class PrecioServiceImpl implements PrecioService {
     }
 
     precio.getSucursal().setIdSucursal(idSucursal);
-    return precioRepository.asignarPrecio(precio);
+
+    ResultadoSP resultado = precioRepository.asignarPrecio(precio);
+    if (resultado.esExitoso()) {
+      webSocketService.notifyPrecioUpdate();
+    }
+    return resultado;
   }
 
   @Override

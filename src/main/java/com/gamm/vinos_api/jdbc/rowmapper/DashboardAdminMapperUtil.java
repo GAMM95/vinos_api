@@ -62,4 +62,12 @@ public class DashboardAdminMapperUtil {
     dto.setComprasNetas(rs.getBigDecimal("compras_netas"));
     dto.setBalanceNeto(rs.getBigDecimal("balance_total"));
   }
+
+  // Mapear el balance global
+  public static void mapBalanceGlobal(BalanceGlobalDTO dto, ResultSet rs) throws SQLException {
+    dto.setBalanceNeto(rs.getBigDecimal("balance_neto"));
+    dto.setIngresos(rs.getBigDecimal("ingresos"));
+    dto.setEgresos(rs.getBigDecimal("egresos"));
+    dto.setReversos(rs.getBigDecimal("reversos"));
+  }
 }

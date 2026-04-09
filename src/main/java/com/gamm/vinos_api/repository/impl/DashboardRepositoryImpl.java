@@ -6,6 +6,7 @@ import com.gamm.vinos_api.repository.DashboardRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -17,6 +18,7 @@ public class DashboardRepositoryImpl implements DashboardRepository {
   private static final String VW_VENTAS_LITROS_USER = "SELECT * FROM vw_ventas_litros_user WHERE idUsuario = ?";
   private static final String VW_INGRESO_VENTAS_ANUAL_USER = "SELECT * FROM vw_ingreso_ventas_anual_user WHERE idUsuario = ? ORDER BY mes";
   private static final String VW_INVERSION_COMPRAS_ANUAL_USER = "SELECT * FROM vw_inversion_compras_anual_user WHERE idUsuario = ? ORDER BY mes";
+  private static final String VW_BALANCE_NETO_MENSUAL_USER = "SELECT * FROM vw_balance_neto_user_anual WHERE idUsuario = ? ORDER BY mes";
   private static final String VW_CANTIDAD_COMPRAS_ANUAL_USER = "SELECT * FROM vw_cant_compras_user_anual WHERE idUsuario = ? ORDER BY mes";
   private static final String VW_CANTIDAD_VENTAS_ANUAL_USER = "SELECT * FROM vw_cant_ventas_user_anual WHERE idUsuario = ? ORDER BY mes";
   private static final String VW_STOCK_DASHBOARD_USER = "SELECT * FROM vw_stock_dash_user WHERE idSucursal = ?";
@@ -32,6 +34,8 @@ public class DashboardRepositoryImpl implements DashboardRepository {
   private static final String VW_CANTIDAD_VENTAS_MENSUAL_ADMIN = "SELECT * FROM vw_cant_ventas_mensual";
   private static final String VW_CANTIDAD_COMPRAS_MENSUAL_ADMIN = "SELECT * FROM vw_cant_compras_mensual";
   private static final String VW_BALANCE_DIARIO = "SELECT * FROM vw_balance_diario";
+  private static final String VW_BALANCE_GLOBAL = "SELECT * FROM vw_balance_global";
+
   private final JdbcTemplate jdbcTemplate;
 
   public DashboardRepositoryImpl(JdbcTemplate jdbcTemplate) {
@@ -68,6 +72,11 @@ public class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @Override
+  public List<BalanceNetoMensualUserDTO> getBalanceNetoMensualUser(Integer idUsuario) {
+    return jdbcTemplate.query(VW_BALANCE_NETO_MENSUAL_USER, new BalanceNetoMensualUserRowMapper(), idUsuario);
+  }
+
+  @Override
   public List<CantidadComprasMensualUserDTO> cantidadComprasAnuales(Integer idUsuario) {
     return jdbcTemplate.query(VW_CANTIDAD_COMPRAS_ANUAL_USER, new CantidadComprasMensualUserRowMapper(), idUsuario);
   }
@@ -84,7 +93,16 @@ public class DashboardRepositoryImpl implements DashboardRepository {
 
   @Override
   public VinoMasVendidoUserDTO getVinoMasVendido(Integer idUsuario) {
-    return jdbcTemplate.queryForObject(VW_VINOS_MAS_VENDIDOS_USER, new VinoMasVendidoUserRowMapper(), idUsuario);
+    List<VinoMasVendidoUserDTO> list = jdbcTemplate.query(VW_VINOS_MAS_VENDIDOS_USER, new VinoMasVendidoUserRowMapper(), idUsuario);
+
+    if (list.isEmpty()) {
+      VinoMasVendidoUserDTO dto = new VinoMasVendidoUserDTO();
+      dto.setIdUsuario(idUsuario);
+      dto.setNombreVino("Sin datos");
+      dto.setTotalVendido(BigDecimal.ZERO);
+      return dto;
+    }
+    return list.getFirst();
   }
 
   @Override
@@ -130,5 +148,10 @@ public class DashboardRepositoryImpl implements DashboardRepository {
   @Override
   public List<BalanceNetoDiarioDTO> getBalanceNetoDiario() {
     return jdbcTemplate.query(VW_BALANCE_DIARIO, new BalanceNetoDiarioRowMapper());
+  }
+
+  @Override
+  public BalanceGlobalDTO getBalanceGlobal() {
+    return jdbcTemplate.queryForObject(VW_BALANCE_GLOBAL, new BalanceGlobalRowMapper());
   }
 }

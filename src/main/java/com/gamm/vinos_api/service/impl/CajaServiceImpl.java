@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.service.impl;
 
+import com.gamm.vinos_api.config.WebSocketService;
 import com.gamm.vinos_api.domain.model.Caja;
 import com.gamm.vinos_api.domain.model.Sucursal;
 import com.gamm.vinos_api.domain.model.Usuario;
@@ -20,6 +21,8 @@ public class CajaServiceImpl implements CajaService {
 
   @Autowired
   private CajaRepository cajaRepository;
+  @Autowired
+  private WebSocketService webSocketService;
 
   /* Helpers */
   private Integer getUsuarioAutenticado() {
@@ -67,12 +70,25 @@ public class CajaServiceImpl implements CajaService {
       sucursal.setIdSucursal(idSucursal);
       caja.setSucursal(sucursal);
     }
-    return cajaRepository.abrirCaja(caja);
+    ResultadoSP resultado = cajaRepository.abrirCaja(caja);
+
+    if (resultado.esExitoso()) {
+      webSocketService.notifyCajaUpdate();
+      webSocketService.notifyCompraUpdate();
+      webSocketService.notifyPrecioUpdate();
+    }
+    return resultado;
   }
 
   @Override
   public ResultadoSP cerrarCaja(Integer idCaja) {
-    return cajaRepository.cerrarCaja(idCaja);
+    ResultadoSP resultado = cajaRepository.cerrarCaja(idCaja);
+    if (resultado.esExitoso()) {
+      webSocketService.notifyCajaUpdate();
+      webSocketService.notifyCompraUpdate();
+      webSocketService.notifyPrecioUpdate();
+    }
+    return resultado;
   }
 
   @Override
@@ -147,6 +163,7 @@ public class CajaServiceImpl implements CajaService {
 
   @Override
   public ResultadoSP obtenerSiguienteCodigoCaja() {
-    return cajaRepository.obtenerSiguienteCodigoCaja();
+    Integer idSucursal = getSucursalAutenticada();
+    return cajaRepository.obtenerSiguienteCodigoCaja(idSucursal);
   }
 }

@@ -16,6 +16,8 @@ public interface DashboardRepository {
 
   List<InversionComprasAnualUserDTO> getInversionComprasAnualesUser(Integer idUsuario);
 
+  List<BalanceNetoMensualUserDTO> getBalanceNetoMensualUser(Integer idUsuario);
+
   List<CantidadComprasMensualUserDTO> cantidadComprasAnuales(Integer idUsuario);
 
   List<CantidadVentasMensualUserDTO> cantidadVentasAnuales(Integer idUsuario);
@@ -41,4 +43,6 @@ public interface DashboardRepository {
   List<CantidadComprasMensualAdminDTO> getCantidadComprasMensualAdmin();
 
   List<BalanceNetoDiarioDTO> getBalanceNetoDiario();
+
+  BalanceGlobalDTO getBalanceGlobal();
 }

@@ -38,6 +38,7 @@ public class DashboardServiceImpl implements DashboardService {
     dto.setLitros(dashboardRepository.getVentasLitros(idUsuario));
     dto.setIngresoVentasAnuales(dashboardRepository.getIngresoVentasAnualesUser(idUsuario));
     dto.setInversionComprasAnuales(dashboardRepository.getInversionComprasAnualesUser(idUsuario));
+    dto.setBalanceNetoMensuales(dashboardRepository.getBalanceNetoMensualUser(idUsuario));
     dto.setCantidadComprasAnuales(dashboardRepository.cantidadComprasAnuales(idUsuario));
     dto.setCantidadVentasAnuales(dashboardRepository.cantidadVentasAnuales(idUsuario));
     dto.setStock(dashboardRepository.getStockDashboard(idSucursal));
@@ -58,6 +59,7 @@ public class DashboardServiceImpl implements DashboardService {
     dto.setCantidadVentasMensual(dashboardRepository.getCantidadVentasMensualAdmin());
     dto.setCantidadComprasMensual(dashboardRepository.getCantidadComprasMensualAdmin());
     dto.setBalanceNetoDiario(dashboardRepository.getBalanceNetoDiario());
+    dto.setBalanceGlobal(dashboardRepository.getBalanceGlobal());
     return dto;
   }
 }

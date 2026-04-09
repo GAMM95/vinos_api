@@ -18,6 +18,7 @@ public class DashboardUserView {
   private VentasLitrosUserDTO litros;
   private List<IngresoVentasAnualUserDTO> ingresoVentasAnuales;
   private List<InversionComprasAnualUserDTO> inversionComprasAnuales;
+  private List<BalanceNetoMensualUserDTO> balanceNetoMensuales;
   private List<CantidadComprasMensualUserDTO> cantidadComprasAnuales;
   private List<CantidadVentasMensualUserDTO> cantidadVentasAnuales;
   private List<StockDashboardUserDTO> stock;

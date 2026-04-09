@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.service.impl;
 
+import com.gamm.vinos_api.config.WebSocketService;
 import com.gamm.vinos_api.domain.model.Compra;
 import com.gamm.vinos_api.dto.view.CarritoCompraView;
 import com.gamm.vinos_api.dto.view.CompraView;
@@ -22,6 +23,8 @@ public class CompraServiceImpl implements CompraService {
 
   @Autowired
   private CompraRepository compraRepository;
+  @Autowired
+  private WebSocketService webSocketService;
 
   /* Helpers */
   private Integer getUsuario() {
@@ -73,22 +76,37 @@ public class CompraServiceImpl implements CompraService {
   @Override
   public ResultadoSP confirmarCompra(Compra compra) {
     Integer idUsuario = getUsuario();
-
     if (compra == null) {
       compra = new Compra();
     }
+    ResultadoSP resultado = compraRepository.confirmarCompra(idUsuario, compra);
 
-    return compraRepository.confirmarCompra(idUsuario, compra);
+    if (resultado.esExitoso()) {
+      webSocketService.notifyDashboardUpdate();
+      webSocketService.notifyCompraUpdate();
+    }
+    return resultado;
   }
 
   @Override
   public ResultadoSP cerrarCompra(Integer idCompra) {
-    return compraRepository.cerrarCompra(idCompra);
+    ResultadoSP resultado = compraRepository.cerrarCompra(idCompra);
+
+    if (resultado.esExitoso()) {
+      webSocketService.notifyDashboardUpdate();
+      webSocketService.notifyCompraUpdate();
+    }
+    return resultado;
   }
 
   @Override
   public ResultadoSP deshacerCerrarCompra(Integer idCompra) {
-    return compraRepository.deshacerCerrarCompra(idCompra);
+    ResultadoSP resultado = compraRepository.deshacerCerrarCompra(idCompra);
+    if (resultado.esExitoso()) {
+      webSocketService.notifyDashboardUpdate();
+      webSocketService.notifyCompraUpdate();
+    }
+    return resultado;
   }
 
   @Override
@@ -112,13 +130,23 @@ public class CompraServiceImpl implements CompraService {
   @Override
   public ResultadoSP anularCompra(Integer idCompra) {
     Integer idUsuario = getUsuario();
-    return compraRepository.anularCompra(idUsuario, idCompra);
+    ResultadoSP resultado = compraRepository.anularCompra(idUsuario, idCompra);
+    if (resultado.esExitoso()) {
+      webSocketService.notifyDashboardUpdate();
+      webSocketService.notifyCompraUpdate();
+    }
+    return resultado;
   }
 
   @Override
   public ResultadoSP revertirCompra(Integer idCompra) {
     Integer idUsuario = getUsuario();
-    return compraRepository.revertirCompra(idUsuario, idCompra);
+    ResultadoSP resultado = compraRepository.revertirCompra(idUsuario, idCompra);
+    if (resultado.esExitoso()) {
+      webSocketService.notifyDashboardUpdate();
+      webSocketService.notifyCompraUpdate();
+    }
+    return resultado;
   }
 
   @Override
