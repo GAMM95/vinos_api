@@ -6,23 +6,27 @@ import com.gamm.vinos_api.domain.model.Sucursal;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.view.CajaView;
 import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.dto.view.UsuarioView;
 import com.gamm.vinos_api.repository.CajaRepository;
+import com.gamm.vinos_api.repository.UsuarioRepository;
 import com.gamm.vinos_api.security.util.SecurityUtils;
 import com.gamm.vinos_api.service.CajaService;
+import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.util.ResultadoSP;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CajaServiceImpl implements CajaService {
 
-  @Autowired
-  private CajaRepository cajaRepository;
-  @Autowired
-  private WebSocketService webSocketService;
+  private final CajaRepository cajaRepository;
+  private final WebSocketService webSocketService;
+  private final NotificacionService notificacionService;
+  private final UsuarioRepository usuarioRepository;
 
   /* Helpers */
   private Integer getUsuarioAutenticado() {
@@ -31,6 +35,12 @@ public class CajaServiceImpl implements CajaService {
       throw new IllegalStateException("Usuario no logueado");
     }
     return idUsuario;
+  }
+
+  private String getRolActual() {
+    String rol = SecurityUtils.getRol();
+    if (rol == null) throw new IllegalArgumentException("Rol no disponible");
+    return rol;
   }
 
   private Integer getSucursalAutenticada() {
@@ -43,50 +53,112 @@ public class CajaServiceImpl implements CajaService {
 
   @Override
   public ResultadoSP abrirCaja(Caja caja) {
+
     Integer idUsuario = getUsuarioAutenticado();
+    String rol = getRolActual();
 
     Usuario usuario = new Usuario();
     usuario.setIdUsuario(idUsuario);
     caja.setUsuario(usuario);
 
-    // Resolver sucursal según rol
-    String rol = SecurityUtils.getRol();
+    Sucursal sucursal = new Sucursal();
 
     if ("ADMINISTRADOR".equalsIgnoreCase(rol)) {
-
-      // Admin debe elegir sucursal
       if (caja.getSucursal() == null || caja.getSucursal().getIdSucursal() == null) {
         return new ResultadoSP(0, "Debe seleccionar una sucursal");
       }
-
+      sucursal.setIdSucursal(caja.getSucursal().getIdSucursal());
     } else {
       Integer idSucursal = getSucursalAutenticada();
-
       if (idSucursal <= 0) {
         return new ResultadoSP(0, "No tienes una sucursal asignada.\nContacta al administrador.");
       }
-
-      Sucursal sucursal = new Sucursal();
       sucursal.setIdSucursal(idSucursal);
-      caja.setSucursal(sucursal);
     }
+    caja.setSucursal(sucursal);
+
     ResultadoSP resultado = cajaRepository.abrirCaja(caja);
 
-    if (resultado.esExitoso()) {
-      webSocketService.notifyCajaUpdate();
-      webSocketService.notifyCompraUpdate();
-      webSocketService.notifyPrecioUpdate();
+    if (!resultado.esExitoso()) {
+      return resultado;
     }
+
+    webSocketService.notifyCajaUpdate();
+    webSocketService.notifyCompraUpdate();
+    webSocketService.notifyPrecioUpdate();
+
+    // Obtener datos reales del usuario
+    UsuarioView user = usuarioRepository.obtenerUsuarioPorId(idUsuario);
+    String nombreCompleto = user != null
+        ? user.getNombres() + " " + user.getApellidoPaterno()
+        : "Usuario " + idUsuario;
+    String nombreSucursal = user != null
+        ? user.getNombreSucursal()
+        : "Sucursal " + caja.getSucursal().getIdSucursal();
+
+    CajaView cajaAbierta = cajaRepository.obtenerUltimaCajaAbiertaUsuario(idUsuario);
+    String codCaja = cajaAbierta != null ? cajaAbierta.getCodCaja() : "";
+
+    if ("ADMINISTRADOR".equalsIgnoreCase(rol)) {
+      notificacionService.notificarRolYSucursal(
+          "Vendedor",
+          caja.getSucursal().getIdSucursal(),
+          "INFO",
+          "Caja abierta",
+          "El administrador abrió la caja " + codCaja + " en tu sucursal " + nombreSucursal,
+          "/caja/mis-cajas"
+      );
+    } else {
+      notificacionService.notificarRol(
+          "Administrador",
+          "INFO",
+          "Caja abierta",
+          nombreCompleto + " abrió la caja " + codCaja + " en la sucursal " + nombreSucursal,
+          "/caja/consultar-caja"
+      );
+    }
+
     return resultado;
   }
 
   @Override
   public ResultadoSP cerrarCaja(Integer idCaja) {
+
     ResultadoSP resultado = cajaRepository.cerrarCaja(idCaja);
-    if (resultado.esExitoso()) {
-      webSocketService.notifyCajaUpdate();
-      webSocketService.notifyCompraUpdate();
-      webSocketService.notifyPrecioUpdate();
+
+    if (!resultado.esExitoso()) return resultado;
+
+    webSocketService.notifyCajaUpdate();
+    webSocketService.notifyCompraUpdate();
+    webSocketService.notifyPrecioUpdate();
+
+    String rol = SecurityUtils.getRol();
+    CajaView caja = cajaRepository.obtenerCajaPorId(idCaja);
+    if (caja == null) {
+      throw new IllegalStateException("Caja no encontrada");
+    }
+    Integer idSucursal = caja.getIdSucursal();
+
+    if ("ADMINISTRADOR".equalsIgnoreCase(rol)) {
+      notificacionService.notificarRolYSucursal(
+          "Vendedor",
+          idSucursal,
+          "WARNING",
+          "Caja cerrada",
+          "El administrador cerró la caja " + caja.getCodCaja() + " de tu sucursal",
+          "/caja/mis-cajas"
+      );
+
+    }
+    // VENDEDOR → admin global
+    else {
+      notificacionService.notificarRol(
+          "Administrador",
+          "WARNING",
+          "Caja cerrada",
+          caja.getUsuario() + " cerró la caja " + caja.getCodCaja() + " en la sucursal " + caja.getSucursal(),
+          "/caja/consultar-caja"
+      );
     }
     return resultado;
   }

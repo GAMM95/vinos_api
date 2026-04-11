@@ -71,5 +71,5 @@ public interface CompraRepository {
 
   List<CompraView> listarComprasAnuladas(int pagina, int limite);
 
-  List<CompraView> listarDetalleTotalCompras();
+  CompraView obtenerCompraPorId(Integer idCompra);
 }

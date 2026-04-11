@@ -9,6 +9,7 @@ import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.repository.CompraRepository;
 import com.gamm.vinos_api.service.CompraService;
 import com.gamm.vinos_api.security.util.SecurityUtils;
+import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +22,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CompraServiceImpl implements CompraService {
 
-  @Autowired
-  private CompraRepository compraRepository;
-  @Autowired
-  private WebSocketService webSocketService;
+  private final CompraRepository compraRepository;
+  private final WebSocketService webSocketService;
+  private final NotificacionService notificacionService;
 
   /* Helpers */
   private Integer getUsuario() {
     Integer idUsuario = SecurityUtils.getUserId();
     if (idUsuario == null) throw new IllegalStateException("Usuario no logueado");
     return idUsuario;
+  }
+
+  private String getRolActual() {
+    String rol = SecurityUtils.getRol();
+    if (rol == null) throw new IllegalArgumentException("Rol no disponible");
+    return rol;
   }
 
   private ResponseVO listarDetalleCompra(Integer idCompra, Integer idUsuario) {
@@ -76,14 +82,40 @@ public class CompraServiceImpl implements CompraService {
   @Override
   public ResultadoSP confirmarCompra(Compra compra) {
     Integer idUsuario = getUsuario();
+    String rol = getRolActual();
+
     if (compra == null) {
       compra = new Compra();
     }
     ResultadoSP resultado = compraRepository.confirmarCompra(idUsuario, compra);
 
-    if (resultado.esExitoso()) {
-      webSocketService.notifyDashboardUpdate();
-      webSocketService.notifyCompraUpdate();
+    if (!resultado.esExitoso()) {
+      return resultado;
+    }
+    CompraView c = compraRepository.obtenerCompraPorId(compra.getIdCompra());
+
+    // Actualizaciones del sistema
+    webSocketService.notifyDashboardUpdate();
+    webSocketService.notifyCompraUpdate();
+    // notificar al administrador que el vendedor ha realizado una nueva compra
+    if ("VENDEDOR".equalsIgnoreCase(rol)) {
+      notificacionService.notificarRol(
+          "Administrador",
+          "SUCCESS",
+          "Nueva compra registrada",
+          c.getUsuario() + " ha registrado la compra " + c.getCodCompra() + " en el sistema.",
+          "/compras/consultar-compra"
+      );
+    }
+      // Notificar a todos los vendedores que se ha realizado una compra
+    else if ("ADMINISTRADOR".equalsIgnoreCase(rol)) {
+      notificacionService.notificarRol(
+          "Vendedor",
+          "INFO",
+          "Compra registrada por el administrador",
+          "El administrador ha registrado la compra " + compra.getCodCompra() + " en el sistema.",
+          "/compras/consultar-compra"
+      );
     }
     return resultado;
   }
@@ -91,10 +123,30 @@ public class CompraServiceImpl implements CompraService {
   @Override
   public ResultadoSP cerrarCompra(Integer idCompra) {
     ResultadoSP resultado = compraRepository.cerrarCompra(idCompra);
+    CompraView compra = compraRepository.obtenerCompraPorId(idCompra);
 
     if (resultado.esExitoso()) {
       webSocketService.notifyDashboardUpdate();
       webSocketService.notifyCompraUpdate();
+      // Notificar a los vendedores en general
+      notificacionService.notificarRol(
+          "Vendedor",
+          "INFO",
+          "Compra cerrada",
+          "La compra " + compra.getCodCompra() + " ha sido recepcionada en el almacén.",
+          "/mercaderia/consultar-mercaderia"
+      );
+      // y si la compra es del vendedor ha realizado, notificarle especificamente a ese vendedor
+      if (compra.getIdUsuario() != null) {
+        notificacionService.notificarUsuario(
+            compra.getIdUsuario(),
+            compra.getUsuario(),
+            "SUCCESS",
+            "Tu compra fue cerrada",
+            "Tu compra " + compra.getCodCompra() + " ha sido recepcionada en el almacén.",
+            "/mercaderia/mi-stock"
+        );
+      }
     }
     return resultado;
   }
@@ -102,9 +154,29 @@ public class CompraServiceImpl implements CompraService {
   @Override
   public ResultadoSP deshacerCerrarCompra(Integer idCompra) {
     ResultadoSP resultado = compraRepository.deshacerCerrarCompra(idCompra);
+    CompraView compra = compraRepository.obtenerCompraPorId(idCompra);
     if (resultado.esExitoso()) {
       webSocketService.notifyDashboardUpdate();
       webSocketService.notifyCompraUpdate();
+      // Notificar a todos los vendedores (stock puede cambiar)
+      notificacionService.notificarRol(
+          "Vendedor",
+          "WARNING",
+          "Reversión de cierre de compra",
+          "Se ha revertido el cierre de la compra " + compra.getCodCompra() + ". Puede haber cambios en el stock.",
+          "/mercaderia/consultar-mercaderia"
+      );
+      // Notificar específicamente al vendedor dueño de la compra
+      if (compra.getIdUsuario() != null) {
+        notificacionService.notificarUsuario(
+            compra.getIdUsuario(),
+            compra.getUsuario(),
+            "WARNING",
+            "Tu compra fue revertida",
+            "El administrador ha revertido el cierre de tu compra " + compra.getCodCompra() + ". Verifique el stock.",
+            "/mercaderia/mi-stock"
+        );
+      }
     }
     return resultado;
   }
@@ -131,9 +203,18 @@ public class CompraServiceImpl implements CompraService {
   public ResultadoSP anularCompra(Integer idCompra) {
     Integer idUsuario = getUsuario();
     ResultadoSP resultado = compraRepository.anularCompra(idUsuario, idCompra);
+    CompraView compra = compraRepository.obtenerCompraPorId(idCompra);
     if (resultado.esExitoso()) {
       webSocketService.notifyDashboardUpdate();
       webSocketService.notifyCompraUpdate();
+      // Notificar al administrador que el usuario ha anulado compra
+      notificacionService.notificarRol(
+          "Administrador",
+          "WARNING",
+          "Compra anulada",
+          compra.getUsuario() + " ha anulado la compra " + compra.getCodCompra() + ".",
+          "/compras/consultar-compra"
+      );
     }
     return resultado;
   }
@@ -142,9 +223,19 @@ public class CompraServiceImpl implements CompraService {
   public ResultadoSP revertirCompra(Integer idCompra) {
     Integer idUsuario = getUsuario();
     ResultadoSP resultado = compraRepository.revertirCompra(idUsuario, idCompra);
+    CompraView compra = compraRepository.obtenerCompraPorId(idCompra);
+
     if (resultado.esExitoso()) {
       webSocketService.notifyDashboardUpdate();
       webSocketService.notifyCompraUpdate();
+      // Notificar al administrador que el usuario a revertido compra
+      notificacionService.notificarRol(
+          "Administrador",
+          "INFO",
+          "Reversión de compra",
+          compra.getUsuario() + " ha revertido la compra " + compra.getCodCompra() + ".",
+          "/compras/consultar-compra"
+      );
     }
     return resultado;
   }

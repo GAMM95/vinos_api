@@ -358,8 +358,9 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
   }
 
   @Override
-  public List<CompraView> listarDetalleTotalCompras() {
-    return List.of();
+  public CompraView obtenerCompraPorId(Integer idCompra) {
+    String sql = "SELECT * FROM vw_compras WHERE idCompra = ?";
+    return jdbcTemplate.queryForObject(sql, new CompraRowMapper(), idCompra);
   }
 
   /* Enums para el tipo de operacion del sp */

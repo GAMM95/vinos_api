@@ -151,6 +151,12 @@ public class VentaRepositoryImpl extends SimpleJdbcDAOBase implements VentaRepos
   }
 
   @Override
+  public VentaView obtenerVentaPorId(Integer idVenta) {
+    String sql = "SELECT * FROM vw_ventas WHERE idVenta = ?";
+    return jdbcTemplate.queryForObject(sql, new VentaRowMapper(), idVenta);
+  }
+
+  @Override
   public List<VentaView> listarTotalVentas(int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VW_VENTAS + " LIMIT ? OFFSET ?";
@@ -272,7 +278,7 @@ public class VentaRepositoryImpl extends SimpleJdbcDAOBase implements VentaRepos
         null,
         pagina,
         limite
-        );
+    );
     addDateRange(params, "pFechaInicio", "pFechaFin", fechaInicio, fechaFin);
     return ejecutarSPConLista(spCall, params);
   }

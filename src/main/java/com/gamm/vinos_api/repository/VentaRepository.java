@@ -20,6 +20,8 @@ public interface VentaRepository {
   // Listar todas las ventas
   long contarTotalVentas();
 
+  VentaView obtenerVentaPorId(Integer idVenta);
+
   List<VentaView> listarTotalVentas(int pagina, int limite);
 
   // Listrar detalle de venta

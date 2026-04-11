@@ -136,6 +136,18 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
     }, email);
   }
 
+  @Override
+  public List<UsuarioView> listarPorRolYSucursal(String rol, Integer idSucursal) {
+    String sql = VIEW_USUARIOS + " WHERE rol = ? AND sucursal = ?";
+    return jdbcTemplate.query(sql, new UsuarioViewRowMapper(), rol, idSucursal);
+  }
+
+  @Override
+  public UsuarioView obtenerUsuarioPorId(Integer idUsuario) {
+   String sql = VIEW_USUARIOS + " WHERE idUsuario = ?";
+    return jdbcTemplate.queryForObject(sql, new UsuarioViewRowMapper(), idUsuario);
+  }
+
 
   @Override
   public Usuario obtenerUsuarioConPassword(Integer idUsuario) {

@@ -19,6 +19,4 @@ public class Sucursal {
   private BigDecimal  latitud;
   private BigDecimal longitud;
   private EstadoSucursal estado;
-
-
 }

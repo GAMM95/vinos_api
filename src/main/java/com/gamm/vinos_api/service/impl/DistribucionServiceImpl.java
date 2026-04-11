@@ -5,9 +5,10 @@ import com.gamm.vinos_api.domain.model.DistribucionSucursal;
 import com.gamm.vinos_api.dto.view.DistribucionView;
 import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.repository.DistribucionRepository;
+import com.gamm.vinos_api.security.util.SecurityUtils;
 import com.gamm.vinos_api.service.DistribucionService;
+import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.util.ResultadoSP;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,10 +17,22 @@ import java.util.List;
 @Service
 public class DistribucionServiceImpl implements DistribucionService {
 
-  @Autowired
-  private DistribucionRepository repository;
-  @Autowired
-  private WebSocketService webSocketService;
+  private final DistribucionRepository repository;
+  private final WebSocketService webSocketService;
+  private final NotificacionService notificacionService;
+
+  public DistribucionServiceImpl(DistribucionRepository repository, WebSocketService webSocketService, NotificacionService notificacionService) {
+    this.repository = repository;
+    this.webSocketService = webSocketService;
+    this.notificacionService = notificacionService;
+  }
+
+  // Helpers
+  private String getRolActual() {
+    String rol = SecurityUtils.getRol();
+    if (rol == null) throw new IllegalArgumentException("Rol no disponible");
+    return rol;
+  }
 
   @Override
   public ResultadoSP distribuirProducto(DistribucionSucursal distribucionSucursal) {
@@ -28,6 +41,22 @@ public class DistribucionServiceImpl implements DistribucionService {
     if (resultado.esExitoso()) {
       webSocketService.notifyDashboardUpdate();
       webSocketService.notifyMercaderiaUpdate();
+      List<DistribucionView> data = repository.listarRepartosSucursal(1, 1);
+
+      DistribucionView d = data.get(0);
+
+      String mensaje = "Se ha distribuido " +
+          d.getCantidad() + " unidades de vino " +
+          d.getVino() + " (" + d.getPresentacion() + ") a la sucursal " +
+          d.getSucursal() + ".";
+
+      notificacionService.notificarRol(
+          "Vendedor",
+          "INFO",
+          "Nueva distribución de vino",
+          mensaje,
+          "/mercaderia/mi-stock"
+      );
     }
     return resultado;
   }

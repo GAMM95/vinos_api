@@ -135,6 +135,14 @@ public class CajaRepositoryImpl extends SimpleJdbcDAOBase implements CajaReposit
   }
 
   @Override
+  public CajaView obtenerUltimaCajaAbiertaUsuario(Integer idUsuario) {
+    return jdbcTemplate.query(VW_ULTIMA_CAJA_ABIERTA, new CajaRowMapper(), idUsuario)
+        .stream()
+        .findFirst()
+        .orElse(null);
+  }
+
+  @Override
   public ResultadoSP cerrarCaja(Integer idCaja) {
     Map<String, Object> params = crearParametros(
         2, idCaja, null, null,
@@ -182,6 +190,12 @@ public class CajaRepositoryImpl extends SimpleJdbcDAOBase implements CajaReposit
 
     Map<String, Object> out = spCall.execute(params);
     return construirResultadoSimple(out, "pCodCaja", "codCaja");
+  }
+
+  @Override
+  public CajaView obtenerCajaPorId(Integer idCaja) {
+    String sql = VW_CAJAS + " WHERE idCaja = ? ";
+    return  jdbcTemplate.queryForObject(sql, new CajaRowMapper(), idCaja);
   }
 
   /* =========================

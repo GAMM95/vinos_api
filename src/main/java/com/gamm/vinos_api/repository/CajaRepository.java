@@ -11,6 +11,8 @@ public interface CajaRepository {
   // Tipo 1: Abrir caja
   ResultadoSP abrirCaja(Caja caja);
 
+  CajaView obtenerUltimaCajaAbiertaUsuario(Integer idUsuario);
+
   // Tipo 2: Cerrar caja
   ResultadoSP cerrarCaja(Integer idCaja);
 
@@ -40,4 +42,6 @@ public interface CajaRepository {
   List<CajaView> mostrarMiUltimaCajaAbierta (Integer idUsuario);
 
   ResultadoSP obtenerSiguienteCodigoCaja(Integer idSucursal);
+
+  CajaView obtenerCajaPorId(Integer idCaja);
 }

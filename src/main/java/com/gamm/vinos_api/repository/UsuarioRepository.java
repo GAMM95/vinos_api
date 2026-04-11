@@ -31,4 +31,8 @@ public interface UsuarioRepository {
   ResultadoSP verificarUsername(String username, Integer idUsuario);
 
   Usuario obtenerUsuarioPorEmail(String email);
+
+  List<UsuarioView> listarPorRolYSucursal(String rol, Integer idSucursal);
+
+  UsuarioView obtenerUsuarioPorId(Integer idUsuario);
 }

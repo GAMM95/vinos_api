@@ -23,5 +23,6 @@ public class VentaView {
   private BigDecimal total;
   private Integer idUsuario;
   private String usuario;
+  private String username;
   private String estado;
 }
