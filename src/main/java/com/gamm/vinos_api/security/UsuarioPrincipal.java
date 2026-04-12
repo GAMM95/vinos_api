@@ -13,8 +13,10 @@ public class UsuarioPrincipal implements UserDetails {
 
   private final Integer idUsuario;
   private final String username;
+  private final String nombreCompleto;
   private final String password;
   private final Integer idSucursal;
+  private final String sucursal;
   private final String rol;
   private final Collection<? extends GrantedAuthority> authorities;
 

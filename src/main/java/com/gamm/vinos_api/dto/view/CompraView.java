@@ -31,4 +31,6 @@ public class CompraView {
   private BigDecimal totalCompra;
   private Integer idUsuario;
   private String usuario;
+  private String username;
+  private String rol;
 }

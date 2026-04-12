@@ -23,4 +23,6 @@ public interface PrecioRepository {
 
   // Filtro para mostrar por nombre de vino de cada sucursal (vendedor)
   ResultadoSP filtrarPorVino(String nombreVino, Integer idSucursal);
+
+  String obtenerNombreVino(Integer idVino);
 }

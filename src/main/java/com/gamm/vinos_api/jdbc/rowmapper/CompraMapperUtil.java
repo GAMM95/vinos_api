@@ -21,6 +21,8 @@ public class CompraMapperUtil {
   public static void mapUsuario(CompraView v, ResultSet rs) throws SQLException {
     v.setIdUsuario(rs.getInt("idUsuario"));
     v.setUsuario(rs.getString("usuario"));
+    v.setUsername(rs.getString("username"));
+    v.setRol(rs.getString("rol"));
   }
 
   public static void mapDetalleCompra(CompraView v, ResultSet rs) throws SQLException {

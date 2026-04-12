@@ -24,25 +24,39 @@ public class CustomUserDetailsService implements UserDetailsService {
       throws UsernameNotFoundException {
 
     ResultadoSP resultado = usuarioService.login(username);
-    Usuario usuario = (Usuario) resultado.getData();
-
-    if (usuario == null) {
-      throw new UsernameNotFoundException(resultado.getMensaje());
+    if (resultado == null || resultado.getData() == null) {
+      throw new UsernameNotFoundException(
+          resultado != null ? resultado.getMensaje() : "Usuario no encontrado"
+      );
     }
+
+    Usuario usuario = (Usuario) resultado.getData();
 
     Integer idSucursal = usuario.getSucursal() != null
         ? usuario.getSucursal().getIdSucursal()
         : null;
 
-    String rol = usuario.getRol().name();
+    String rol = usuario.getRol() != null
+        ? usuario.getRol().name()
+        : "USER";
+
+    String nombreCompleto = usuario.getPersona() != null
+        ? usuario.getPersona().getNombres() + " " + usuario.getPersona().getApellidoPaterno()
+        : usuario.getUsername();
+
+    String sucursal = usuario.getSucursal() != null
+        ? usuario.getSucursal().getNombre()
+        : null;
 
     return new UsuarioPrincipal(
         usuario.getIdUsuario(),
         usuario.getUsername(),
+        nombreCompleto,
         usuario.getPassword(),
-        usuario.getSucursal() != null ? usuario.getSucursal().getIdSucursal() : null,
-        usuario.getRol().name(),
-        List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name()))
+        idSucursal,
+        sucursal,
+        rol,
+        List.of(new SimpleGrantedAuthority("ROLE_" + rol))
     );
   }
 }

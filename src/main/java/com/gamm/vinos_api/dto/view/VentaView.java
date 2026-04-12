@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,7 +18,7 @@ public class VentaView {
   private String codVenta;
   private Integer idSucursal;
   private String sucursal;
-  private LocalDate fechaVenta;
+  private LocalDateTime fechaVenta;
   private String metodoPago;
   private BigDecimal descuento;
   private BigDecimal total;

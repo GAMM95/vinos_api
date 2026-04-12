@@ -1,26 +1,29 @@
 package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.config.WebSocketService;
+import com.gamm.vinos_api.domain.model.Persona;
 import com.gamm.vinos_api.domain.model.PrecioSucursal;
 import com.gamm.vinos_api.domain.model.Sucursal;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.view.PrecioView;
 import com.gamm.vinos_api.repository.PrecioRepository;
 import com.gamm.vinos_api.security.util.SecurityUtils;
+import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.service.PrecioService;
 import com.gamm.vinos_api.util.ResultadoSP;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PrecioServiceImpl implements PrecioService {
 
-  @Autowired
-  private PrecioRepository precioRepository;
-  @Autowired
-  private WebSocketService webSocketService;
+  private final PrecioRepository precioRepository;
+  private final WebSocketService webSocketService;
+  private final NotificacionService notificacionService;
 
   /* Helpers */
   private Integer getUsuarioAutenticado() {
@@ -31,7 +34,7 @@ public class PrecioServiceImpl implements PrecioService {
     return idUsuario;
   }
 
-  private Integer getSucursalAutenticada() {
+  private Integer getIdSucursalAutenticada() {
     Integer idSucursal = SecurityUtils.getSucursalId();
     if (idSucursal == null) {
       throw new IllegalStateException("El usuario no tiene sucursal asignada");
@@ -46,6 +49,8 @@ public class PrecioServiceImpl implements PrecioService {
 
     Usuario usuario = new Usuario();
     usuario.setIdUsuario(idUsuario);
+    Persona persona = new Persona();
+    persona.setIdPersona(idUsuario);
 
     String rol = SecurityUtils.getRol();
 
@@ -60,7 +65,7 @@ public class PrecioServiceImpl implements PrecioService {
 
     } else {
       // Vendedor usa su sucursal autenticada
-      idSucursal = getSucursalAutenticada();
+      idSucursal = getIdSucursalAutenticada();
     }
 
     if (precio.getSucursal() == null) {
@@ -70,8 +75,33 @@ public class PrecioServiceImpl implements PrecioService {
     precio.getSucursal().setIdSucursal(idSucursal);
 
     ResultadoSP resultado = precioRepository.asignarPrecio(precio);
+
     if (resultado.esExitoso()) {
       webSocketService.notifyPrecioUpdate();
+      // Obtener el nombre del vino
+      String nombreVino = precioRepository.obtenerNombreVino(precio.getVino().getIdVino());
+      String nombreCompleto = SecurityUtils.getNombreCompleto();
+      if ("ADMINISTRADOR".equalsIgnoreCase(rol)) {
+        // Notificar solo al vendedor de esa sucursal
+        notificacionService.notificarRolYSucursal(
+            "Vendedor",
+            idSucursal,
+            "INFO",
+            "Precio asignado a tu stock",
+            "El administrador ha asignado un precio de S/." + precio.getPrecioVenta() + " a " + nombreVino + " de tu stock.",
+            "/ventas/establecer-precios"
+        );
+      } else {
+        // Vendedor asignó su precio - notificar al administrador
+        notificacionService
+            .notificarRol(
+                "Administrador",
+                "INFO",
+                "Precio asignado por vendedor",
+                nombreCompleto + " ha asignado un precio de S/." + precio.getPrecioVenta() + " a " + nombreVino + " de su stock.",
+                "/ventas/establecer-precios"
+            );
+      }
     }
     return resultado;
   }
@@ -83,7 +113,7 @@ public class PrecioServiceImpl implements PrecioService {
 
   @Override
   public List<PrecioView> listarPreciosStockSucursal() {
-    return precioRepository.listarPreciosStockSucursal(getSucursalAutenticada());
+    return precioRepository.listarPreciosStockSucursal(getIdSucursalAutenticada());
   }
 
   @Override
@@ -98,7 +128,7 @@ public class PrecioServiceImpl implements PrecioService {
 
   @Override
   public ResultadoSP filtrarPorVino(String nombreVino) {
-    return precioRepository.filtrarPorVino(nombreVino, getSucursalAutenticada());
+    return precioRepository.filtrarPorVino(nombreVino, getIdSucursalAutenticada());
   }
 
 }

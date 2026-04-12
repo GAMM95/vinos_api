@@ -138,7 +138,7 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
 
   @Override
   public List<UsuarioView> listarPorRolYSucursal(String rol, Integer idSucursal) {
-    String sql = VIEW_USUARIOS + " WHERE rol = ? AND sucursal = ?";
+    String sql = VIEW_USUARIOS + " WHERE rol = ? AND idSucursal = ?";
     return jdbcTemplate.query(sql, new UsuarioViewRowMapper(), rol, idSucursal);
   }
 

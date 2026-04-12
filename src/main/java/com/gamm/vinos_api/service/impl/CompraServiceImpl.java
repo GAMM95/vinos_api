@@ -39,6 +39,14 @@ public class CompraServiceImpl implements CompraService {
     return rol;
   }
 
+  private String getNombreCompletoAutenticado() {
+    String nombreCompleto = SecurityUtils.getNombreCompleto();
+    if (nombreCompleto == null) {
+      throw new IllegalStateException("El usuario no logueado");
+    }
+    return nombreCompleto;
+  }
+
   private ResponseVO listarDetalleCompra(Integer idCompra, Integer idUsuario) {
     List<CompraView> detalles =
         idUsuario != null
@@ -113,8 +121,8 @@ public class CompraServiceImpl implements CompraService {
           "Vendedor",
           "INFO",
           "Compra registrada por el administrador",
-          "El administrador ha registrado la compra " + compra.getCodCompra() + " en el sistema.",
-          "/compras/consultar-compra"
+          "El administrador ha registrado la compra " + c.getCodCompra() + " en el sistema.",
+          "/mercaderia/consultar-mercaderia"
       );
     }
     return resultado;
@@ -128,19 +136,23 @@ public class CompraServiceImpl implements CompraService {
     if (resultado.esExitoso()) {
       webSocketService.notifyDashboardUpdate();
       webSocketService.notifyCompraUpdate();
+
+      String rol = compra.getRol();
       // Notificar a los vendedores en general
-      notificacionService.notificarRol(
-          "Vendedor",
-          "INFO",
-          "Compra cerrada",
-          "La compra " + compra.getCodCompra() + " ha sido recepcionada en el almacén.",
-          "/mercaderia/consultar-mercaderia"
-      );
-      // y si la compra es del vendedor ha realizado, notificarle especificamente a ese vendedor
-      if (compra.getIdUsuario() != null) {
+      if ("ADMINISTRADOR".equalsIgnoreCase(rol)) {
+        // La compra es del admin → notificar a todos los vendedores
+        notificacionService.notificarRol(
+            "Vendedor",
+            "INFO",
+            "Nueva mercadería disponible",
+            "Se ha recepcionado nueva mercadería en el almacén. Compra " + compra.getCodCompra() + " cerrada.",
+            "/mercaderia/consultar-mercaderia"
+        );
+      } else {
+        // La compra es de un vendedor → notificar solo a ese vendedor
         notificacionService.notificarUsuario(
             compra.getIdUsuario(),
-            compra.getUsuario(),
+            compra.getUsername(),
             "SUCCESS",
             "Tu compra fue cerrada",
             "Tu compra " + compra.getCodCompra() + " ha sido recepcionada en el almacén.",

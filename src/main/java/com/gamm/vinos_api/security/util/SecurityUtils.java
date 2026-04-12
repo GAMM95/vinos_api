@@ -27,9 +27,19 @@ public final class SecurityUtils {
     return up != null ? up.getUsername() : null;
   }
 
+  public static String getNombreCompleto(){
+    UsuarioPrincipal up = getPrincipal();
+    return up != null ? up.getNombreCompleto() : null;
+  }
+
   public static Integer getSucursalId() {
     UsuarioPrincipal up = getPrincipal();
     return up != null ? up.getIdSucursal() : null;
+  }
+
+  public static String getSucursal() {
+    UsuarioPrincipal up = getPrincipal();
+    return up != null ? up.getSucursal() : null;
   }
 
   public static String getRol() {

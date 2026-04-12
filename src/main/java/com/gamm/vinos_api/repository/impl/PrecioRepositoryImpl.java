@@ -103,7 +103,7 @@ public class PrecioRepositoryImpl extends SimpleJdbcDAOBase implements PrecioRep
   }
 
   @Override
-  public List<PrecioView> listarPreciosDetalle(Integer idVino , Integer idSucursal) {
+  public List<PrecioView> listarPreciosDetalle(Integer idVino, Integer idSucursal) {
     return jdbcTemplate.query(VW_PRECIOS_STOCK_DETALLE, new PrecioStockDetalleRowMapper(), idVino, idSucursal);
   }
 
@@ -111,5 +111,11 @@ public class PrecioRepositoryImpl extends SimpleJdbcDAOBase implements PrecioRep
   public ResultadoSP filtrarPorVino(String nombreVino, Integer idSucursal) {
     Map<String, Object> params = construirParametros(3, null, idSucursal, null, nombreVino);
     return ejecutarSPConLista(spCall, params);
+  }
+
+  @Override
+  public String obtenerNombreVino(Integer idVino) {
+    String sql = "SELECT nombreVino FROM vw_stock_precios WHERE idVino = ? LIMIT 1";
+    return jdbcTemplate.queryForObject(sql, String.class, idVino);
   }
 }

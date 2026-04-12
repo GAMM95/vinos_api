@@ -26,6 +26,8 @@ public class Compra {
 
     // Asociar carrito al usuario
     private Integer idUsuario;
+    private String username;
+    private String rol;
 
     // Una compra puede tener 1 o varios detalles
     private List<DetalleCompra> detalles;
