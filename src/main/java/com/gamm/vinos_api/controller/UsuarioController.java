@@ -1,119 +1,122 @@
 package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.domain.model.Usuario;
-import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.dto.request.UsernameCheckRequest;
+import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.exception.business.BusinessException;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.util.ResultadoSP;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@Tag(name = "Usuarios", description = "Gestión de usuarios del sistema")
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/v1/usuarios")
 @RequiredArgsConstructor
 public class UsuarioController extends AbstractRestController {
+
   private final UsuarioService usuarioService;
 
-  // Inactivar usuario
-  @PatchMapping("/{id}/inactivar")
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> inactivarUsuario(@PathVariable Integer id) {
-    ResultadoSP resultado = usuarioService.inactivarUsuario(id);
+  // ─── Consultas ────────────────────────────────────────────────────────────
 
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
-  }
-
-  // Activar usuario
-  @PatchMapping("/{id}/activar")
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> activarUsuario(
-      @PathVariable Integer id,
-      @RequestParam(required = false) Integer idSucursal) {
-
-    ResultadoSP resultado = usuarioService.activarUsuario(id, idSucursal);
-    return resultado.esExitoso()
-        ? ResponseEntity.ok(new ResponseVO(true, resultado.getMensaje(), null))
-        : ResponseEntity.badRequest().body(new ResponseVO(false, resultado.getMensaje(), null));
-  }
-
-
-  // Filtrar usuarios
-  @GetMapping("/filtrar")
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> filtrarUsuarios(@RequestParam String termino) {
-    ResultadoSP resultado = usuarioService.filtrarUsuario(termino);
-
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
-  }
-
-  // Actualizar usuario
-  @PutMapping("/{id}")
-  public ResponseEntity<ResponseVO> actualizarUsuario(
-      @PathVariable Integer id,
-      @RequestBody Usuario usuario) {
-
-    usuario.setIdUsuario(id);
-    ResultadoSP resultado = usuarioService.actualizarUsuario(usuario);
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
-  }
-
-  // Listar usuarios
+  @Operation(summary = "Listar todos los usuarios")
   @GetMapping
   @SoloAdministrador
   public ResponseEntity<ResponseVO> listarUsuarios() {
     return ok(usuarioService.listarUsuarios());
   }
 
-  // Listar usuarios con paginación
+  @Operation(summary = "Listar usuarios con paginación")
   @GetMapping("/paginado")
   @SoloAdministrador
   public ResponseEntity<ResponseVO> listarUsuariosPaginados(
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "5") int limite
   ) {
-    // Llamada al servicio
-    ResponseVO response = usuarioService.listarUsuariosPaginados(pagina, limite);
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(usuarioService.listarUsuariosPaginados(pagina, limite));
   }
 
+  @Operation(summary = "Obtener usuario por ID")
+  @GetMapping("/{id}")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> obtenerPorId(@PathVariable Integer id) {
+    Usuario usuario = usuarioService.obtenerPorId(id);
+    // obtenerPorId retorna null si no existe — lanzamos excepción manualmente
+    // ya que este método no pasa por ResultadoSP
+    if (usuario == null) {
+      throw new BusinessException("El usuario especificado no existe.");
+    }
+    return ok(usuario);
+  }
 
+  @Operation(summary = "Filtrar usuarios por término de búsqueda")
+  @GetMapping("/filtro")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> filtrarUsuarios(@RequestParam String termino) {
+    ResultadoSP resultado = usuarioService.filtrarUsuario(termino);
+    ResponseVO.validar(resultado); // → "Debe enviar un término de búsqueda."
+    return ok(resultado.getMensaje(), resultado.getData());
+  }
+
+  // ─── Mutaciones ───────────────────────────────────────────────────────────
+
+  @Operation(summary = "Actualizar datos del usuario")
+  @PutMapping("/{id}")
+  public ResponseEntity<ResponseVO> actualizarUsuario(
+      @PathVariable Integer id,
+      @Valid @RequestBody Usuario usuario
+  ) {
+    usuario.setIdUsuario(id);
+    ResultadoSP resultado = usuarioService.actualizarUsuario(usuario);
+    ResponseVO.validar(resultado); // → "El usuario no existe." / "No se detectaron cambios."
+    return ok(resultado.getMensaje(), resultado.getData());
+  }
+
+  @Operation(summary = "Inactivar usuario")
+  @PatchMapping("/{id}/inactivacion")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> inactivarUsuario(@PathVariable Integer id) {
+    ResultadoSP resultado = usuarioService.inactivarUsuario(id);
+    ResponseVO.validar(resultado); // → "Usuario no encontrado o ya está inactivo."
+    return ok(resultado.getMensaje(), null);
+  }
+
+  @Operation(summary = "Activar usuario y asignar sucursal")
+  @PatchMapping("/{id}/activacion")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> activarUsuario(
+      @PathVariable Integer id,
+      @RequestParam(required = false) Integer idSucursal
+  ) {
+    ResultadoSP resultado = usuarioService.activarUsuario(id, idSucursal);
+    ResponseVO.validar(resultado); // → "Debe enviarse un ID." / "La sucursal no existe." / etc.
+    return ok(resultado.getMensaje(), null);
+  }
+
+  @Operation(summary = "Actualizar foto del usuario")
   @PostMapping("/{id}/foto")
   public ResponseEntity<ResponseVO> actualizarFoto(
       @PathVariable Integer id,
-      @RequestParam("foto") MultipartFile foto) {
+      @RequestParam("foto") MultipartFile foto
+  ) {
     ResultadoSP resultado = usuarioService.actualizarFoto(id, foto);
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
+    ResponseVO.validar(resultado); // → "El usuario no existe." / "No se envió ninguna foto."
+    return ok(resultado.getMensaje(), resultado.getData());
   }
 
-  @PostMapping("/verificar-username")
+  @Operation(summary = "Verificar disponibilidad de username en tiempo real")
+  @PostMapping("/username/verificacion")
   public ResponseEntity<ResponseVO> verificarUsername(
-      @RequestBody UsernameCheckRequest request) {
-
+      @RequestBody UsernameCheckRequest request
+  ) {
     ResultadoSP resultado = usuarioService.verificarUsername(request.username(), request.idUsuario());
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
-  }
-
-  /* Obtener usuario por su id */
-  @GetMapping("/{id}")
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> obtenerUsuarioPorId(@PathVariable Integer id) {
-    Usuario usuario = usuarioService.obtenerPorId(id);
-    if (usuario == null) {
-      return badRequest("Usuario no encontrado");
-    }
-    return ok("Usuario obtenido correctamente", usuario);
+    ResponseVO.validar(resultado); // → "El username ya está siendo utilizado."
+    return ok(resultado.getMensaje(), null);
   }
 }

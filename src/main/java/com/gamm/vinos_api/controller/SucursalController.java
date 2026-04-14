@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/sucursales")
+@RequestMapping("/api/v1/sucursales")
 public class SucursalController extends AbstractRestController {
 
   private final SucursalService sucursalService;
@@ -27,9 +27,8 @@ public class SucursalController extends AbstractRestController {
   @SoloAdministrador
   public ResponseEntity<ResponseVO> registrarSucursal(@RequestBody Sucursal sucursal) {
     ResultadoSP resultado = sucursalService.registrarSucursal(sucursal);
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), null);
   }
 
   // Actualizar sucursales
@@ -38,9 +37,8 @@ public class SucursalController extends AbstractRestController {
   public ResponseEntity<ResponseVO> actualizarSucursal(@PathVariable Integer id, @RequestBody Sucursal sucursal) {
     sucursal.setIdSucursal(id);
     ResultadoSP resultado = sucursalService.actualizarSucursal(sucursal);
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
+    ResponseVO.validar(resultado);
+    return  ok(resultado.getMensaje(), null);
   }
 
   // Dar de baja / Dar de alta a sucursal
@@ -55,9 +53,8 @@ public class SucursalController extends AbstractRestController {
     } else {
       resultado = sucursalService.darDeBajaSucursal(id);
     }
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), null);
   }
 
   // filtrar sucursal por nombre
@@ -65,9 +62,8 @@ public class SucursalController extends AbstractRestController {
   public ResponseEntity<ResponseVO> filtrarSucursalPorNombre(
       @RequestParam String nombre) {
     ResultadoSP resultado = sucursalService.filtrarSucursal(nombre);
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), resultado.getData());
   }
 
 }

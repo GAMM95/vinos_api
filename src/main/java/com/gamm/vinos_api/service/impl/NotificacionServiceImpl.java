@@ -6,46 +6,31 @@ import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.dto.view.UsuarioView;
 import com.gamm.vinos_api.repository.NotificacionRepository;
 import com.gamm.vinos_api.repository.UsuarioRepository;
-import com.gamm.vinos_api.security.util.SecurityUtils;
+import com.gamm.vinos_api.service.BaseService;
 import com.gamm.vinos_api.service.NotificacionService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
-public class NotificacionServiceImpl implements NotificacionService {
+@RequiredArgsConstructor
+public class NotificacionServiceImpl extends BaseService implements NotificacionService {
 
   private final NotificacionRepository notificacionRepository;
   private final SimpMessagingTemplate messagingTemplate;
   private final UsuarioRepository usuarioRepository;
 
-  public NotificacionServiceImpl(NotificacionRepository notificacionRepository,
-                                 SimpMessagingTemplate messagingTemplate, UsuarioRepository usuarioRepository) {
-    this.notificacionRepository = notificacionRepository;
-    this.messagingTemplate = messagingTemplate;
-    this.usuarioRepository = usuarioRepository;
-  }
+  // ─── Helpers privados ─────────────────────────────────────────────────────
 
-  // HELPERS PRIVADOS
-  private Integer getUsuarioActual() {
-    Integer idUsuario = SecurityUtils.getUserId();
-    if (idUsuario == null) {
-      throw new IllegalStateException("No hay usuario autenticado en el contexto de seguridad.");
-    }
-    return idUsuario;
-  }
-
-  private String getRolActual() {
-    String rol = SecurityUtils.getRol();
-    if (rol == null) {
-      throw new IllegalStateException("No hay rol asignado al usuario autenticado.");
-    }
-    return rol;
-  }
-
-  private NotificacionDTO buildWsDto(Integer idNotificacion, String tipo, String titulo,  String mensaje, String ruta) {
+  private NotificacionDTO buildWsDto(
+      Integer idNotificacion, String tipo,
+      String titulo, String mensaje, String ruta
+  ) {
     NotificacionDTO dto = new NotificacionDTO();
     dto.setIdNotificacion(idNotificacion);
     dto.setTipo(tipo);
@@ -57,7 +42,10 @@ public class NotificacionServiceImpl implements NotificacionService {
     return dto;
   }
 
-  private Notificacion buildModelo(Integer idUsuarioDestino, String rolDestino, String tipo, String titulo, String mensaje, String ruta) {
+  private Notificacion buildModelo(
+      Integer idUsuarioDestino, String rolDestino,
+      String tipo, String titulo, String mensaje, String ruta
+  ) {
     return Notificacion.builder()
         .idUsuarioDestino(idUsuarioDestino)
         .rolDestino(rolDestino)
@@ -69,14 +57,16 @@ public class NotificacionServiceImpl implements NotificacionService {
         .build();
   }
 
+  // ─── Notificaciones ───────────────────────────────────────────────────────
+
   @Override
-  public void notificarUsuario(Integer idUsuario, String username, String tipo, String titulo, String mensaje, String ruta) {
-    // 1. Guardar y obtener la notif con ID generado
+  public void notificarUsuario(
+      Integer idUsuario, String username,
+      String tipo, String titulo, String mensaje, String ruta
+  ) {
     Notificacion guardada = notificacionRepository.guardarNotificacion(
         buildModelo(idUsuario, null, tipo, titulo, mensaje, ruta)
     );
-
-    // 2. Enviar por WS con el ID real
     messagingTemplate.convertAndSendToUser(
         username,
         "/queue/notificaciones",
@@ -85,59 +75,67 @@ public class NotificacionServiceImpl implements NotificacionService {
   }
 
   @Override
-  public void notificarRol(String rol, String tipo, String titulo, String mensaje, String ruta) {
+  public void notificarRol(
+      String rol, String tipo,
+      String titulo, String mensaje, String ruta
+  ) {
     Notificacion guardada = notificacionRepository.guardarNotificacion(
         buildModelo(null, rol, tipo, titulo, mensaje, ruta)
     );
 
+    // mapa explícito — más fácil de mantener que un switch con string magic
     String topic = switch (rol) {
       case "Administrador" -> "/topic/notificaciones-admin";
-      case "Vendedor"      -> "/topic/notificaciones-vendedor";
-      default -> throw new IllegalArgumentException("Rol desconocido: " + rol);
+      case "Vendedor" -> "/topic/notificaciones-vendedor";
+      default -> {
+        log.warn("Intento de notificar rol desconocido: {}", rol); //
+        throw new IllegalArgumentException("Rol desconocido: " + rol);
+      }
     };
 
-    messagingTemplate.convertAndSend(topic,
+    messagingTemplate.convertAndSend(
+        topic,
         buildWsDto(guardada.getIdNotificacion(), tipo, titulo, mensaje, ruta)
     );
   }
 
   @Override
-  public void notificarRolYSucursal(String rol, Integer idSucursal, String tipo, String titulo, String mensaje, String ruta) {
-    List<UsuarioView> usuarios =
-        usuarioRepository.listarPorRolYSucursal(rol, idSucursal);
-
-    for (UsuarioView u : usuarios) {
-      notificarUsuario(
-          u.getIdUsuario(),
-          u.getUsername(),
-          tipo,
-          titulo,
-          mensaje,
-          ruta
-      );
-    }
+  public void notificarRolYSucursal(
+      String rol, Integer idSucursal,
+      String tipo, String titulo, String mensaje, String ruta
+  ) {
+    List<UsuarioView> usuarios = usuarioRepository.listarPorRolYSucursal(rol, idSucursal);
+    usuarios.forEach(u ->
+        notificarUsuario(u.getIdUsuario(), u.getUsername(), tipo, titulo, mensaje, ruta)
+    );
   }
+
+  // ─── Consultas del usuario autenticado ────────────────────────────────────
 
   @Override
   public ResponseVO obtenerMisNotificaciones() {
-    List<NotificacionDTO> data = notificacionRepository
-        .encontrarMisNotificaciones(getUsuarioActual(), getRolActual());
+    List<NotificacionDTO> data = notificacionRepository.encontrarMisNotificaciones(
+        getIdUsuarioAutenticado(), getRolAutenticado()
+    );
     return ResponseVO.success(data);
   }
 
   @Override
   public long contarNoLeidas() {
-    return notificacionRepository.contarNoLeidas(getUsuarioActual(), getRolActual());
+    return notificacionRepository.contarNoLeidas(
+        getIdUsuarioAutenticado(), getRolAutenticado()
+    );
   }
 
   @Override
   public void marcarLeida(Integer idNotificacion) {
-    Integer idUsuario = getUsuarioActual();
-    notificacionRepository.marcarLeida(idNotificacion, idUsuario);
+    notificacionRepository.marcarLeida(idNotificacion, getIdUsuarioAutenticado());
   }
 
   @Override
   public void marcarTodasLeidas() {
-    notificacionRepository.marcarTodasLeidas(getUsuarioActual(), getRolActual());
+    notificacionRepository.marcarTodasLeidas(
+        getIdUsuarioAutenticado(), getRolAutenticado()
+    );
   }
 }

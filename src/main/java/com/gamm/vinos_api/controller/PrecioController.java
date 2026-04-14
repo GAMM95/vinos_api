@@ -7,31 +7,26 @@ import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.security.annotations.SoloVendedor;
 import com.gamm.vinos_api.service.PrecioService;
 import com.gamm.vinos_api.util.ResultadoSP;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Precios", description = "Gestión de precios por sucursal")
 @RestController
-@RequestMapping("/api/precios")
+@RequestMapping("/api/v1/precios")
 @RequiredArgsConstructor
 public class PrecioController extends AbstractRestController {
 
   private final PrecioService precioService;
 
-  // Asignar precio
-  @PostMapping
-  public ResponseEntity<ResponseVO> asignarPrecio(
-      @RequestBody PrecioSucursal precio
-  ) {
-    ResultadoSP resultado = precioService.asignarPrecio(precio);
-    return resultado.esExitoso()
-        ? created(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
-  }
+  // ─── Consultas ────────────────────────────────────────────────────────────
 
-  // Listar todos los precios del stock (admin)
+  @Operation(summary = "Listar todos los precios del stock")
   @GetMapping
   @SoloAdministrador
   public ResponseEntity<ResponseVO> listarTotalPreciosStock() {
@@ -40,7 +35,8 @@ public class PrecioController extends AbstractRestController {
   }
 
   // Listar precios de la sucursal autenticada (vendedor)
-  @GetMapping("/mi-sucursal")
+  @Operation(summary = "Listar precios de la sucursal autenticada")
+  @GetMapping("/mi-sucursal")  //"Sucursal/actual"
   @SoloVendedor
   public ResponseEntity<ResponseVO> listarPreciosSucursal() {
     List<PrecioView> lista = precioService.listarPreciosStockSucursal();
@@ -48,21 +44,21 @@ public class PrecioController extends AbstractRestController {
   }
 
   // Filtrar por vino  o sucursal (admin)
-  @GetMapping("/filtrar")
+  @Operation(summary = "Filtrar precios por vino o sucursal")
+  @GetMapping("/filtrar") // "/filtro
   @SoloAdministrador
   public ResponseEntity<ResponseVO> filtrarPorVinoOSucursal(
       @RequestParam(required = false) String nombreVino,
       @RequestParam(required = false) Integer idSucursal
   ) {
     ResultadoSP resultado = precioService.filtrarPorVinoOSucursal(nombreVino, idSucursal);
-
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), resultado.getData());
   }
 
   // Ver historial de precios de un  vino
-  @GetMapping("/detalle")
+  @Operation(summary = "Ver historial de precios de un vino en una sucursal")
+  @GetMapping("/detalle") // "/historial
   public ResponseEntity<ResponseVO> listarDetallePrecios(
       @RequestParam Integer idVino,
       @RequestParam Integer idSucursal
@@ -72,13 +68,26 @@ public class PrecioController extends AbstractRestController {
   }
 
   // Filtrar historial por nombre de vino
+  @Operation(summary = "Filtrar historial de precios por nombre de vino")
+//  @GetMapping("/historial/filtro")
   @GetMapping("/filtrar-vino")
-  public ResponseEntity<ResponseVO> filtrarPorVino(
+  public ResponseEntity<ResponseVO> filtrarHistorialPorVino(
       @RequestParam String nombreVino
   ) {
     ResultadoSP resultado = precioService.filtrarPorVino(nombreVino);
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), resultado.getData());
   }
+  // ─── Mutaciones ───────────────────────────────────────────────────────────
+
+  @Operation(summary = "Asignar precio a un vino en una sucursal")
+  @PostMapping
+  public ResponseEntity<ResponseVO> asignarPrecio(
+    @Valid @RequestBody PrecioSucursal precio
+  ) {
+    ResultadoSP resultado = precioService.asignarPrecio(precio);
+    ResponseVO.validar(resultado);
+    return created(resultado.getMensaje(), resultado.getData());
+  }
+
 }

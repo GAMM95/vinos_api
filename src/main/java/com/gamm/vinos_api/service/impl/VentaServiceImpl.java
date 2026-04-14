@@ -7,10 +7,11 @@ import com.gamm.vinos_api.dto.view.CarritoVentaView;
 import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.dto.view.VentaView;
 import com.gamm.vinos_api.repository.VentaRepository;
-import com.gamm.vinos_api.security.util.SecurityUtils;
+import com.gamm.vinos_api.service.BaseService;
 import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.service.VentaService;
 import com.gamm.vinos_api.util.ResultadoSP;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,50 +19,28 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class VentaServiceImpl implements VentaService {
+@RequiredArgsConstructor
+public class VentaServiceImpl extends BaseService implements VentaService {
 
   // Inyección por constructor
   private final VentaRepository ventaRepository;
   private final WebSocketService webSocketService;
   private final NotificacionService notificacionService;
 
-  public VentaServiceImpl(VentaRepository ventaRepository,
-                          WebSocketService webSocketService,
-                          NotificacionService notificacionService) {
-    this.ventaRepository = ventaRepository;
-    this.webSocketService = webSocketService;
-    this.notificacionService = notificacionService;
-  }
-
-  // HELPERS PRIVADOS
-  private Integer getUsuarioActual() {
-    Integer idUsuario = SecurityUtils.getUserId();
-    if (idUsuario == null) throw new IllegalStateException("Usuario no autenticado.");
-    return idUsuario;
-  }
-
-  private String getRolActual() {
-    String rol = SecurityUtils.getRol();
-    if (rol == null) throw new IllegalStateException("Rol no disponible.");
-    return rol;
-  }
-
   // OPERACIONES DE CARRITO
   @Override
   public List<CarritoVentaView> listarCarritoVentaUsuario() {
-    // Consulta — sin notificación
-    return ventaRepository.listarCarritoVentaUsuario(getUsuarioActual());
+    return ventaRepository.listarCarritoVentaUsuario(getIdUsuarioAutenticado());
   }
 
   @Override
   public List<CarritoVentaView> listarCarritoVentaAdmin(Integer idVenta) {
-    // Consulta — sin notificación
     return ventaRepository.listarCarritoVentaAdmin(idVenta);
   }
 
   @Override
   public ResultadoSP agregarCarritoVenta(Venta venta) {
-    Integer idUsuario = getUsuarioActual();
+    Integer idUsuario = getIdUsuarioAutenticado();
     DetalleVenta detalle = venta.getDetalles().stream()
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException("Debe enviar un producto."));
@@ -70,14 +49,14 @@ public class VentaServiceImpl implements VentaService {
 
   @Override
   public ResultadoSP retirarProductoCarrito(Integer idVenta, Integer idVino) {
-    Integer idUsuario = getUsuarioActual();
+    Integer idUsuario = getIdUsuarioAutenticado();
     return ventaRepository.retirarProductoCarrito(idUsuario, idVenta, idVino);
   }
 
   // OPERACIONES PRINCIPALES — notifican al vendedor + admins + dashboard
   @Override
   public ResultadoSP confirmarVenta(Integer idVenta, String metodoPago, BigDecimal descuento) {
-    Integer idUsuario = getUsuarioActual();
+    Integer idUsuario = getIdUsuarioAutenticado();
     ResultadoSP resultado = ventaRepository.confirmarVenta(idUsuario, idVenta, metodoPago, descuento);
 
     if (resultado.esExitoso()) {
@@ -100,7 +79,7 @@ public class VentaServiceImpl implements VentaService {
 
   @Override
   public ResultadoSP anularVenta(Integer idVenta) {
-    String rolActual = getRolActual();
+    String rolActual = getRolAutenticado();
     String rolNormalizado = rolActual.substring(0, 1).toUpperCase() + rolActual.substring(1).toLowerCase();
 
     // 1. Obtener venta ANTES de anular
@@ -143,7 +122,7 @@ public class VentaServiceImpl implements VentaService {
   // CONSULTAS — sin notificaciones (son lecturas, no acciones de estado)
   @Override
   public ResponseVO listarVentasUsuario(int pagina, int limite) {
-    Integer idUsuario = getUsuarioActual();
+    Integer idUsuario = getIdUsuarioAutenticado();
     List<VentaView> ventasPagina = ventaRepository.listarVentasUsuario(idUsuario, pagina, limite);
     long totalRegistros = ventaRepository.contarVentasUsuario(idUsuario);
     int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
@@ -164,9 +143,8 @@ public class VentaServiceImpl implements VentaService {
   }
 
   @Override
-  public ResponseVO filtrarMisVentasPorRango(LocalDate fechaInicio, LocalDate fechaFin,
-                                             int pagina, int limite) {
-    Integer idUsuario = getUsuarioActual();
+  public ResponseVO filtrarMisVentasPorRango(LocalDate fechaInicio, LocalDate fechaFin,  int pagina, int limite) {
+    Integer idUsuario = getIdUsuarioAutenticado();
     ResultadoSP resultadoSP = ventaRepository.filtrarMisVentasPorFechas(
         idUsuario, fechaInicio, fechaFin, pagina, limite
     );

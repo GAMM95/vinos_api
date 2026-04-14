@@ -7,12 +7,11 @@ import com.gamm.vinos_api.dto.view.CompraView;
 import com.gamm.vinos_api.dto.view.ProductosCarritoView;
 import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.repository.CompraRepository;
+import com.gamm.vinos_api.service.BaseService;
 import com.gamm.vinos_api.service.CompraService;
-import com.gamm.vinos_api.security.util.SecurityUtils;
 import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,33 +19,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CompraServiceImpl implements CompraService {
+public class CompraServiceImpl extends BaseService implements CompraService {
 
   private final CompraRepository compraRepository;
   private final WebSocketService webSocketService;
   private final NotificacionService notificacionService;
 
   /* Helpers */
-  private Integer getUsuario() {
-    Integer idUsuario = SecurityUtils.getUserId();
-    if (idUsuario == null) throw new IllegalStateException("Usuario no logueado");
-    return idUsuario;
-  }
-
-  private String getRolActual() {
-    String rol = SecurityUtils.getRol();
-    if (rol == null) throw new IllegalArgumentException("Rol no disponible");
-    return rol;
-  }
-
-  private String getNombreCompletoAutenticado() {
-    String nombreCompleto = SecurityUtils.getNombreCompleto();
-    if (nombreCompleto == null) {
-      throw new IllegalStateException("El usuario no logueado");
-    }
-    return nombreCompleto;
-  }
-
   private ResponseVO listarDetalleCompra(Integer idCompra, Integer idUsuario) {
     List<CompraView> detalles =
         idUsuario != null
@@ -63,7 +42,7 @@ public class CompraServiceImpl implements CompraService {
 
   @Override
   public ResultadoSP agregarProductoCarrito(Compra compra) {
-    Integer idUsuario = getUsuario();
+    Integer idUsuario = getIdUsuarioAutenticado();
     return compraRepository.agregarProductoCarrito(
         idUsuario,
         compra,
@@ -73,13 +52,13 @@ public class CompraServiceImpl implements CompraService {
 
   @Override
   public ResultadoSP eliminarProductoCarrito(Integer idDetalleCompra) {
-    Integer idUsuario = getUsuario();
+    Integer idUsuario = getIdUsuarioAutenticado();
     return compraRepository.eliminarProductoCarrito(idUsuario, idDetalleCompra);
   }
 
   @Override
   public ResultadoSP actualizarCantidadProductoCarrito(Compra compra) {
-    Integer idUsuario = getUsuario();
+    Integer idUsuario = getIdUsuarioAutenticado();
     return compraRepository.actualizarCantidadProductoCarrito(
         idUsuario,
         compra,
@@ -89,8 +68,7 @@ public class CompraServiceImpl implements CompraService {
 
   @Override
   public ResultadoSP confirmarCompra(Compra compra) {
-    Integer idUsuario = getUsuario();
-    String rol = getRolActual();
+    Integer idUsuario = getIdUsuarioAutenticado();
 
     if (compra == null) {
       compra = new Compra();
@@ -102,11 +80,10 @@ public class CompraServiceImpl implements CompraService {
     }
     CompraView c = compraRepository.obtenerCompraPorId(compra.getIdCompra());
 
-    // Actualizaciones del sistema
     webSocketService.notifyDashboardUpdate();
     webSocketService.notifyCompraUpdate();
     // notificar al administrador que el vendedor ha realizado una nueva compra
-    if ("VENDEDOR".equalsIgnoreCase(rol)) {
+    if (!esAdministrador()) {
       notificacionService.notificarRol(
           "Administrador",
           "SUCCESS",
@@ -116,7 +93,7 @@ public class CompraServiceImpl implements CompraService {
       );
     }
       // Notificar a todos los vendedores que se ha realizado una compra
-    else if ("ADMINISTRADOR".equalsIgnoreCase(rol)) {
+    else if (esAdministrador()) {
       notificacionService.notificarRol(
           "Vendedor",
           "INFO",
@@ -139,7 +116,7 @@ public class CompraServiceImpl implements CompraService {
 
       String rol = compra.getRol();
       // Notificar a los vendedores en general
-      if ("ADMINISTRADOR".equalsIgnoreCase(rol)) {
+      if (esAdministrador()) {
         // La compra es del admin → notificar a todos los vendedores
         notificacionService.notificarRol(
             "Vendedor",
@@ -195,7 +172,7 @@ public class CompraServiceImpl implements CompraService {
 
   @Override
   public long contarProductosCarritoUsuario() {
-    Integer idUsuario = getUsuario();
+    Integer idUsuario = getIdUsuarioAutenticado();
     Compra carrito = compraRepository.obtenerCarritoPendiente(idUsuario);
     return carrito != null
         ? compraRepository.contarProductosCarrito(idUsuario, carrito.getIdCompra())
@@ -204,7 +181,7 @@ public class CompraServiceImpl implements CompraService {
 
   @Override
   public List<ProductosCarritoView> listarProductosCarritoUsuario() {
-    Integer idUsuario = getUsuario();
+    Integer idUsuario = getIdUsuarioAutenticado();
     Compra carrito = compraRepository.obtenerCarritoPendiente(idUsuario);
     return carrito != null
         ? compraRepository.listarProductosCarritos(idUsuario, carrito.getIdCompra())
@@ -213,7 +190,7 @@ public class CompraServiceImpl implements CompraService {
 
   @Override
   public ResultadoSP anularCompra(Integer idCompra) {
-    Integer idUsuario = getUsuario();
+    Integer idUsuario = getIdUsuarioAutenticado();
     ResultadoSP resultado = compraRepository.anularCompra(idUsuario, idCompra);
     CompraView compra = compraRepository.obtenerCompraPorId(idCompra);
     if (resultado.esExitoso()) {
@@ -233,7 +210,7 @@ public class CompraServiceImpl implements CompraService {
 
   @Override
   public ResultadoSP revertirCompra(Integer idCompra) {
-    Integer idUsuario = getUsuario();
+    Integer idUsuario = getIdUsuarioAutenticado();
     ResultadoSP resultado = compraRepository.revertirCompra(idUsuario, idCompra);
     CompraView compra = compraRepository.obtenerCompraPorId(idCompra);
 
@@ -254,7 +231,7 @@ public class CompraServiceImpl implements CompraService {
 
   @Override
   public ResponseVO filtrarMisComprasPorFechas(LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
-    Integer idUsuario = getUsuario();
+    Integer idUsuario = getIdUsuarioAutenticado();
     ResultadoSP resultado = compraRepository.filtrarMisComprasRangoFechas(idUsuario, fechaInicio, fechaFin);
 
     if (!resultado.esExitoso()) {
@@ -298,7 +275,7 @@ public class CompraServiceImpl implements CompraService {
 
   @Override
   public ResponseVO listarComprasUsuario(int pagina, int limite) {
-    Integer idUsuario = getUsuario();
+    Integer idUsuario = getIdUsuarioAutenticado();
     // Obtener la lista de compras de cada usuario
     List<CompraView> comprasPagina = compraRepository.listarComprasUsuario(idUsuario, pagina, limite);
 
@@ -318,7 +295,7 @@ public class CompraServiceImpl implements CompraService {
 
   @Override
   public ResponseVO listarDetalleCompraUsuario(Integer idCompra) {
-    return listarDetalleCompra(idCompra, getUsuario());
+    return listarDetalleCompra(idCompra, getIdUsuarioAutenticado());
   }
 
   @Override

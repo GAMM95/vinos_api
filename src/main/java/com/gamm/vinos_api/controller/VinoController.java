@@ -6,70 +6,31 @@ import com.gamm.vinos_api.security.annotations.Publico;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.service.VinoService;
 import com.gamm.vinos_api.util.ResultadoSP;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Vinos", description = "Gestión del catálogo de vinos")
 @RestController
-@RequestMapping("/api/vinos")
+@RequestMapping("/api/v1/vinos")
 @RequiredArgsConstructor
 public class VinoController extends AbstractRestController {
 
-  @Autowired
-  private VinoService vinoService;
+  private final VinoService vinoService;
 
-  // Registrar vino
-  @PostMapping
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> registrarVino(@RequestBody Vino vino) {
-    ResultadoSP resultado = vinoService.registrarVino(vino);
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
-  }
+  // ─── Consultas ────────────────────────────────────────────────────────────
 
-  // Actualizar vinos
-  @PutMapping("/{id}")
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> actualizarVino(@PathVariable Integer id, @RequestBody Vino vino) {
-    vino.setIdVino(id);
-    ResultadoSP resultado = vinoService.actualizarVino(vino);
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
-  }
-
-  // Eliminar vino
-  @PatchMapping("/{id}/eliminar")
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> eliminarVino(@PathVariable Integer id) {
-    ResultadoSP resultado = vinoService.eliminarVinoPorId(id);
-
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
-  }
-
-  // Buscar vinos por nombre
-  @GetMapping("/filtrar")
-  @Publico
-  public ResponseEntity<ResponseVO> filtrarVinoPorNombre(@RequestParam String nombre) {
-    ResultadoSP resultado = vinoService.filtrarVinoPorNombre(nombre);
-
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
-  }
-
-  // Listar vinos
+  @Operation(summary = "Listar todos los vinos")
   @GetMapping
   @Publico
   public ResponseEntity<ResponseVO> listarVinos() {
     return ok(vinoService.listarVinos());
   }
 
-  // Listar vinos paginados
+  @Operation(summary = "Listar vinos paginados")
   @GetMapping("/paginado")
   @Publico
   public ResponseEntity<ResponseVO> listarVinosPaginados(
@@ -80,14 +41,14 @@ public class VinoController extends AbstractRestController {
     return ResponseEntity.ok(response);
   }
 
-  // Listar vinos disponibles para compra
+  @Operation(summary = "Listar vinos disponibles para compra")
   @GetMapping("/compra")
   @Publico
   public ResponseEntity<ResponseVO> listarVinosParaCompra() {
     return ok(vinoService.listarVinosParaCompra());
   }
 
-  // Listar vinos disponibles para compra paginados
+  @Operation(summary = "Listar vinos para compra paginados")
   @GetMapping("/compra/paginado")
   @Publico
   public ResponseEntity<ResponseVO> listarVinosParaCompraPaginados(
@@ -98,8 +59,8 @@ public class VinoController extends AbstractRestController {
     return ResponseEntity.ok(response);
   }
 
-  // Filtrar vinos para compra (Tipo 5)
-  @GetMapping("/compra/filtrar")
+  @Operation(summary = "Filtrar vinos para compra por múltiples criterios")
+  @GetMapping("/compra/filtro")
   @Publico
   public ResponseEntity<ResponseVO> filtrarVinosParaCompra(
       @RequestParam(required = false) String nombre,
@@ -112,15 +73,12 @@ public class VinoController extends AbstractRestController {
     ResultadoSP resultado = vinoService.filtrarVinosParaCompra(
         nombre, proveedores, categorias, presentaciones, tiposVino, origenVino
     );
-
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), resultado.getData());
   }
 
-
-  // Filtrar vinos para compra paginados
-  @GetMapping("/compra/filtrar/paginado")
+  @Operation(summary = "Filtrar vinos para compra por criterios — paginado")
+  @GetMapping("/compra/filtro/paginado")
   @Publico
   public ResponseEntity<ResponseVO> filtrarVinosParaCompraPaginados(
       @RequestParam(required = false) String nombre,
@@ -134,6 +92,48 @@ public class VinoController extends AbstractRestController {
   ) {
     ResponseVO response = vinoService.filtrarVinosParaCompraPaginados(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino, pagina, limite);
     return ResponseEntity.ok(response);
+  }
+
+  @Operation(summary = "Filtrar vinos por nombre")
+  @GetMapping("/filtrar")
+  @Publico
+  public ResponseEntity<ResponseVO> filtrarVinoPorNombre(@RequestParam String nombre) {
+    ResultadoSP resultado = vinoService.filtrarVinoPorNombre(nombre);
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), resultado.getData());
+  }
+
+  // ─── Mutaciones ────────────────────────────────────────────────────────────
+
+  @Operation(summary = "Registrar nuevo vino")
+  @PostMapping
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> registrarVino(@Valid @RequestBody Vino vino) {
+    ResultadoSP resultado = vinoService.registrarVino(vino);
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), null);
+  }
+
+  @Operation(summary = "Actualizar vino")
+  @PutMapping("/{id}")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> actualizarVino(
+      @PathVariable Integer id,
+      @RequestBody Vino vino
+  ) {
+    vino.setIdVino(id);
+    ResultadoSP resultado = vinoService.actualizarVino(vino);
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), null);
+  }
+
+  @Operation(summary = "Eliminar vino (baja lógica)")
+  @PatchMapping("/{id}/eliminacion")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> eliminarVino(@PathVariable Integer id) {
+    ResultadoSP resultado = vinoService.eliminarVinoPorId(id);
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), null);
   }
 
 }

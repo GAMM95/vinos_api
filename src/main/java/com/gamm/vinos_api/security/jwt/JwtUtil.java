@@ -16,37 +16,36 @@ public class JwtUtil {
 
   private final Key key;
   private final long expiracion;
+  private final long refreshExpiracion;
 
   public JwtUtil(
       @Value("${jwt.secret}") String secret,
-      @Value("${jwt.expiration}") long expiracion
+      @Value("${jwt.expiration}") long expiracion,
+      @Value("${jwt.refresh-expiration}") long refreshExpiration
   ) {
     if (secret == null || secret.length() < 32)
       throw new IllegalArgumentException("jwt.secret mínimo 32 chars para HS256");
 
     this.key = Keys.hmacShaKeyFor(secret.getBytes());
     this.expiracion = expiracion;
+    this.refreshExpiracion = refreshExpiration;
   }
 
-  // Generar token
   public String generarToken(String username) {
+    return buildToken(username, expiracion, "access");
+  }
+
+  public String generarRefreshToken(String username) {
+    return buildToken(username, refreshExpiracion, "refresh");
+  }
+
+  // Metodo privado reutilizable
+  private String buildToken(String username, long expiracion, String type) {
     return Jwts.builder()
         .setSubject(username)
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + expiracion))
-        .claim("type", "access")
-        .signWith(key, SignatureAlgorithm.HS256)
-        .compact();
-  }
-
-  // Generar Refresh Token
-  public String generarRefreshToken(String username) {
-    long refreshExpiration = 7 * 24 * 60 * 60 * 1000; // 7 días
-    return Jwts.builder()
-        .setSubject(username)
-        .setIssuedAt(new Date())
-        .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
-        .claim("type", "refresh")
+        .claim("type", type)
         .signWith(key, SignatureAlgorithm.HS256)
         .compact();
   }
@@ -60,11 +59,11 @@ public class JwtUtil {
           .parseClaimsJws(token)
           .getBody();
     } catch (ExpiredJwtException ex) {
-      throw new TokenExpiradoException("El token ha expirado");
-    } catch (MalformedJwtException | SecurityException  | IllegalArgumentException ex) {
-      throw new TokenInvalidoException("Token inválido");
+      throw new TokenExpiradoException("El token ha expirado", ex);
+    } catch (MalformedJwtException | SecurityException | IllegalArgumentException ex) {
+      throw new TokenInvalidoException("Token inválido", ex);
     } catch (Exception ex) {
-      throw new TokenInvalidoException("Error al procesar el token");
+      throw new TokenInvalidoException("Error al procesar el token", ex);
     }
   }
 
@@ -82,6 +81,28 @@ public class JwtUtil {
       throw new InvalidRefreshTokenException("Este no es un refresh token válido");
     }
   }
-
-
 }
+
+
+// Generar token
+//  public String generarToken(String username) {
+//    return Jwts.builder()
+//        .setSubject(username)
+//        .setIssuedAt(new Date())
+//        .setExpiration(new Date(System.currentTimeMillis() + expiracion))
+//        .claim("type", "access")
+//        .signWith(key, SignatureAlgorithm.HS256)
+//        .compact();
+//  }
+//
+//  // Generar Refresh Token
+//  public String generarRefreshToken(String username) {
+//    long refreshExpiration = 7 * 24 * 60 * 60 * 1000; // 7 días
+//    return Jwts.builder()
+//        .setSubject(username)
+//        .setIssuedAt(new Date())
+//        .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
+//        .claim("type", "refresh")
+//        .signWith(key, SignatureAlgorithm.HS256)
+//        .compact();
+//  }

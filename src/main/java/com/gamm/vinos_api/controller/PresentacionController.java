@@ -1,73 +1,67 @@
 package com.gamm.vinos_api.controller;
 
-import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.domain.model.Presentacion;
+import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.service.PresentacionService;
 import com.gamm.vinos_api.util.ResultadoSP;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Presentaciones", description = "Gestión de presentaciones de vinos")
 @RestController
-@RequestMapping("/api/presentaciones")
+@RequestMapping("/api/v1/presentaciones")
 @RequiredArgsConstructor
+@SoloAdministrador
 public class PresentacionController extends AbstractRestController {
   private final PresentacionService presentacionService;
 
-  // Registrar presentacion
+  @Operation(summary = "Registrar presentación")
   @PostMapping
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> guardarPresentacion(@RequestBody Presentacion presentacion) {
-
+  public ResponseEntity<ResponseVO> guardarPresentacion(@Valid @RequestBody Presentacion presentacion) {
     ResultadoSP resultado = presentacionService.guardarPresentacion(presentacion);
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), null);
   }
 
-  // Actualizar presentacion
+  @Operation(summary = "Actualizar presentación")
   @PutMapping("/{id}")
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> actualizarPresentacion(@PathVariable Integer id, @RequestBody Presentacion presentacion) {
+  public ResponseEntity<ResponseVO> actualizarPresentacion(
+      @PathVariable Integer id,
+      @Valid @RequestBody Presentacion presentacion
+  ) {
     presentacion.setIdPresentacion(id);
     ResultadoSP resultado = presentacionService.actualizarPresentacion(presentacion);
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), null);
   }
 
-  // Dar de baja/alta a presentación
-  @PatchMapping("/{idPresentacion}/estado")
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> cambiarEstadoPresentacion(
-      @PathVariable Integer idPresentacion,
-      @RequestParam("disponible") boolean disponible) {
-
-    ResultadoSP resultado;
-    if (disponible) {
-      resultado = presentacionService.darAlta(idPresentacion);
-    } else {
-      resultado = presentacionService.darBaja(idPresentacion);
-    }
-
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
+  @Operation(summary = "Cambiar estado de presentación")
+  @PatchMapping("/{id}/estado")
+  public ResponseEntity<ResponseVO> cambiarEstado(
+      @PathVariable Integer id,
+      @RequestParam boolean disponible
+  ) {
+    ResultadoSP resultado = disponible
+        ? presentacionService.darAlta(id)
+        : presentacionService.darBaja(id);
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), null);
   }
 
-  // Filtrar usuarios
-  @GetMapping("/filtrar")
-  @SoloAdministrador
-  public ResponseEntity<ResponseVO> filtrarPresentaciones(@RequestParam String descripcion  ) {
+  @Operation(summary = "Filtrar presentaciones por descripción")
+  @GetMapping("/filtro") // ✅ /filtrar → /filtro
+  public ResponseEntity<ResponseVO> filtrarPresentaciones(@RequestParam String descripcion) {
     ResultadoSP resultado = presentacionService.filtrarPresentacion(descripcion);
-
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
+    ResponseVO.validar(resultado);
+    return ok(resultado.getMensaje(), resultado.getData());
   }
 
-  // Listar presentaciones
+  @Operation(summary = "Listar presentaciones")
   @GetMapping
   public ResponseEntity<ResponseVO> listarPresentaciones() {
     return ok(presentacionService.listarPresentaciones());

@@ -9,6 +9,8 @@ import com.gamm.vinos_api.security.dto.*;
 import com.gamm.vinos_api.security.service.AuthService;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.util.ResultadoSP;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +18,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Tag(name = "Autenticación", description = "Registro, login y gestión de contraseñas")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController extends AbstractRestController {
 
   private final UsuarioService usuarioService;
   private final AuthService authService;
 
-  @PostMapping("/registrar")
-  public ResponseEntity<ResponseVO> registrar(@RequestBody RegisterRequest req) {
+  // ─── Registro ─────────────────────────────────────────────────────────────
+
+  @Operation(summary = "Registrar nuevo usuario vendedor")
+  @PostMapping("/registro")
+  public ResponseEntity<ResponseVO> registrar(@Valid @RequestBody RegisterRequest req) {
     Persona p = new Persona();
     p.setNombres(req.nombres());
     p.setApellidoPaterno(req.apellidoPaterno());
@@ -37,82 +43,73 @@ public class AuthController extends AbstractRestController {
     u.setUsername(req.username());
     u.setPassword(req.password());
 
+    // registrarUsuario lanza BusinessException si el SP retorna pRespuesta=0
     ResultadoSP r = usuarioService.registrarUsuario(u);
+    ResponseVO.validar(r);
 
-    return r.esExitoso()
-        ? created(r.getMensaje(), r.getData())
-        : badRequest(r.getMensaje());
+    return created(r.getMensaje(), r.getData());
   }
 
-  @PostMapping("/login")
-  public ResponseEntity<ResponseVO> login(@RequestBody LoginRequest req) {
-    ResultadoSP resultado = authService.login(req.username(), req.password());
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
-  }
+  // ─── Login ────────────────────────────────────────────────────────────────
 
-  @PostMapping("/refresh")
-  public ResponseEntity<ResponseVO> refresh(@RequestBody Map<String, String> body) {
-    String refreshToken = body.get("refreshToken");
-    String newAccessToken = authService.refreshToken(refreshToken);
-    AuthResponse data = new AuthResponse(newAccessToken, refreshToken, "OK");
+  @Operation(summary = "Iniciar sesión")
+  @PostMapping("/sesion")
+  public ResponseEntity<ResponseVO> login(@Valid @RequestBody LoginRequest req) {
+    // lanza BusinessException si el usuario no existe, está inactivo o credenciales incorrectas
+    Map<String, Object> data = authService.login(req.username(), req.password());
     return ok(data);
   }
 
-  // Resetear contraseña (admin)
-  @PatchMapping("/password/reset/{id}")
+  // ─── Refresh token ────────────────────────────────────────────────────────
+
+  @Operation(summary = "Renovar access token usando refresh token")
+  @PostMapping("/token/refresh")
+  public ResponseEntity<ResponseVO> refresh(@RequestBody Map<String, String> body) {
+    String newAccessToken = authService.refreshToken(body.get("refreshToken"));
+    return ok(new AuthResponse(newAccessToken, body.get("refreshToken"), "OK"));
+  }
+
+  // ─── Perfil ───────────────────────────────────────────────────────────────
+
+  @Operation(summary = "Obtener perfil del usuario autenticado")
+  @GetMapping("/usuarios/me")
+  public ResponseEntity<ResponseVO> obtenerPerfil() {
+    return ok(authService.obtenerPerfil());
+  }
+
+  // ─── Contraseñas ──────────────────────────────────────────────────────────
+
+  @Operation(summary = "Restablecer contraseña de un usuario (solo administrador)")
   @SoloAdministrador
+  @PatchMapping("/usuarios/{id}/password")
   public ResponseEntity<ResponseVO> resetearPassword(
       @PathVariable Integer id,
-      @RequestBody ResetPasswordRequest req
+      @Valid @RequestBody ResetPasswordRequest req
   ) {
-    ResultadoSP resultado =
-        usuarioService.resetearPassword(id, req.nuevaPassword());
-
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
+    ResultadoSP resultado = usuarioService.resetearPassword(id, req.nuevaPassword());
+    ResponseVO.validar(resultado); // → "El usuario no existe." / "Debe especificar la nueva contraseña."
+    return ok(resultado.getMensaje(), null);
   }
 
-  @PatchMapping("/password")
-  public ResponseEntity<ResponseVO> changePassword(
-      @RequestBody ChangePasswordRequest req
-  ) {
-    ResultadoSP resultado = usuarioService.cambiarPassword(
-        req.actual(),
-        req.nueva()
-    );
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
+  @Operation(summary = "Cambiar contraseña del usuario autenticado")
+  @PatchMapping("/usuarios/me/password")
+  public ResponseEntity<ResponseVO> cambiarPassword(@Valid @RequestBody ChangePasswordRequest req) {
+    ResultadoSP resultado = usuarioService.cambiarPassword(req.actual(), req.nueva());
+    ResponseVO.validar(resultado); // → "La contraseña actual es incorrecta." / "Usuario no encontrado."
+    return ok(resultado.getMensaje(), null);
   }
 
-  @GetMapping("/me")
-  public ResponseEntity<ResponseVO> obtenerPerfil() {
-    ResultadoSP resultado = authService.obtenerPerfilDesdeToken();
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), resultado.getData())
-        : badRequest(resultado.getMensaje());
-  }
-
-  @PostMapping("/password/recuperar")
+  @Operation(summary = "Solicitar email de recuperación de contraseña")
+  @PostMapping("/password/recuperacion")
   public ResponseEntity<ResponseVO> solicitarRecuperacion(@Valid @RequestBody EmailRequest request) {
-    String email = request.email();
-    ResultadoSP resultado = authService.generarTokenRecuperacion(email);
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null) // No enviamos el token al cliente
-        : badRequest(resultado.getMensaje());
+    authService.generarTokenRecuperacion(request.email());
+    return ok("Se envió un email con instrucciones.", null);
   }
 
-  // Restaurar contraseña usando token
-  @PostMapping("/password/reset/token")
+  @Operation(summary = "Restaurar contraseña usando token recibido por email")
+  @PostMapping("/password/restauracion")
   public ResponseEntity<ResponseVO> restaurarPassword(@Valid @RequestBody ResetPasswordRequestEmail request) {
-    ResultadoSP resultado = authService.resetearPasswordConToken(request.token(), request.nuevaPassword());
-
-    return resultado.esExitoso()
-        ? ok(resultado.getMensaje(), null)
-        : badRequest(resultado.getMensaje());
+    authService.resetearPasswordConToken(request.token(), request.nuevaPassword());
+    return ok("Contraseña actualizada correctamente.", null);
   }
-
 }

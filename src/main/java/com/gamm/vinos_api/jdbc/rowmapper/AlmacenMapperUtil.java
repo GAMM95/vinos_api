@@ -15,8 +15,6 @@ public class AlmacenMapperUtil {
 
   // Para la vista detallada del stock del almacen
   public static void mapDetallado(AlmacenView v, ResultSet rs) throws SQLException {
-    v.setIdAlmacen(rs.getInt("idAlmacen"));
-    v.setIdCatalogo(rs.getInt("idCatalogo"));
     v.setNombreVino(rs.getString("nombreVino"));
     v.setPresentacion(rs.getString("presentacion"));
     v.setTotalUnidades(rs.getInt("totalUnidades"));
@@ -26,6 +24,17 @@ public class AlmacenMapperUtil {
   public static void mapPorVino(AlmacenView v, ResultSet rs) throws SQLException {
     v.setIdVino(rs.getInt("idVino"));
     v.setNombreVino(rs.getString("nombreVino"));
+  }
+
+  public static void mapDistribucion (AlmacenView v, ResultSet rs) throws SQLException {
+    v.setIdAlmacen(rs.getInt("idAlmacen"));
+    v.setIdCatalogo(rs.getInt("idCatalogo"));
+    v.setNombreVino(rs.getString("nombreVino"));
+    v.setOrigen(rs.getString("origen"));
+    v.setPresentacion(rs.getString("presentacion"));
+    v.setTotalUnidades(rs.getInt("totalUnidades"));
+    v.setTotalLitros(rs.getBigDecimal("totalLitros"));
+    v.setFechaDistribucion(rs.getTimestamp("fechaDistribucion").toLocalDateTime().toLocalDate());
   }
 
 }

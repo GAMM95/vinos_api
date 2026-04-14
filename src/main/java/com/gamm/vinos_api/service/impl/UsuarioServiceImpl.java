@@ -7,19 +7,22 @@ import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.repository.UsuarioAuthRepository;
 import com.gamm.vinos_api.repository.UsuarioRepository;
 import com.gamm.vinos_api.security.util.SecurityUtils;
+import com.gamm.vinos_api.service.BaseService;
 import com.gamm.vinos_api.service.FotoService;
 import com.gamm.vinos_api.service.UsuarioService;
 import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class UsuarioServiceImpl implements UsuarioService {
+public class UsuarioServiceImpl extends BaseService implements UsuarioService {
 
   private final UsuarioRepository usuarioRepository;
   private final UsuarioAuthRepository usuarioAuthRepository;
@@ -83,10 +86,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
   @Override
   public ResultadoSP cambiarPassword(String actual, String nueva) {
-    Integer idUsuario = SecurityUtils.getUserId();
-    if (idUsuario == null) {
-      return new ResultadoSP(0, "Usuario no autenticado");
-    }
+    Integer idUsuario = getIdUsuarioAutenticado();
+
     Usuario u = usuarioRepository.obtenerUsuarioConPassword(idUsuario);
     if (u == null) {
       return new ResultadoSP(0, "Usuario no encontrado");
@@ -97,11 +98,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     String nuevaEncriptada = passwordEncoder.encode(nueva);
-    return usuarioAuthRepository.cambiarPassword(
-        idUsuario,
-        u.getPassword(),
-        nuevaEncriptada
-    );
+    return usuarioAuthRepository.cambiarPassword(idUsuario, u.getPassword(), nuevaEncriptada);
   }
 
   @Override
@@ -119,13 +116,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
 
     // Retornar usando ResponseVO con paginación
-    return ResponseVO.paginated(
-        usuariosPagina,   // data
-        pagina,           // página actual
-        limite,           // registros por página
-        totalPaginas,     // total de páginas
-        totalRegistros    // total de registros
-    );
+    return ResponseVO.paginated(usuariosPagina, pagina, limite, totalPaginas, totalRegistros);
   }
 
   @Override
@@ -133,15 +124,13 @@ public class UsuarioServiceImpl implements UsuarioService {
     try {
       String ruta = fotoService.guardarFoto(idUsuario, foto);
       ResultadoSP resultado = usuarioRepository.actualizarFoto(idUsuario, ruta);
-      if (!resultado.esExitoso()) {
-        return resultado; // error, no emitir
-      }
+      if (!resultado.esExitoso())   return resultado;
       webSocketService.notifyUsuarioUpdate();
       resultado.setData(ruta);
       return resultado;
-
     } catch (Exception e) {
-      return new ResultadoSP(0, "Error al guardar la foto: " + e.getMessage());
+      log.error("Error al guardar foto para idUsuario {}: {}", idUsuario, e.getMessage());
+      return new ResultadoSP(0, "Error al procesar la foto");
     }
   }
 

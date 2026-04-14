@@ -8,17 +8,21 @@ import com.gamm.vinos_api.util.ResultadoSP;
 import java.util.List;
 
 public interface VinoRepository {
+
+  // ─── CRUD ─────────────────────────────────────────────────────────────────
   ResultadoSP registrarVino(Vino vino);
 
   ResultadoSP actualizarVino(Vino vino);
 
   ResultadoSP eliminarVinoPorId(Integer idVino);
 
-  ResultadoSP filtrarVinoPorNombre(String nombre);
+  // ─── Catálogo ─────────────────────────────────────────────────────────────
 
   List<VinoView> listarVinos();
 
   List<VinoView> listarVinosPaginados(int pagina, int limite);
+
+  ResultadoSP filtrarVinoPorNombre(String nombre);
 
   Long contarVinos();
 

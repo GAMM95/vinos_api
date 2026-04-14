@@ -2,62 +2,65 @@ package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.service.CombosService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Combos", description = "Datos para listas desplegables en formularios")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/combo")
+@RequestMapping("/api/v1/combos")
 public class CombosController extends AbstractRestController {
   private final CombosService combosService;
 
-  // Llenar el combo de unidades de volumen
-  @GetMapping("/unidad-volumen")
+  @Operation(summary = "Combo de unidades de volumen")
+  @GetMapping("/unidades-volumen")
   public ResponseEntity<ResponseVO> comboUnidadVolumen() {
     return ok(combosService.comboUnidadVolumen());
   }
 
-  // Llenar el combo de categorías
-  @GetMapping("/categoria")
+  @Operation(summary = "Combo de categorías")
+  @GetMapping("/categorias")
   public ResponseEntity<ResponseVO> comboCategoria() {
     return ok(combosService.comboCategoria());
   }
 
-  // Llenar el combo de proveedores
-  @GetMapping("/proveedor")
+  @Operation(summary = "Combo de proveedores")
+  @GetMapping("/proveedores")
   public ResponseEntity<ResponseVO> comboProveedor() {
     return ok(combosService.comboProveedor());
   }
 
-  // Llenar el combo de presentaciones
-  @GetMapping("/presentacion")
+  @Operation(summary = "Combo de presentaciones")
+  @GetMapping("/presentaciones")
   public ResponseEntity<ResponseVO> comboPresentacion() {
     return ok(combosService.comboPresentacion());
   }
 
-  // Llenar el combo de vinos
-  @GetMapping("/vino")
+  @Operation(summary = "Combo de vinos")
+  @GetMapping("/vinos")
   public ResponseEntity<ResponseVO> comboVino() {
     return ok(combosService.comboVino());
   }
 
-  // Llenar el combo de sucursales
-  @GetMapping("/sucursal")
+  @Operation(summary = "Combo de sucursales")
+  @GetMapping("/sucursales")
   public ResponseEntity<ResponseVO> comboSucursal() {
     return ok(combosService.comboSucursal());
   }
 
-  // Llenar el checkbox de presentaciones
-  @GetMapping("/chkPresentacion")
+  @Operation(summary = "Checkbox de presentaciones")
+  @GetMapping("/presentaciones/checkbox")  // ✅ chkPresentacion → sustantivo descriptivo
   public ResponseEntity<ResponseVO> checkBoxPresentacion() {
     return ok(combosService.checkBoxPresentacion());
   }
 
-  // Llamar al combo de usuarios
-  @GetMapping("/usuario")
+  @Operation(summary = "Combo de usuarios")
+  @GetMapping("/usuarios")
   public ResponseEntity<ResponseVO> comboUsuario() {
     return ok(combosService.comboUsuario());
   }

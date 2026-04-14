@@ -3,30 +3,22 @@ package com.gamm.vinos_api.service.impl;
 import com.gamm.vinos_api.dto.view.MovimientosView;
 import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.repository.MovimientoRepository;
-import com.gamm.vinos_api.security.util.SecurityUtils;
+import com.gamm.vinos_api.service.BaseService;
 import com.gamm.vinos_api.service.MovimientoService;
 import com.gamm.vinos_api.util.ResultadoSP;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class MovimientosServiceImpl implements MovimientoService {
+@RequiredArgsConstructor
+public class MovimientosServiceImpl extends BaseService implements MovimientoService {
 
-  @Autowired
-  private MovimientoRepository movimientoRepository;
+  private final MovimientoRepository movimientoRepository;
 
   /* Helpers */
-  private Integer getUsuarioAutenticado() {
-    Integer idUsuario = SecurityUtils.getUserId();
-    if (idUsuario == null) {
-      throw new IllegalStateException("Usuario no logueado");
-    }
-    return idUsuario;
-  }
-
   private ResponseVO listarDetalleMovimiento(Integer idCaja, Integer idUsuario) {
     List<MovimientosView> data = idUsuario != null
         ? movimientoRepository.listarDetalleMovimientoUsuario(idUsuario, idCaja)
@@ -36,7 +28,7 @@ public class MovimientosServiceImpl implements MovimientoService {
 
   @Override
   public ResponseVO filtrarMisMovimientosPorRango(LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
-    Integer idUsuario = getUsuarioAutenticado();
+    Integer idUsuario = getIdUsuarioAutenticado();
     ResultadoSP resultadoSP = movimientoRepository.filtrarMisMovimientosPorRango(idUsuario, fechaInicio, fechaFin, pagina, limite);
 
     if (!resultadoSP.esExitoso()) {
@@ -71,7 +63,7 @@ public class MovimientosServiceImpl implements MovimientoService {
 
   @Override
   public ResponseVO listarMisMovimientos(int pagina, int limite) {
-    Integer idUsuario = getUsuarioAutenticado();
+    Integer idUsuario = getIdUsuarioAutenticado();
     List<MovimientosView> data = movimientoRepository.listarMisMovimientos(idUsuario, pagina, limite);
 
     long totalRegistros = movimientoRepository.contarMisMovimientos(idUsuario);
@@ -92,7 +84,7 @@ public class MovimientosServiceImpl implements MovimientoService {
 
   @Override
   public ResponseVO listarDetalleMovimientoUsuario(Integer idCaja) {
-    return listarDetalleMovimiento(idCaja, getUsuarioAutenticado());
+    return listarDetalleMovimiento(idCaja, getIdUsuarioAutenticado());
   }
 
   @Override

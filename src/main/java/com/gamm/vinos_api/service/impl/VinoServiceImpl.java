@@ -8,7 +8,6 @@ import com.gamm.vinos_api.repository.VinoRepository;
 import com.gamm.vinos_api.service.VinoService;
 import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VinoServiceImpl implements VinoService {
 
-  @Autowired
-  private VinoRepository vinoRepository;
+  private final VinoRepository vinoRepository;
 
   @Override
   public ResultadoSP registrarVino(Vino vino) {
@@ -79,62 +77,17 @@ public class VinoServiceImpl implements VinoService {
   }
 
   @Override
-  public ResponseVO filtrarVinosParaCompraPaginados(
-      String nombre,
-      String proveedores,
-      String categorias,
-      String presentaciones,
-      String tiposVino,
-      String origenVino,
-      int pagina,
-      int limite) {
-
-    // 1️⃣ Obtener los registros filtrados de la página
-    List<VinosCompraView> vinosPagina = vinoRepository.filtrarVinosParaCompraPaginados(
-        nombre,
-        proveedores,
-        categorias,
-        presentaciones,
-        tiposVino,
-        origenVino,
-        pagina,
-        limite
-    );
-
-    // 2️⃣ Obtener el total de registros que cumplen el filtro
-    Long totalVinos = vinoRepository.contarVinosParaCompraFiltrados(
-        nombre,
-        proveedores,
-        categorias,
-        presentaciones,
-        tiposVino,
-        origenVino
-    );
-
-    // 3️⃣ Calcular total de páginas
+  public ResponseVO filtrarVinosParaCompraPaginados(String nombre, String proveedores, String categorias, String presentaciones, String tiposVino, String origenVino, int pagina, int limite) {
+    List<VinosCompraView> vinosPagina = vinoRepository.filtrarVinosParaCompraPaginados(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino, pagina, limite);
+    Long totalVinos = vinoRepository.contarVinosParaCompraFiltrados(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino);
     int totalPaginas = (int) Math.ceil(totalVinos / (double) limite);
 
-    // 4️⃣ Retornar ResponseVO paginado
     return ResponseVO.paginated(vinosPagina, pagina, limite, totalPaginas, totalVinos);
   }
 
   @Override
-  public Long contarVinosParaCompraFiltrados(
-      String nombre,
-      String proveedores,
-      String categorias,
-      String presentaciones,
-      String tiposVino,
-      String origenVino) {
-
-    // Simplemente delegamos al repo
-    return vinoRepository.contarVinosParaCompraFiltrados(
-        nombre,
-        proveedores,
-        categorias,
-        presentaciones,
-        tiposVino,
-        origenVino
+  public Long contarVinosParaCompraFiltrados(String nombre, String proveedores, String categorias, String presentaciones, String tiposVino, String origenVino) {
+    return vinoRepository.contarVinosParaCompraFiltrados(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino
     );
   }
 

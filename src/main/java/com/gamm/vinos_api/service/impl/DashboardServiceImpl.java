@@ -3,34 +3,21 @@ package com.gamm.vinos_api.service.impl;
 import com.gamm.vinos_api.dto.view.DashboardAdminView;
 import com.gamm.vinos_api.dto.view.DashboardUserView;
 import com.gamm.vinos_api.repository.DashboardRepository;
-import com.gamm.vinos_api.security.util.SecurityUtils;
+import com.gamm.vinos_api.service.BaseService;
 import com.gamm.vinos_api.service.DashboardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DashboardServiceImpl implements DashboardService {
+@RequiredArgsConstructor
+public class DashboardServiceImpl extends BaseService implements DashboardService {
 
-  @Autowired
-  private DashboardRepository dashboardRepository;
-
-  /* Helpers */
-  private Integer getUsuario() {
-    Integer idUsuario = SecurityUtils.getUserId();
-    if (idUsuario == null) throw new IllegalStateException("Usuario no logueado");
-    return idUsuario;
-  }
-
-  private Integer getSucursal() {
-    Integer idSucursal = SecurityUtils.getSucursalId();
-    if (idSucursal == null) throw new IllegalStateException("Sucursal no encontrada");
-    return idSucursal;
-  }
+  private final DashboardRepository dashboardRepository;
 
   @Override
   public DashboardUserView getDashboardUser() {
-    Integer idUsuario = getUsuario();
-    Integer idSucursal = getSucursal();
+    Integer idUsuario = getIdUsuarioAutenticado();
+    Integer idSucursal = getIdSucursalAutenticada();
     DashboardUserView dto = new DashboardUserView();
     // Agregar datos
     dto.setIngresoVentas(dashboardRepository.getIngresoVentasUser(idUsuario));

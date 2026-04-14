@@ -45,28 +45,14 @@ public class CatalogoServiceImpl implements CatalogoService {
   public ResponseVO listarCatalogosPaginadosPorProveedor(Integer idProveedor, int pagina, int limite) {
     // Obtener la lista de la pagina
     List<CatalogoView> catalogosPagina = catalogoRepository.listarCatalogosPaginados(idProveedor, pagina, limite);
-    // Obtener el total de registros para calcular paginas
     Long totalRegistros = catalogoRepository.contarCatalogos(idProveedor);
     int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
-
-    // Retornar usando ResponseVO con paginacion
-    return ResponseVO.paginated(
-        catalogosPagina, //data
-        pagina, // pagina actual
-        limite, // registros por pagina
-        totalPaginas, // total de paginas
-        totalRegistros // total de registros
-    );
+    return ResponseVO.paginated( catalogosPagina,   pagina,  limite,  totalPaginas,  totalRegistros  );
   }
-
 
   @Override
   public ResultadoSP filtrarPorProveedor(Integer idProveedor) {
     return catalogoRepository.filtrarPorProveedor(idProveedor);
   }
 
-//  @Override
-//  public ResultadoSP filtrarPorProveedorYTermino(Integer idProveedor, String termino) {
-//    return catalogoRepository.filtrarPorIDProveedorTermino(idProveedor, termino);
-//  }
 }

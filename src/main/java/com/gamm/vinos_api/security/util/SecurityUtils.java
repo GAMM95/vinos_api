@@ -12,38 +12,44 @@ public final class SecurityUtils {
   private static UsuarioPrincipal getPrincipal() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if (auth == null || !auth.isAuthenticated()) return null;
-
     Object principal = auth.getPrincipal();
     return principal instanceof UsuarioPrincipal up ? up : null;
   }
 
-  public static Integer getUserId() {
+  // el usuario DEBE estar autenticado (services protegidos)
+  private static UsuarioPrincipal getPrincipalOrThrow() {
     UsuarioPrincipal up = getPrincipal();
-    return up != null ? up.getIdUsuario() : null;
+    if (up == null) {
+      throw new IllegalStateException(
+          "Se intentó acceder al contexto de seguridad fuera de una sesión autenticada."
+      );
+    }
+    return up;
+  }
+
+  // ─── Públicos — aprovechan directamente UsuarioPrincipal ─────────────────
+
+  public static Integer getUserId() {
+    return getPrincipalOrThrow().getIdUsuario();
   }
 
   public static String getUsername() {
-    UsuarioPrincipal up = getPrincipal();
-    return up != null ? up.getUsername() : null;
+    return getPrincipalOrThrow().getUsername();
   }
 
-  public static String getNombreCompleto(){
-    UsuarioPrincipal up = getPrincipal();
-    return up != null ? up.getNombreCompleto() : null;
+  public static String getNombreCompleto() {
+    return getPrincipalOrThrow().getNombreCompleto();
   }
 
   public static Integer getSucursalId() {
-    UsuarioPrincipal up = getPrincipal();
-    return up != null ? up.getIdSucursal() : null;
+    return getPrincipalOrThrow().getIdSucursal();
   }
 
   public static String getSucursal() {
-    UsuarioPrincipal up = getPrincipal();
-    return up != null ? up.getSucursal() : null;
+    return getPrincipalOrThrow().getSucursal();
   }
 
   public static String getRol() {
-    UsuarioPrincipal up = getPrincipal();
-    return up != null ? up.getRol() : null;
+    return getPrincipalOrThrow().getRol();
   }
 }

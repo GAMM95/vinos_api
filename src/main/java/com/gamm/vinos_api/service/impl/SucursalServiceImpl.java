@@ -13,6 +13,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SucursalServiceImpl implements SucursalService {
+
   // Inyeccion de dependencia al repositorio Sucursal
   private final SucursalRepository sucursalRepository;
 

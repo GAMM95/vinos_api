@@ -11,4 +11,6 @@ public interface AlmacenService {
   List<AlmacenView> listarStockPorVino();
 
   List<AlmacenView> listarStockPorOrigen();
+
+  List<AlmacenView> listarStockADistribuir();
 }

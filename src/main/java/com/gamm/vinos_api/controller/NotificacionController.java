@@ -2,40 +2,43 @@ package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.service.NotificacionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Notificaciones", description = "Gestión de notificaciones del usuario autenticado")
 @RestController
-@RequestMapping("/api/notificaciones")
-public class NotificacionController {
-  @Autowired
-  private NotificacionService notificacionService;
+@RequestMapping("/api/v1/notificaciones")
+@RequiredArgsConstructor
+public class NotificacionController extends AbstractRestController {
 
-  /** Obtener mis notificaciones - carga inicial del dropdown */
+  private final NotificacionService notificacionService;
+
+  @Operation(summary = "Obtener mis notificaciones")
   @GetMapping
   public ResponseEntity<ResponseVO> obtenerNotificaciones() {
     return ResponseEntity.ok(notificacionService.obtenerMisNotificaciones());
   }
 
-  /** Badge - cantidad de no leidas */
-  @GetMapping("/no-leidas")
-  public ResponseEntity<Long> contarNoLeidas() {
-    return ResponseEntity.ok(notificacionService.contarNoLeidas());
+  @Operation(summary = "Contar notificaciones no leídas")
+  @GetMapping("/no-leidas/cantidad") // ✅ /no-leidas → /no-leidas/cantidad — más descriptivo
+  public ResponseEntity<ResponseVO> contarNoLeidas() {
+    return ok(notificacionService.contarNoLeidas()); // ✅ usa ResponseVO consistente
   }
 
-  /** Marcar una como leída al hacer click */
-  @PatchMapping("/{idNotificacion}/leer")
-  public ResponseEntity<Void> marcarLeida(
-      @PathVariable Integer idNotificacion) {
-    notificacionService.marcarLeida(idNotificacion);
-    return ResponseEntity.ok().build();
+  @Operation(summary = "Marcar notificación como leída")
+  @PatchMapping("/{id}/lectura") // ✅ /leer → /lectura — sustantivo
+  public ResponseEntity<Void> marcarLeida(@PathVariable Integer id) {
+    notificacionService.marcarLeida(id);
+    return noContent();
   }
 
-  /** Marcar todas como leídas */
-  @PatchMapping("/leer-todas")
+  @Operation(summary = "Marcar todas las notificaciones como leídas")
+  @PatchMapping("/lectura") // ✅ /leer-todas → /lectura
   public ResponseEntity<Void> marcarTodasLeidas() {
     notificacionService.marcarTodasLeidas();
-    return ResponseEntity.ok().build();
+    return noContent();
   }
 }

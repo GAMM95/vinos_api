@@ -9,30 +9,19 @@ import com.gamm.vinos_api.security.util.SecurityUtils;
 import com.gamm.vinos_api.service.DistribucionService;
 import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.util.ResultadoSP;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DistribucionServiceImpl implements DistribucionService {
 
   private final DistribucionRepository repository;
   private final WebSocketService webSocketService;
   private final NotificacionService notificacionService;
-
-  public DistribucionServiceImpl(DistribucionRepository repository, WebSocketService webSocketService, NotificacionService notificacionService) {
-    this.repository = repository;
-    this.webSocketService = webSocketService;
-    this.notificacionService = notificacionService;
-  }
-
-  // Helpers
-  private String getRolActual() {
-    String rol = SecurityUtils.getRol();
-    if (rol == null) throw new IllegalArgumentException("Rol no disponible");
-    return rol;
-  }
 
   @Override
   public ResultadoSP distribuirProducto(DistribucionSucursal distribucionSucursal) {

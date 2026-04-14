@@ -28,4 +28,9 @@ public class AlmacenServiceImpl implements AlmacenService {
   public List<AlmacenView> listarStockPorOrigen() {
     return almacenRepository.listarStockPorOrigen();
   }
+
+  @Override
+  public List<AlmacenView> listarStockADistribuir() {
+    return almacenRepository.listarStockADistribuir();
+  }
 }
