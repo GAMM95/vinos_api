@@ -54,11 +54,22 @@ public class CatalogoController extends AbstractRestController {
     return ok(resultado.getMensaje(), null);
   }
 
-  @Operation(summary = "Filtrar catálogos por proveedor")
-  @GetMapping("/filtro") // ✅ /filtrar → /filtro
+  @Operation(summary = "Filtrar catálogos por proveedor y término")
+  @GetMapping("/filtro")
   @Publico
-  public ResponseEntity<ResponseVO> filtrarPorProveedor(@RequestParam Integer idProveedor) {
-    ResultadoSP resultado = catalogoService.filtrarPorProveedor(idProveedor);
+  public ResponseEntity<ResponseVO> filtrarCatalogos(
+      @RequestParam Integer idProveedor,
+      @RequestParam(required = false) String termino
+  ) {
+
+    ResultadoSP resultado;
+
+    if (termino == null || termino.trim().isEmpty()) {
+      resultado = catalogoService.filtrarPorProveedor(idProveedor);
+    } else {
+      resultado = catalogoService.filtrarPorTermino(idProveedor, termino);
+    }
+
     return ok(resultado.getMensaje(), resultado.getData());
   }
 

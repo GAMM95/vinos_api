@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.controller;
 
+import com.gamm.vinos_api.domain.enums.Rol;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.request.UsernameCheckRequest;
 import com.gamm.vinos_api.dto.response.ResponseVO;
@@ -112,5 +113,16 @@ public class UsuarioController extends AbstractRestController {
   ) {
     usuarioService.verificarUsername(username, idUsuario); // ✅ void — lanza si no disponible
     return ok("Username disponible.", null);
+  }
+
+  @Operation(summary = "Cambiar rol de usuario")
+  @PatchMapping("/{id}/rol")
+  @SoloAdministrador
+  public ResponseEntity<ResponseVO> cambiarRol(
+      @PathVariable Integer id,
+      @RequestParam("rol") Rol rol
+  ) {
+    usuarioService.cambiarRol(id, rol);
+    return ok("Rol actualizado correctamente.", null);
   }
 }

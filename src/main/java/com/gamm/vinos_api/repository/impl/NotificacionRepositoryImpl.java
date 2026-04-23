@@ -79,11 +79,18 @@ public class NotificacionRepositoryImpl extends SimpleJdbcDAOBase implements Not
     return count != null ? count : 0L;
   }
 
-  @Override
-  public void marcarLeida(Integer idNotificacion, Integer idUsuario) {
-    String sql = "UPDATE notificacion SET leida = 1 WHERE idNotificacion = ? AND idUsuarioDestino = ?";
-    jdbcTemplate.update(sql, idNotificacion, idUsuario);
-  }
+@Override
+public int marcarLeida(Integer idNotificacion, Integer idUsuario, String rol) {
+  String sql = """
+        UPDATE notificacion SET leida = 1
+        WHERE idNotificacion = ?
+          AND (
+            idUsuarioDestino = ?
+            OR (idUsuarioDestino IS NULL AND rolDestino = ?)
+          )
+    """;
+  return jdbcTemplate.update(sql, idNotificacion, idUsuario, rol);
+}
 
   @Override
   public void marcarTodasLeidas(Integer idUsuario, String rol) {

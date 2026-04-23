@@ -55,6 +55,13 @@ public class CatalogoServiceImpl extends BaseService implements CatalogoService 
   }
 
   @Override
+  public ResultadoSP filtrarPorTermino(Integer idProveedor, String termino) {
+    ResultadoSP resultado = catalogoRepository.filtrarPorTermino(idProveedor, termino);
+    ResponseVO.validar(resultado);
+    return resultado;
+  }
+
+  @Override
   public List<CatalogoDTO> listarCatalogos() {
     return catalogoRepository.listarCatalogos();
   }

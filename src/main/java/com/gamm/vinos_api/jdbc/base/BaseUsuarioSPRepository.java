@@ -39,6 +39,7 @@ public abstract class BaseUsuarioSPRepository extends SimpleJdbcDAOBase {
             new SqlParameter("pPassword", Types.VARCHAR),
             new SqlParameter("pPasswordNueva", Types.VARCHAR),
             new SqlParameter("pIdSucursal", Types.TINYINT),
+            new SqlParameter("pRolNuevo", Types.VARCHAR),
             new SqlParameter("pTerminoBusqueda", Types.VARCHAR),
             new SqlOutParameter("pRespuesta", Types.INTEGER),
             new SqlOutParameter("pMensaje", Types.VARCHAR)
@@ -58,6 +59,11 @@ public abstract class BaseUsuarioSPRepository extends SimpleJdbcDAOBase {
     p.put("pRutaFoto", u.getRutaFoto()); // si null => no actualizar foto
     p.put("pPassword", u.getPassword()); // solo para tipos 7/8 si viene
     p.put("pPasswordNueva", u.getPasswordNueva()); // para tipos 7/8
+    if (u.getRolNuevo() != null) {
+      p.put("pRolNuevo", u.getRolNuevo().name());
+    } else {
+      p.put("pRolNuevo", null);
+    }
     // pTerminoBusqueda solo para tipo 5
     p.put("pTerminoBusqueda", null);
 

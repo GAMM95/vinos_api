@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.repository;
 
+import com.gamm.vinos_api.domain.enums.Rol;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.view.UsuarioDTO;
 import com.gamm.vinos_api.util.ResultadoSP;
@@ -13,6 +14,8 @@ public interface UsuarioRepository {
   ResultadoSP activarUsuario(Integer idUsuario, Integer idSucursal);
 
   ResultadoSP actualizarUsuario(Usuario usuario);
+
+  ResultadoSP cambiarRol(Integer idUsuario, Rol rol);
 
   ResultadoSP filtrarUsuario(String terminoBusqueda);
 

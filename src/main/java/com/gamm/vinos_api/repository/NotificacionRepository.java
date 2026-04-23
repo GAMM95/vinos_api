@@ -12,7 +12,7 @@ public interface NotificacionRepository {
 
   long contarNoLeidas(Integer idUsuario, String rol);
 
-  void marcarLeida(Integer idNotificacion, Integer idUsuario);
+  int marcarLeida(Integer idNotificacion, Integer idUsuario, String rol);
 
   void marcarTodasLeidas(Integer idUsuario, String rol);
 }

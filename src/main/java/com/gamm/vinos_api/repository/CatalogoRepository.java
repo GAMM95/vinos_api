@@ -24,4 +24,5 @@ public interface CatalogoRepository {
 
   ResultadoSP filtrarPorProveedor(Integer idProveedor);
 
+  ResultadoSP filtrarPorTermino(Integer idProveedor, String termino);
 }

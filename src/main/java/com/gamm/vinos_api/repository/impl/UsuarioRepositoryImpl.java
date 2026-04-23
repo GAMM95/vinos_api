@@ -55,6 +55,14 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
   }
 
   @Override
+  public ResultadoSP cambiarRol(Integer idUsuario, Rol rol) {
+    Usuario u = new Usuario();
+    u.setIdUsuario(idUsuario);
+    u.setRolNuevo(rol);
+    return ejecutarSP(construirParametros(13, u));
+  }
+
+  @Override
   public ResultadoSP filtrarUsuario(String terminoBusqueda) {
     Usuario u = new Usuario();
     u.setUsername(terminoBusqueda);

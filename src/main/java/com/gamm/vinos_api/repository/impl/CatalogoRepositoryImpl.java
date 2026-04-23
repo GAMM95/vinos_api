@@ -43,6 +43,7 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
             new SqlParameter("pIdPresentacion", Types.INTEGER),
             new SqlParameter("pPrecioUnidad", Types.DECIMAL),
             new SqlParameter("pTipoVino", Types.VARCHAR),
+            new SqlParameter("pTermino",Types.VARCHAR),
             new SqlOutParameter(PARAM_RESPUESTA, Types.INTEGER),
             new SqlOutParameter(PARAM_MENSAJE, Types.VARCHAR)
         )
@@ -106,6 +107,16 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
     return ejecutarSPConLista(spCall, construirParametros(3, catalogo));
   }
 
+  @Override
+  public ResultadoSP filtrarPorTermino(Integer idProveedor,String termino) {
+    Catalogo catalogo = new Catalogo();
+    catalogo.setIdProveedor(idProveedor);
+    Map<String, Object> params = construirParametros(6, catalogo);
+    params.put("pTermino" , termino != null ? termino.trim() : "");
+
+    return ejecutarSPConLista(spCall,params);
+  }
+
   /// MÉTODOS PRIVADOS AUXILIARES
   // Ejecuta el procedimiento almacenado con los parámetros dados
   private ResultadoSP ejecutarSP(int tipo, Catalogo catalogo) {
@@ -124,6 +135,7 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
     params.put("pTipoVino",
         catalogo.getTipoVino() != null ? catalogo.getTipoVino().getValorBD() : null
     );
+    params.put("pTermino", "");
     return params;
   }
 }

@@ -1,6 +1,7 @@
 package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.config.WebSocketService;
+import com.gamm.vinos_api.domain.enums.Rol;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.common.PaginaResultado;
 import com.gamm.vinos_api.dto.response.ResponseVO;
@@ -9,6 +10,7 @@ import com.gamm.vinos_api.exception.business.BusinessException;
 import com.gamm.vinos_api.repository.UsuarioAuthRepository;
 import com.gamm.vinos_api.repository.UsuarioRepository;
 import com.gamm.vinos_api.security.util.SecurityUtils;
+import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.service.base.BaseService;
 import com.gamm.vinos_api.service.FotoService;
 import com.gamm.vinos_api.service.UsuarioService;
@@ -31,6 +33,7 @@ public class UsuarioServiceImpl extends BaseService implements UsuarioService {
   private final PasswordEncoder passwordEncoder;
   private final FotoService fotoService;
   private final WebSocketService webSocketService;
+  private final NotificacionService notificacionService;
 
   // ─── Autenticación ────────────────────────────────────────────────────────
 
@@ -53,7 +56,22 @@ public class UsuarioServiceImpl extends BaseService implements UsuarioService {
   public ResultadoSP registrarUsuario(Usuario usuario) {
     usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
     //  Retorna ResultadoSP sin validar — el controller llama ResponseVO.validar()
-    return usuarioAuthRepository.registrarUsuario(usuario);
+    ResultadoSP resultado = usuarioAuthRepository.registrarUsuario(usuario);
+
+    if (resultado.esExitoso()) {
+      log.info("Usuario registrado correctamente username={}", usuario.getUsername());
+
+      notificacionService.notificarRol(
+          "Administrador",
+          "INFO",
+          "Nuevo usuario registrado",
+          "Se registro el usuario " + usuario.getUsername(),
+          "/sistema/usuarios"
+      );
+    } else {
+      log.warn("Error registrando usuario username={}, mensaje={}", usuario.getUsername(), resultado.getMensaje());
+    }
+    return resultado;
   }
 
   @Override
@@ -153,6 +171,25 @@ public class UsuarioServiceImpl extends BaseService implements UsuarioService {
     ResultadoSP resultado = usuarioRepository.verificarUsername(username, idUsuario);
     ResponseVO.validar(resultado); // lanza BusinessException si username no disponible
     log.debug("Username disponible='{}'", username);
+  }
+
+  @Override
+  public void cambiarRol(Integer idUsuario, Rol rol) {
+    ResultadoSP resultado = usuarioRepository.cambiarRol(idUsuario, rol);
+    ResponseVO.validar(resultado);
+
+    Usuario usuario = usuarioRepository.obtenerPorId(idUsuario);
+
+    webSocketService.notifyUsuarioUpdate();
+    notificacionService.notificarUsuario(
+        idUsuario,
+        usuario.getUsername(),
+        "INFO",
+        "Cambio de rol",
+        "Tu rol ha sido actualizado a " + rol.getLabel(),
+        "/sistema/ajustes/editar-perfil"
+    );
+    log.info("Rol actualizado correctamente idUsuario={}, rol={}", idUsuario, rol);
   }
 
   // ─── Consultas ────────────────────────────────────────────────────────────

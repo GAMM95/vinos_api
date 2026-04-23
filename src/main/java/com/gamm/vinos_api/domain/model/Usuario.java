@@ -19,5 +19,6 @@ public class Usuario {
   private String passwordNueva;
   private Sucursal sucursal;
   private Rol rol = Rol.VENDEDOR;
+  private Rol rolNuevo;
   private EstadoRegistro estado = EstadoRegistro.INACTIVO;
 }

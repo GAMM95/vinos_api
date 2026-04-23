@@ -129,7 +129,14 @@ public class NotificacionServiceImpl extends BaseService implements Notificacion
 
   @Override
   public void marcarLeida(Integer idNotificacion) {
-    notificacionRepository.marcarLeida(idNotificacion, getIdUsuarioAutenticado());
+    Integer idUsuario = getIdUsuarioAutenticado();
+    String rol = getRolAutenticado();
+
+    log.info("marcarLeida → idNotificacion={}, idUsuario={}, rol={}", idNotificacion, idUsuario, rol);
+    int filas = notificacionRepository.marcarLeida(idNotificacion, idUsuario, rol);
+    log.info("marcarLeida → filas afectadas={}", filas);
+    if (filas == 0) log.warn("marcarLeida → ninguna fila actualizada para idNotificacion={}", idNotificacion);
+
   }
 
   @Override

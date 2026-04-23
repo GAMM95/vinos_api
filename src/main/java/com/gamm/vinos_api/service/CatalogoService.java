@@ -19,6 +19,7 @@ public interface CatalogoService {
 
   ResultadoSP filtrarPorProveedor(Integer idProveedor);
 
+  ResultadoSP filtrarPorTermino(Integer idProveedor, String termino);
   // Consultas
   List<CatalogoDTO> listarCatalogos();
 

@@ -1,5 +1,6 @@
 package com.gamm.vinos_api.service;
 
+import com.gamm.vinos_api.domain.enums.Rol;
 import com.gamm.vinos_api.domain.model.Usuario;
 import com.gamm.vinos_api.dto.common.PaginaResultado;
 import com.gamm.vinos_api.dto.view.UsuarioDTO;
@@ -35,6 +36,8 @@ public interface UsuarioService {
   ResultadoSP actualizarFoto(Integer idUsuario, MultipartFile foto);
 
   void verificarUsername(String username, Integer idUsuario); // void — lanza si no disponible
+
+  void cambiarRol(Integer idUsuario, Rol rol);
 
   // ─── Consultas ────────────────────────────────────────────────────────────
   List<UsuarioDTO> listarUsuarios();
