@@ -3,9 +3,9 @@ package com.gamm.vinos_api.repository.impl;
 import com.gamm.vinos_api.domain.enums.EstadoCompra;
 import com.gamm.vinos_api.domain.model.Compra;
 import com.gamm.vinos_api.domain.model.DetalleCompra;
-import com.gamm.vinos_api.dto.view.CarritoCompraView;
-import com.gamm.vinos_api.dto.view.CompraView;
-import com.gamm.vinos_api.dto.view.ProductosCarritoView;
+import com.gamm.vinos_api.dto.view.CarritoCompraDTO;
+import com.gamm.vinos_api.dto.view.CompraDTO;
+import com.gamm.vinos_api.dto.view.ProductosCarritoDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.*;
 import com.gamm.vinos_api.repository.CompraRepository;
@@ -54,7 +54,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
   private static final String VW_CONFIRM_COMPRAS = "SELECT idCompra, codCompra,idUsuario, usuario, fechaCompra, MAX(subtotalCalculado) AS subtotalCalculado, MAX(costoLogistico) AS costoLogistico, MAX(totalCompra) AS totalCompra, estado , username, rol FROM vw_compras WHERE estado IN ('Confirmada','Cerrada') GROUP BY idCompra, codCompra, usuario, fechaCompra, estado ORDER BY fechaCompra DESC";
 
   // Queries para listar las compras pendientes
-  private static final String VW_PEND_COMPRAS = "SELECT idCompra, codCompra, idUsuario, usuario, fechaCarrito, MAX(subtotalCalculado) AS subtotalCalculado, MAX(totalCompra) AS totalCompra, estado , rol FROM vw_comprasPendientes GROUP BY idCompra, codCompra, usuario, fechaCarrito, estado ORDER BY fechaCarrito DESC";
+  private static final String VW_PEND_COMPRAS = "SELECT idCompra, codCompra, idUsuario, usuario, username, fechaCarrito, MAX(subtotalCalculado) AS subtotalCalculado, MAX(totalCompra) AS totalCompra, estado , rol FROM vw_comprasPendientes GROUP BY idCompra, codCompra, usuario, username, fechaCarrito, estado ORDER BY fechaCarrito DESC";
 
   // Queries para listar compras anuladas
   private static final String COUNT_ANULADAS_COMPRAS = "SELECT COUNT(DISTINCT idCompra) FROM vw_compras WHERE estado LIKE 'Anulada'";
@@ -177,7 +177,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
   }
 
   @Override
-  public List<ProductosCarritoView> listarProductosCarritos(Integer idUsuario, Integer idCompra) {
+  public List<ProductosCarritoDTO> listarProductosCarritos(Integer idUsuario, Integer idCompra) {
     if (idCompra == null) {
       Compra carrito = obtenerCarritoPendiente(idUsuario);
       if (carrito == null) return List.of();
@@ -194,7 +194,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
 
   @Override
   public Compra obtenerCarritoPendiente(Integer idUsuario) {
-    List<ProductosCarritoView> detalles = jdbcTemplate.query(
+    List<ProductosCarritoDTO> detalles = jdbcTemplate.query(
         VW_CARRITO_PENDIENTE,
         new ProductosCarritoRowMapper(),
         idUsuario
@@ -230,7 +230,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
   }
 
   @Override
-  public List<CarritoCompraView> listarCarritosCompra() {
+  public List<CarritoCompraDTO> listarCarritosCompra() {
     return jdbcTemplate.query(VW_CARRITO_COMPRAS, new CarritosCompraRowMapper());
   }
 
@@ -245,7 +245,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
   }
 
   @Override
-  public List<CompraView> listarComprasUsuario(Integer idUsuario, int pagina, int limite) {
+  public List<CompraDTO> listarComprasUsuario(Integer idUsuario, int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     return jdbcTemplate.query(
         VW_COMPRAS_USUARIO + " LIMIT ? OFFSET ?",
@@ -257,7 +257,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
   }
 
   @Override
-  public List<CompraView> listarDetalleComprasUsuario(Integer idUsuario, Integer idCompra) {
+  public List<CompraDTO> listarDetalleComprasUsuario(Integer idUsuario, Integer idCompra) {
     return jdbcTemplate.query(
         VW_DETALLE_COMPRAS_USUARIO,
         new DetalleCompraUserRowMapper(),
@@ -267,7 +267,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
   }
 
   @Override
-  public List<CompraView> listarDetalleCompraAdmin(Integer idCompra) {
+  public List<CompraDTO> listarDetalleCompraAdmin(Integer idCompra) {
     return jdbcTemplate.query(
         VW_DETALLE_COMPRAS_ADMIN,
         new DetalleCompraUserRowMapper(),
@@ -320,7 +320,7 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
   }
 
   @Override
-  public List<CompraView> listarTotalCompras(int pagina, int limite) {
+  public List<CompraDTO> listarTotalCompras(int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VW_COMPRAS_TOTAL + " LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, new CompraRowMapper(), limite, offset);
@@ -333,14 +333,14 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
   }
 
   @Override
-  public List<CompraView> listarComprasConfirmadas(int pagina, int limite) {
+  public List<CompraDTO> listarComprasConfirmadas(int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VW_CONFIRM_COMPRAS + " LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, new CompraRowMapper(), limite, offset);
   }
 
   @Override
-  public List<CompraView> listarComprasPendientes() {
+  public List<CompraDTO> listarComprasPendientes() {
     return jdbcTemplate.query(VW_PEND_COMPRAS, new CompraPendienteRowMapper());
   }
 
@@ -351,14 +351,14 @@ public class CompraRepositoryImpl extends SimpleJdbcDAOBase implements CompraRep
   }
 
   @Override
-  public List<CompraView> listarComprasAnuladas(int pagina, int limite) {
+  public List<CompraDTO> listarComprasAnuladas(int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VW_ANULADAS_COMPRAS + " LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, new CompraRowMapper(), limite, offset);
   }
 
   @Override
-  public CompraView obtenerCompraPorId(Integer idCompra) {
+  public CompraDTO obtenerCompraPorId(Integer idCompra) {
     String sql = "SELECT * FROM vw_compras WHERE idCompra = ?";
     return jdbcTemplate.queryForObject(sql, new CompraRowMapper(), idCompra);
   }

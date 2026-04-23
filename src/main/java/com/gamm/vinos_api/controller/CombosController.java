@@ -53,12 +53,6 @@ public class CombosController extends AbstractRestController {
     return ok(combosService.comboSucursal());
   }
 
-  @Operation(summary = "Checkbox de presentaciones")
-  @GetMapping("/presentaciones/checkbox")  // ✅ chkPresentacion → sustantivo descriptivo
-  public ResponseEntity<ResponseVO> checkBoxPresentacion() {
-    return ok(combosService.checkBoxPresentacion());
-  }
-
   @Operation(summary = "Combo de usuarios")
   @GetMapping("/usuarios")
   public ResponseEntity<ResponseVO> comboUsuario() {

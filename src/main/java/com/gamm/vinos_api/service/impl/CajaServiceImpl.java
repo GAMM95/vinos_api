@@ -4,10 +4,12 @@ import com.gamm.vinos_api.config.WebSocketService;
 import com.gamm.vinos_api.domain.model.Caja;
 import com.gamm.vinos_api.domain.model.Sucursal;
 import com.gamm.vinos_api.domain.model.Usuario;
-import com.gamm.vinos_api.dto.view.CajaView;
+import com.gamm.vinos_api.dto.common.PaginaResultado;
+import com.gamm.vinos_api.dto.view.CajaDTO;
 import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.exception.business.BusinessException;
 import com.gamm.vinos_api.repository.CajaRepository;
-import com.gamm.vinos_api.service.BaseService;
+import com.gamm.vinos_api.service.base.BaseService;
 import com.gamm.vinos_api.service.CajaService;
 import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.util.ResultadoSP;
@@ -25,11 +27,11 @@ public class CajaServiceImpl extends BaseService implements CajaService {
   private final WebSocketService webSocketService;
   private final NotificacionService notificacionService;
 
+  // ─── Operaciones ──────────────────────────────────────────────────────────
+
   @Override
   public ResultadoSP abrirCaja(Caja caja) {
-
     Integer idUsuario = getIdUsuarioAutenticado();
-
     Usuario usuario = new Usuario();
     usuario.setIdUsuario(idUsuario);
     caja.setUsuario(usuario);
@@ -38,35 +40,28 @@ public class CajaServiceImpl extends BaseService implements CajaService {
 
     if (esAdministrador()) {
       if (caja.getSucursal() == null || caja.getSucursal().getIdSucursal() == null) {
-        return new ResultadoSP(0, "Debe seleccionar una sucursal");
+        throw new BusinessException("Debe seleccionar una sucursal.");
       }
       sucursal.setIdSucursal(caja.getSucursal().getIdSucursal());
     } else {
       Integer idSucursal = getIdSucursalAutenticada();
-      if (idSucursal <= 0) {
-        return new ResultadoSP(0, "No tienes una sucursal asignada.\nContacta al administrador.");
-      }
       sucursal.setIdSucursal(idSucursal);
     }
     caja.setSucursal(sucursal);
 
     ResultadoSP resultado = cajaRepository.abrirCaja(caja);
-
-    if (!resultado.esExitoso()) {
-      return resultado;
-    }
+    ResponseVO.validar(resultado);
 
     webSocketService.notifyCajaUpdate();
     webSocketService.notifyCompraUpdate();
     webSocketService.notifyPrecioUpdate();
 
-    CajaView cajaAbierta = cajaRepository.obtenerUltimaCajaAbiertaUsuario(idUsuario);
+    CajaDTO cajaAbierta = cajaRepository.obtenerUltimaCajaAbiertaUsuario(idUsuario);
     String codCaja = cajaAbierta != null ? cajaAbierta.getCodCaja() : "";
 
     if (esAdministrador()) {
       notificacionService.notificarRolYSucursal(
-          "Vendedor",
-          caja.getSucursal().getIdSucursal(),
+          "Vendedor", caja.getSucursal().getIdSucursal(),
           "INFO",
           "Caja abierta",
           "El administrador abrió la caja " + codCaja + " en tu sucursal.",
@@ -87,21 +82,19 @@ public class CajaServiceImpl extends BaseService implements CajaService {
 
   @Override
   public ResultadoSP cerrarCaja(Integer idCaja) {
-
     ResultadoSP resultado = cajaRepository.cerrarCaja(idCaja);
-    if (!resultado.esExitoso()) return resultado;
+    ResponseVO.validar(resultado);
 
     webSocketService.notifyCajaUpdate();
     webSocketService.notifyCompraUpdate();
     webSocketService.notifyPrecioUpdate();
 
-    CajaView caja = cajaRepository.obtenerCajaPorId(idCaja);
-    if (caja == null)  throw new IllegalStateException("Caja no encontrada");
+    CajaDTO caja = cajaRepository.obtenerCajaPorId(idCaja);
+    if (caja == null) throw new BusinessException("Caja no encontrada.");
 
     if (esAdministrador()) {
       notificacionService.notificarRolYSucursal(
-          "Vendedor",
-          caja.getIdSucursal(),
+          "Vendedor", caja.getIdSucursal(),
           "WARNING",
           "Caja cerrada",
           "El administrador cerró la caja " + caja.getCodCaja() + " de tu sucursal",
@@ -123,78 +116,69 @@ public class CajaServiceImpl extends BaseService implements CajaService {
   }
 
   @Override
-  public ResponseVO listarMisCajas(int pagina, int limite) {
-    Integer idUsuario = getIdUsuarioAutenticado();
-    List<CajaView> data = cajaRepository.listarMisCajas(idUsuario, pagina, limite);
-
-    long totalRegistros = cajaRepository.contarMisCajas(idUsuario);
-    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
-
-    return ResponseVO.paginated(data, pagina, limite, totalPaginas, totalRegistros);
+  public ResultadoSP obtenerSiguienteCodigoCaja() {
+    Integer idSucursal = getIdSucursalAutenticada();
+    return cajaRepository.obtenerSiguienteCodigoCaja(idSucursal);
   }
 
-  @Override
-  public ResponseVO listarTotalCajas(int pagina, int limite) {
-
-    long totalRegistros = cajaRepository.contarTotalCajas();
-    int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
-    List<CajaView> data = cajaRepository.listarTotalCajas(pagina, limite);
-
-    return ResponseVO.paginated(data, pagina, limite, totalPaginas, totalRegistros);
-  }
+  // ─── Consultas del usuario autenticado ────────────────────────────────────
 
   @Override
-  public ResponseVO filtrarMisCajasPorRango(LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
-    Integer idUsuario = getIdUsuarioAutenticado();
-
-    ResultadoSP resultadoSP = cajaRepository.filtrarMisCajasPorRango(idUsuario, fechaInicio, fechaFin, pagina, limite);
-
-    if (!resultadoSP.esExitoso()) {
-      return ResponseVO.error(resultadoSP.getMensaje());
-    }
-
-    @SuppressWarnings("unchecked")
-    List<CajaView> data = (List<CajaView>) resultadoSP.getData();
-
-    long totalRegistros = cajaRepository.contarMisCajasPorRango(idUsuario, fechaInicio, fechaFin);
-    int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
-
-    return ResponseVO.paginated(data, pagina, limite, totalPaginas, totalRegistros);
-
-  }
-
-  @Override
-  public ResponseVO filtrarCajasPorUsuarioORango(Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
-    ResultadoSP resultadoSP = cajaRepository.filtrarTotalCajasPorRango(idUsuario, fechaInicio, fechaFin, pagina, limite);
-
-    if (!resultadoSP.esExitoso()) {
-      return ResponseVO.error(resultadoSP.getMensaje());
-    }
-
-    @SuppressWarnings("unchecked")
-    List<CajaView> data = (List<CajaView>) resultadoSP.getData();
-
-    long totalRegistros;
-    if (idUsuario != null) {
-      totalRegistros = cajaRepository.contarTotalCajasPorRango(idUsuario, fechaInicio, fechaFin);
-    } else {
-      totalRegistros = cajaRepository.contarTotalCajasPorRango(null, fechaInicio, fechaFin);
-    }
-
-    int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
-
-    return ResponseVO.paginated(data, pagina, limite, totalPaginas, totalRegistros);
-  }
-
-  @Override
-  public List<CajaView> mostrarMiUltimaCajaAbierta() {
+  public List<CajaDTO> mostrarMiUltimaCajaAbierta() {
     Integer idUsuario = getIdUsuarioAutenticado();
     return cajaRepository.mostrarMiUltimaCajaAbierta(idUsuario);
   }
 
   @Override
-  public ResultadoSP obtenerSiguienteCodigoCaja() {
-    Integer idSucursal = getIdSucursalAutenticada();
-    return cajaRepository.obtenerSiguienteCodigoCaja(idSucursal);
+  public PaginaResultado<CajaDTO> listarMisCajas(int pagina, int limite) {
+    Integer idUsuario = getIdUsuarioAutenticado();
+    List<CajaDTO> data = cajaRepository.listarMisCajas(idUsuario, pagina, limite);
+    long total = cajaRepository.contarMisCajas(idUsuario);
+    return construirPagina(data, pagina, limite,total);
   }
+
+
+  @Override
+  public PaginaResultado<CajaDTO> filtrarMisCajasPorRango(
+      LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite
+  ) {
+    Integer idUsuario = getIdUsuarioAutenticado();
+    ResultadoSP resultado = cajaRepository.filtrarMisCajasPorRango(
+        idUsuario, fechaInicio, fechaFin, pagina, limite
+    );
+    ResponseVO.validar(resultado);
+
+    @SuppressWarnings("unchecked")
+    List<CajaDTO> data = (List<CajaDTO>) resultado.getData();
+    long total = cajaRepository.contarMisCajasPorRango(idUsuario, fechaInicio, fechaFin);
+
+    return construirPagina(data, pagina, limite,total);
+  }
+
+  // ─── Administración ───────────────────────────────────────────────────────
+
+  @Override
+  public PaginaResultado<CajaDTO> listarTotalCajas(int pagina, int limite) {
+    List<CajaDTO> data = cajaRepository.listarTotalCajas(pagina, limite);
+    long total = cajaRepository.contarTotalCajas();
+    return construirPagina(data, pagina, limite,total);
+  }
+
+
+  @Override
+  public PaginaResultado<CajaDTO> filtrarCajasPorUsuarioORango(
+      Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin,
+      int pagina, int limite
+  ) {
+    ResultadoSP resultado = cajaRepository.filtrarTotalCajasPorRango(
+        idUsuario, fechaInicio, fechaFin, pagina, limite
+    );
+    ResponseVO.validar(resultado);
+
+    @SuppressWarnings("unchecked")
+    List<CajaDTO> data = (List<CajaDTO>) resultado.getData();
+    long total = cajaRepository.contarTotalCajasPorRango(idUsuario, fechaInicio, fechaFin);
+    return construirPagina(data, pagina, limite,total);
+  }
+
 }

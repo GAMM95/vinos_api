@@ -1,13 +1,14 @@
 package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.domain.model.PrecioSucursal;
-import com.gamm.vinos_api.dto.view.PrecioView;
+import com.gamm.vinos_api.dto.view.PrecioDTO;
 import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.security.annotations.SoloVendedor;
 import com.gamm.vinos_api.service.PrecioService;
 import com.gamm.vinos_api.util.ResultadoSP;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,67 +27,82 @@ public class PrecioController extends AbstractRestController {
 
   // ─── Consultas ────────────────────────────────────────────────────────────
 
-  @Operation(summary = "Listar todos los precios del stock")
+  @Operation(
+      summary = "Listar todos los precios del stock",
+      description = "Retorna todos los precios registrados en el stock. Solo administradores."
+  )
   @GetMapping
   @SoloAdministrador
   public ResponseEntity<ResponseVO> listarTotalPreciosStock() {
-    List<PrecioView> lista = precioService.listarTotalPreciosStock();
+    List<PrecioDTO> lista = precioService.listarTotalPreciosStock();
     return ok(lista);
   }
 
-  // Listar precios de la sucursal autenticada (vendedor)
-  @Operation(summary = "Listar precios de la sucursal autenticada")
-  @GetMapping("/mi-sucursal")  //"Sucursal/actual"
+  @Operation(
+      summary = "Listar precios de la sucursal autenticada",
+      description = "Retorna los precios del stock correspondientes a la sucursal del vendedor actualmente autenticado."
+  )
+  @GetMapping("/mi-sucursal")
   @SoloVendedor
   public ResponseEntity<ResponseVO> listarPreciosSucursal() {
-    List<PrecioView> lista = precioService.listarPreciosStockSucursal();
+    List<PrecioDTO> lista = precioService.listarPreciosStockSucursal();
     return ok(lista);
   }
 
-  // Filtrar por vino  o sucursal (admin)
-  @Operation(summary = "Filtrar precios por vino o sucursal")
-  @GetMapping("/filtrar") // "/filtro
+  @Operation(
+      summary = "Filtrar precios por vino o sucursal",
+      description = "Permite filtrar los precios del stock por nombre de vino y/o ID de sucursal. Solo administradores."
+  )
+  @GetMapping("/filtro")
   @SoloAdministrador
   public ResponseEntity<ResponseVO> filtrarPorVinoOSucursal(
+      @Parameter(description = "Nombre del vino a filtrar (opcional)")
       @RequestParam(required = false) String nombreVino,
+      @Parameter(description = "ID de la sucursal a filtrar (opcional)")
       @RequestParam(required = false) Integer idSucursal
   ) {
     ResultadoSP resultado = precioService.filtrarPorVinoOSucursal(nombreVino, idSucursal);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData());
   }
 
-  // Ver historial de precios de un  vino
-  @Operation(summary = "Ver historial de precios de un vino en una sucursal")
-  @GetMapping("/detalle") // "/historial
+  @Operation(
+      summary = "Ver historial de precios de un vino en una sucursal",
+      description = "Retorna el historial de precios de un vino específico en una sucursal determinada."
+  )
+  @GetMapping("/historial")
   public ResponseEntity<ResponseVO> listarDetallePrecios(
+      @Parameter(description = "ID del vino", required = true)
       @RequestParam Integer idVino,
+      @Parameter(description = "ID de la sucursal", required = true)
       @RequestParam Integer idSucursal
   ) {
-    List<PrecioView> lista = precioService.listarPreciosDetalle(idVino, idSucursal);
-    return ok(lista);
+    return ok(precioService.listarPreciosDetalle(idVino, idSucursal));
   }
 
-  // Filtrar historial por nombre de vino
-  @Operation(summary = "Filtrar historial de precios por nombre de vino")
-//  @GetMapping("/historial/filtro")
-  @GetMapping("/filtrar-vino")
+  @Operation(
+      summary = "Filtrar historial de precios por nombre de vino",
+      description = "Retorna el historial de precios filtrando por nombre de vino."
+  )
+  @GetMapping("/historial/filtro")
   public ResponseEntity<ResponseVO> filtrarHistorialPorVino(
+      @Parameter(description = "Nombre del vino a filtrar", required = true)
       @RequestParam String nombreVino
   ) {
     ResultadoSP resultado = precioService.filtrarPorVino(nombreVino);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData());
   }
+
   // ─── Mutaciones ───────────────────────────────────────────────────────────
 
-  @Operation(summary = "Asignar precio a un vino en una sucursal")
+  @Operation(
+      summary = "Asignar precio a un vino en una sucursal",
+      description = "Crea un nuevo registro de precio para un vino en una sucursal determinada."
+  )
   @PostMapping
   public ResponseEntity<ResponseVO> asignarPrecio(
-    @Valid @RequestBody PrecioSucursal precio
+      @Valid @RequestBody PrecioSucursal precio
   ) {
     ResultadoSP resultado = precioService.asignarPrecio(precio);
-    ResponseVO.validar(resultado);
     return created(resultado.getMensaje(), resultado.getData());
   }
 

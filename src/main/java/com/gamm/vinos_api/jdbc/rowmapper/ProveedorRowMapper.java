@@ -1,16 +1,16 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.dto.view.ProveedorView;
+import com.gamm.vinos_api.dto.view.ProveedorDTO;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ProveedorRowMapper implements RowMapper<ProveedorView> {
+public class ProveedorRowMapper implements RowMapper<ProveedorDTO> {
 
   @Override
-  public ProveedorView mapRow(ResultSet rs, int rowNum) throws SQLException {
-    ProveedorView proveedor = new ProveedorView();
+  public ProveedorDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+    ProveedorDTO proveedor = new ProveedorDTO();
     proveedor.setIdProveedor(rs.getInt("idProveedor"));
     proveedor.setCodProveedor(rs.getString("codProveedor"));
     proveedor.setRazonSocial(rs.getString("razonSocial"));

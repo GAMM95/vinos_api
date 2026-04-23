@@ -1,10 +1,10 @@
 package com.gamm.vinos_api.service;
 
-import com.gamm.vinos_api.dto.view.DashboardAdminView;
-import com.gamm.vinos_api.dto.view.DashboardUserView;
+import com.gamm.vinos_api.dto.view.DashboardAdminDTO;
+import com.gamm.vinos_api.dto.view.DashboardUserDTO;
 
 public interface DashboardService {
- DashboardUserView getDashboardUser();
+ DashboardUserDTO getDashboardUser();
 
- DashboardAdminView getDashboardAdmin();
+ DashboardAdminDTO getDashboardAdmin();
 }

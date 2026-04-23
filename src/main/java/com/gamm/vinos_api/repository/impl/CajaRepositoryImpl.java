@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.Caja;
-import com.gamm.vinos_api.dto.view.CajaView;
+import com.gamm.vinos_api.dto.view.CajaDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.CajaRowMapper;
 import com.gamm.vinos_api.repository.CajaRepository;
@@ -135,7 +135,7 @@ public class CajaRepositoryImpl extends SimpleJdbcDAOBase implements CajaReposit
   }
 
   @Override
-  public CajaView obtenerUltimaCajaAbiertaUsuario(Integer idUsuario) {
+  public CajaDTO obtenerUltimaCajaAbiertaUsuario(Integer idUsuario) {
     return jdbcTemplate.query(VW_ULTIMA_CAJA_ABIERTA, new CajaRowMapper(), idUsuario)
         .stream()
         .findFirst()
@@ -193,7 +193,7 @@ public class CajaRepositoryImpl extends SimpleJdbcDAOBase implements CajaReposit
   }
 
   @Override
-  public CajaView obtenerCajaPorId(Integer idCaja) {
+  public CajaDTO obtenerCajaPorId(Integer idCaja) {
     String sql = VW_CAJAS + " WHERE idCaja = ? ";
     return  jdbcTemplate.queryForObject(sql, new CajaRowMapper(), idCaja);
   }
@@ -239,21 +239,21 @@ public class CajaRepositoryImpl extends SimpleJdbcDAOBase implements CajaReposit
   }
 
   @Override
-  public List<CajaView> listarMisCajas(Integer idUsuario, int pagina, int limite) {
+  public List<CajaDTO> listarMisCajas(Integer idUsuario, int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VW_MIS_CAJAS + " LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, new CajaRowMapper(), idUsuario, limite, offset);
   }
 
   @Override
-  public List<CajaView> listarTotalCajas(int pagina, int limite) {
+  public List<CajaDTO> listarTotalCajas(int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VW_CAJAS + " LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, new CajaRowMapper(), limite, offset);
   }
 
   @Override
-  public List<CajaView> mostrarMiUltimaCajaAbierta(Integer idUsuario) {
+  public List<CajaDTO> mostrarMiUltimaCajaAbierta(Integer idUsuario) {
     return jdbcTemplate.query(
         VW_ULTIMA_CAJA_ABIERTA,
         new CajaRowMapper(),

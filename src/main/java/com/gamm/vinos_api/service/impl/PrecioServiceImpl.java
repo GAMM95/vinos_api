@@ -3,9 +3,10 @@ package com.gamm.vinos_api.service.impl;
 import com.gamm.vinos_api.config.WebSocketService;
 import com.gamm.vinos_api.domain.model.PrecioSucursal;
 import com.gamm.vinos_api.domain.model.Sucursal;
-import com.gamm.vinos_api.dto.view.PrecioView;
+import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.dto.view.PrecioDTO;
 import com.gamm.vinos_api.repository.PrecioRepository;
-import com.gamm.vinos_api.service.BaseService;
+import com.gamm.vinos_api.service.base.BaseService;
 import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.service.PrecioService;
 import com.gamm.vinos_api.util.ResultadoSP;
@@ -28,57 +29,57 @@ public class PrecioServiceImpl extends BaseService implements PrecioService {
     Integer idSucursal;
 
     if (esAdministrador()) {
-      // Admin puede elegir sucursal
       if (precio.getSucursal() == null || precio.getSucursal().getIdSucursal() == null) {
         throw new IllegalStateException("El administrador debe indicar sucursal");
       }
       idSucursal = precio.getSucursal().getIdSucursal();
     } else {
-      idSucursal = getIdSucursalAutenticada(); // Vendedor usa su sucursal autenticada
+      idSucursal = getIdSucursalAutenticada();
     }
 
-    if (precio.getSucursal() == null) precio.setSucursal(new Sucursal());
+    if (precio.getSucursal() == null) {
+      precio.setSucursal(new Sucursal());
+    }
     precio.getSucursal().setIdSucursal(idSucursal);
 
     ResultadoSP resultado = precioRepository.asignarPrecio(precio);
+    ResponseVO.validar(resultado);
 
-    if (resultado.esExitoso()) {
-      webSocketService.notifyPrecioUpdate();
-      // Obtener el nombre del vino
-      String nombreVino = precioRepository.obtenerNombreVino(precio.getVino().getIdVino());
+    webSocketService.notifyPrecioUpdate();
+    String nombreVino = precioRepository.obtenerNombreVino(precio.getVino().getIdVino());
 
-      if (esAdministrador()) {
-        // Notificar solo al vendedor de esa sucursal
-        notificacionService.notificarRolYSucursal(
-            "Vendedor",
-            idSucursal,
-            "INFO",
-            "Precio asignado a tu stock",
-            "El administrador ha asignado un precio de S/." + precio.getPrecioVenta() + " a " + nombreVino + " de tu stock.",
-            "/ventas/establecer-precios"
-        );
-      } else {
-        // Vendedor asignó su precio - notificar al administrador
-        notificacionService
-            .notificarRol(
-                "Administrador",
-                "INFO",
-                "Precio asignado por vendedor",
-                getNombreUsuarioAutenticado() + " ha asignado un precio de S/." + precio.getPrecioVenta() + " a " + nombreVino + " de su stock en " + getNombreSucursalAutenticado() + ".",
-                "/ventas/establecer-precios"
-            );
-      }
+    if (esAdministrador()) {
+      notificacionService.notificarRolYSucursal(
+          "Vendedor",
+          idSucursal,
+          "INFO",
+          "Precio asignado a tu stock",
+          "El administrador ha asignado un precio de S/." + precio.getPrecioVenta()
+              + " a " + nombreVino + " de tu stock.",
+          "/ventas/establecer-precios"
+      );
+    } else {
+      notificacionService.notificarRol(
+          "Administrador",
+          "INFO",
+          "Precio asignado por vendedor",
+          getNombreUsuarioAutenticado()
+              + " ha asignado un precio de S/." + precio.getPrecioVenta()
+              + " a " + nombreVino
+              + " de su stock en " + getNombreSucursalAutenticado() + ".",
+          "/ventas/establecer-precios"
+      );
     }
     return resultado;
   }
 
   @Override
-  public List<PrecioView> listarTotalPreciosStock() {
+  public List<PrecioDTO> listarTotalPreciosStock() {
     return precioRepository.listarTotalPreciosStock();
   }
 
   @Override
-  public List<PrecioView> listarPreciosStockSucursal() {
+  public List<PrecioDTO> listarPreciosStockSucursal() {
     return precioRepository.listarPreciosStockSucursal(getIdSucursalAutenticada());
   }
 
@@ -88,7 +89,7 @@ public class PrecioServiceImpl extends BaseService implements PrecioService {
   }
 
   @Override
-  public List<PrecioView> listarPreciosDetalle(Integer idVino, Integer idSucursal) {
+  public List<PrecioDTO> listarPreciosDetalle(Integer idVino, Integer idSucursal) {
     return precioRepository.listarPreciosDetalle(idVino, idSucursal);
   }
 

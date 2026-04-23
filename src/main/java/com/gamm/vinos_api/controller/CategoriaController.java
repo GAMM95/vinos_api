@@ -21,9 +21,10 @@ public class CategoriaController extends AbstractRestController {
 
   @Operation(summary = "Registrar categoría")
   @PostMapping
-  public ResponseEntity<ResponseVO> registrarCategoria(@Valid @RequestBody Categoria categoria) {
+  public ResponseEntity<ResponseVO> registrarCategoria(
+      @Valid @RequestBody Categoria categoria
+  ) {
     ResultadoSP resultado = categoriaService.registrarCategoria(categoria);
-    ResponseVO.validar(resultado);
     return created(resultado.getMensaje(), resultado.getData());
   }
 
@@ -35,15 +36,13 @@ public class CategoriaController extends AbstractRestController {
   ) {
     categoria.setIdCategoria(id);
     ResultadoSP resultado = categoriaService.actualizarCategoria(categoria);
-    ResponseVO.validar(resultado);
-    return ok(resultado.getMensaje(), categoria);
+    return ok(resultado.getMensaje(), null);
   }
 
   @Operation(summary = "Cambiar estado de categoría")
   @PatchMapping("/{id}/estado")
   public ResponseEntity<ResponseVO> cambiarEstado(@PathVariable Integer id) {
     ResultadoSP resultado = categoriaService.cambiarEstado(id);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -52,10 +51,4 @@ public class CategoriaController extends AbstractRestController {
   public ResponseEntity<ResponseVO> listarCategorias() {
     return ok(categoriaService.listarCategorias());
   }
-
-  // Listar en combo de categorías
-  //  @GetMapping("/combo")
-  //  public ResponseEntity<ResponseVO> comboCategorias() {
-  //    return ok(categoriaService.comboCategoria());
-  //  }
 }

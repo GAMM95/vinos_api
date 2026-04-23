@@ -39,7 +39,7 @@ public class UsuarioController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "5") int limite
   ) {
-    return ResponseEntity.ok(usuarioService.listarUsuariosPaginados(pagina, limite));
+    return okPaginado(usuarioService.listarUsuariosPaginados(pagina, limite));
   }
 
   @Operation(summary = "Obtener usuario por ID")
@@ -55,13 +55,11 @@ public class UsuarioController extends AbstractRestController {
     return ok(usuario);
   }
 
-  @Operation(summary = "Filtrar usuarios por término de búsqueda")
+  @Operation(summary = "Filtrar usuarios por término")
   @GetMapping("/filtro")
   @SoloAdministrador
   public ResponseEntity<ResponseVO> filtrarUsuarios(@RequestParam String termino) {
-    ResultadoSP resultado = usuarioService.filtrarUsuario(termino);
-    ResponseVO.validar(resultado); // → "Debe enviar un término de búsqueda."
-    return ok(resultado.getMensaje(), resultado.getData());
+    return ok(usuarioService.filtrarUsuario(termino)); // ✅ List directa
   }
 
   // ─── Mutaciones ───────────────────────────────────────────────────────────
@@ -73,18 +71,16 @@ public class UsuarioController extends AbstractRestController {
       @Valid @RequestBody Usuario usuario
   ) {
     usuario.setIdUsuario(id);
-    ResultadoSP resultado = usuarioService.actualizarUsuario(usuario);
-    ResponseVO.validar(resultado); // → "El usuario no existe." / "No se detectaron cambios."
-    return ok(resultado.getMensaje(), resultado.getData());
+    Usuario actualizado = usuarioService.actualizarUsuario(usuario); // ✅ retorna Usuario
+    return ok("Datos actualizados correctamente.", actualizado);
   }
 
   @Operation(summary = "Inactivar usuario")
   @PatchMapping("/{id}/inactivacion")
   @SoloAdministrador
   public ResponseEntity<ResponseVO> inactivarUsuario(@PathVariable Integer id) {
-    ResultadoSP resultado = usuarioService.inactivarUsuario(id);
-    ResponseVO.validar(resultado); // → "Usuario no encontrado o ya está inactivo."
-    return ok(resultado.getMensaje(), null);
+    usuarioService.inactivarUsuario(id); // ✅ void — lanza si falla
+    return ok("Usuario inactivado correctamente.", null);
   }
 
   @Operation(summary = "Activar usuario y asignar sucursal")
@@ -94,9 +90,8 @@ public class UsuarioController extends AbstractRestController {
       @PathVariable Integer id,
       @RequestParam(required = false) Integer idSucursal
   ) {
-    ResultadoSP resultado = usuarioService.activarUsuario(id, idSucursal);
-    ResponseVO.validar(resultado); // → "Debe enviarse un ID." / "La sucursal no existe." / etc.
-    return ok(resultado.getMensaje(), null);
+    usuarioService.activarUsuario(id, idSucursal); // ✅ void
+    return ok("Usuario activado correctamente.", null);
   }
 
   @Operation(summary = "Actualizar foto del usuario")
@@ -106,17 +101,16 @@ public class UsuarioController extends AbstractRestController {
       @RequestParam("foto") MultipartFile foto
   ) {
     ResultadoSP resultado = usuarioService.actualizarFoto(id, foto);
-    ResponseVO.validar(resultado); // → "El usuario no existe." / "No se envió ninguna foto."
     return ok(resultado.getMensaje(), resultado.getData());
   }
 
-  @Operation(summary = "Verificar disponibilidad de username en tiempo real")
-  @PostMapping("/username/verificacion")
+  @Operation(summary = "Verificar disponibilidad de username")
+  @GetMapping("/username/disponibilidad")
   public ResponseEntity<ResponseVO> verificarUsername(
-      @RequestBody UsernameCheckRequest request
+      @RequestParam String username,
+      @RequestParam(required = false) Integer idUsuario
   ) {
-    ResultadoSP resultado = usuarioService.verificarUsername(request.username(), request.idUsuario());
-    ResponseVO.validar(resultado); // → "El username ya está siendo utilizado."
-    return ok(resultado.getMensaje(), null);
+    usuarioService.verificarUsername(username, idUsuario); // ✅ void — lanza si no disponible
+    return ok("Username disponible.", null);
   }
 }

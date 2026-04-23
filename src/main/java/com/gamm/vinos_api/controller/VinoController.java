@@ -37,8 +37,7 @@ public class VinoController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    ResponseVO response = vinoService.listarVinosPaginados(pagina, limite);
-    return ResponseEntity.ok(response);
+    return okPaginado(vinoService.listarVinosPaginados(pagina, limite));
   }
 
   @Operation(summary = "Listar vinos disponibles para compra")
@@ -55,8 +54,7 @@ public class VinoController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    ResponseVO response = vinoService.listarVinosParaCompraPaginados(pagina, limite);
-    return ResponseEntity.ok(response);
+    return okPaginado(vinoService.listarVinosParaCompraPaginados(pagina, limite));
   }
 
   @Operation(summary = "Filtrar vinos para compra por múltiples criterios")
@@ -70,11 +68,7 @@ public class VinoController extends AbstractRestController {
       @RequestParam(required = false) String tiposVino,         // ej: "2,3"
       @RequestParam(required = false) String origenVino         // ej: "Cascas"
   ) {
-    ResultadoSP resultado = vinoService.filtrarVinosParaCompra(
-        nombre, proveedores, categorias, presentaciones, tiposVino, origenVino
-    );
-    ResponseVO.validar(resultado);
-    return ok(resultado.getMensaje(), resultado.getData());
+    return ok(vinoService.filtrarVinosParaCompra(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino));
   }
 
   @Operation(summary = "Filtrar vinos para compra por criterios — paginado")
@@ -90,16 +84,14 @@ public class VinoController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    ResponseVO response = vinoService.filtrarVinosParaCompraPaginados(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino, pagina, limite);
-    return ResponseEntity.ok(response);
+    return okPaginado(vinoService.filtrarVinosParaCompraPaginados(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino, pagina, limite));
   }
 
   @Operation(summary = "Filtrar vinos por nombre")
-  @GetMapping("/filtrar")
+  @GetMapping("/filtro")
   @Publico
   public ResponseEntity<ResponseVO> filtrarVinoPorNombre(@RequestParam String nombre) {
     ResultadoSP resultado = vinoService.filtrarVinoPorNombre(nombre);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData());
   }
 
@@ -110,7 +102,6 @@ public class VinoController extends AbstractRestController {
   @SoloAdministrador
   public ResponseEntity<ResponseVO> registrarVino(@Valid @RequestBody Vino vino) {
     ResultadoSP resultado = vinoService.registrarVino(vino);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -123,7 +114,6 @@ public class VinoController extends AbstractRestController {
   ) {
     vino.setIdVino(id);
     ResultadoSP resultado = vinoService.actualizarVino(vino);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -132,7 +122,6 @@ public class VinoController extends AbstractRestController {
   @SoloAdministrador
   public ResponseEntity<ResponseVO> eliminarVino(@PathVariable Integer id) {
     ResultadoSP resultado = vinoService.eliminarVinoPorId(id);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 

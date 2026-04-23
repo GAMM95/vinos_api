@@ -28,7 +28,6 @@ public class CajaController extends AbstractRestController {
   @PostMapping("/apertura") // ✅ sustantivo
   public ResponseEntity<ResponseVO> abrirCaja(@Valid @RequestBody Caja caja) {
     ResultadoSP resultado = cajaService.abrirCaja(caja);
-    ResponseVO.validar(resultado);
     return created(resultado.getMensaje(), resultado.getData());
   }
 
@@ -36,7 +35,6 @@ public class CajaController extends AbstractRestController {
   @PatchMapping("/{id}/cierre") // ✅ POST → PATCH + sustantivo
   public ResponseEntity<ResponseVO> cerrarCaja(@PathVariable Integer id) {
     ResultadoSP resultado = cajaService.cerrarCaja(id);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData());
   }
 
@@ -44,7 +42,6 @@ public class CajaController extends AbstractRestController {
   @GetMapping("/siguiente-codigo")
   public ResponseEntity<ResponseVO> obtenerSiguienteCodigoCaja() {
     ResultadoSP resultado = cajaService.obtenerSiguienteCodigoCaja();
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData());
   }
 
@@ -61,7 +58,7 @@ public class CajaController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    return ResponseEntity.ok(cajaService.listarMisCajas(pagina, limite));
+    return okPaginado(cajaService.listarMisCajas(pagina, limite));
   }
 
   @Operation(summary = "Filtrar mis cajas por rango de fechas")
@@ -73,7 +70,7 @@ public class CajaController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    return ResponseEntity.ok(cajaService.filtrarMisCajasPorRango(fechaInicio, fechaFin, pagina, limite));
+    return okPaginado(cajaService.filtrarMisCajasPorRango(fechaInicio, fechaFin, pagina, limite));
   }
 
   @Operation(summary = "Listar todas las cajas paginadas")
@@ -83,7 +80,7 @@ public class CajaController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    return ResponseEntity.ok(cajaService.listarTotalCajas(pagina, limite));
+    return okPaginado(cajaService.listarTotalCajas(pagina, limite));
   }
 
   @Operation(summary = "Filtrar cajas por usuario y/o rango de fechas")
@@ -96,9 +93,7 @@ public class CajaController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    return ResponseEntity.ok(cajaService.filtrarCajasPorUsuarioORango(
-        idUsuario, fechaInicio, fechaFin, pagina, limite
-    ));
+    return okPaginado(cajaService.filtrarCajasPorUsuarioORango(idUsuario, fechaInicio, fechaFin, pagina, limite));
   }
 
 }

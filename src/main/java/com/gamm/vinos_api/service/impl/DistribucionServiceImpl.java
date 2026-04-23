@@ -2,10 +2,11 @@ package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.config.WebSocketService;
 import com.gamm.vinos_api.domain.model.DistribucionSucursal;
-import com.gamm.vinos_api.dto.view.DistribucionView;
+import com.gamm.vinos_api.dto.common.PaginaResultado;
+import com.gamm.vinos_api.dto.view.DistribucionDTO;
 import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.service.base.BaseService;
 import com.gamm.vinos_api.repository.DistribucionRepository;
-import com.gamm.vinos_api.security.util.SecurityUtils;
 import com.gamm.vinos_api.service.DistribucionService;
 import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.util.ResultadoSP;
@@ -17,7 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DistribucionServiceImpl implements DistribucionService {
+public class DistribucionServiceImpl extends BaseService implements DistribucionService {
 
   private final DistribucionRepository repository;
   private final WebSocketService webSocketService;
@@ -26,13 +27,14 @@ public class DistribucionServiceImpl implements DistribucionService {
   @Override
   public ResultadoSP distribuirProducto(DistribucionSucursal distribucionSucursal) {
     ResultadoSP resultado = repository.distribuirProducto(distribucionSucursal);
+    ResponseVO.validar(resultado);
 
-    if (resultado.esExitoso()) {
       webSocketService.notifyDashboardUpdate();
       webSocketService.notifyMercaderiaUpdate();
-      List<DistribucionView> data = repository.listarRepartosSucursal(1, 1);
+      List<DistribucionDTO> data = repository.listarRepartosSucursal(1, 1);
 
-      DistribucionView d = data.get(0);
+      if (data == null|| data.isEmpty()) return resultado;
+      DistribucionDTO d = data.getFirst();
 
       String mensaje = "Se ha distribuido " +
           d.getCantidad() + " unidades de vino " +
@@ -46,38 +48,30 @@ public class DistribucionServiceImpl implements DistribucionService {
           mensaje,
           "/mercaderia/mi-stock"
       );
-    }
+
     return resultado;
   }
 
   @Override
-  public ResponseVO filtrarRepartosPorSucursalORango(Integer idSucursal, LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
+  public PaginaResultado<DistribucionDTO> filtrarRepartosPorSucursalORango(Integer idSucursal, LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
     ResultadoSP resultadoSP = repository.filtrarRepartoSucursalRango(idSucursal, fechaInicio, fechaFin, pagina, limite);
 
-    if (!resultadoSP.esExitoso()) {
-      return ResponseVO.error(resultadoSP.getMensaje());
-    }
+    ResponseVO.validar(resultadoSP);
 
     @SuppressWarnings("unchecked")
-    List<DistribucionView> data = (List<DistribucionView>) resultadoSP.getData();
+    List<DistribucionDTO> data = resultadoSP.getData() != null
+        ? (List<DistribucionDTO>) resultadoSP.getData()
+        : List.of();
+    long totalRegistros = repository.contarRepartosSucursalRango(  idSucursal, fechaInicio, fechaFin );
 
-    long totalRegistros;
-    if (idSucursal != null) {
-      totalRegistros = repository.contarRepartosSucursalRango(idSucursal, fechaInicio, fechaFin);
-    } else {
-      totalRegistros = repository.contarRepartosSucursalRango(null, fechaInicio, fechaFin);
-    }
-    int totalPaginas = (int) Math.ceil((double) totalRegistros / limite);
-    return ResponseVO.paginated(data, pagina, limite, totalPaginas, totalRegistros);
+    return construirPagina(data, pagina, limite, totalRegistros);
   }
 
   @Override
-  public ResponseVO listarRepartoSucursal(int pagina, int limite) {
-    List<DistribucionView> data = repository.listarRepartosSucursal(pagina, limite);
-
+  public PaginaResultado<DistribucionDTO> listarRepartoSucursal(int pagina, int limite) {
+    List<DistribucionDTO> data = repository.listarRepartosSucursal(pagina, limite);
     long totalRegistros = repository.contarRepartos();
-    int totalPaginas = (int) Math.ceil(totalRegistros / (double) pagina);
-    return ResponseVO.paginated(data, pagina, limite, totalPaginas, totalRegistros);
+    return construirPagina(data, pagina, limite, totalRegistros);
   }
 
 }

@@ -1,15 +1,15 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.dto.view.CarritoVentaView;
+import com.gamm.vinos_api.dto.view.CarritoVentaDTO;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CarritoVentaRowMapper implements RowMapper<CarritoVentaView> {
+public class CarritoVentaRowMapper implements RowMapper<CarritoVentaDTO> {
   @Override
-  public CarritoVentaView mapRow(ResultSet rs, int rowNum) throws SQLException {
-    CarritoVentaView v = new CarritoVentaView();
+  public CarritoVentaDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+    CarritoVentaDTO v = new CarritoVentaDTO();
     v.setIdDetalleVenta(rs.getInt("idDetalleVenta"));
     v.setIdVenta(rs.getInt("idVenta"));
     v.setIdVino(rs.getInt("idVino"));

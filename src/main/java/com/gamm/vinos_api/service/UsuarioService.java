@@ -1,41 +1,47 @@
 package com.gamm.vinos_api.service;
 
 import com.gamm.vinos_api.domain.model.Usuario;
-import com.gamm.vinos_api.dto.view.UsuarioView;
-import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.dto.common.PaginaResultado;
+import com.gamm.vinos_api.dto.view.UsuarioDTO;
 import com.gamm.vinos_api.util.ResultadoSP;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface UsuarioService {
-  ResultadoSP registrarUsuario(Usuario usuario);
 
+  // ─── Autenticación ────────────────────────────────────────────────────────
+  // Retorna ResultadoSP — CustomUserDetailsService necesita manejar el fallo manualmente
   ResultadoSP login(String username);
-
-  ResultadoSP inactivarUsuario(Integer idUsuario);
-
-  ResultadoSP activarUsuario(Integer idUsuario, Integer idSucursal);
-
-  ResultadoSP filtrarUsuario(String terminoBusqueda);
 
   ResultadoSP obtenerPerfil();
 
-  ResultadoSP actualizarUsuario(Usuario usuario);
+  // ─── Registro y contraseñas ───────────────────────────────────────────────
+  ResultadoSP registrarUsuario(Usuario usuario);
 
   ResultadoSP resetearPassword(Integer idUsuario, String nuevaPassword);
 
   ResultadoSP resetearPasswordToken(Integer idUsuario, String nuevaPassword);
 
-  ResultadoSP cambiarPassword(String actual, String nueva);
+  void cambiarPassword(String actual, String nueva); // void — lanza si falla
 
-  List<UsuarioView> listarUsuarios();
+  // ─── CRUD ─────────────────────────────────────────────────────────────────
+  void inactivarUsuario(Integer idUsuario);         // void — lanza si falla
 
-  ResponseVO listarUsuariosPaginados(int pagina, int limite);
+  void activarUsuario(Integer idUsuario, Integer idSucursal); // void
+
+  Usuario actualizarUsuario(Usuario usuario);        // retorna el usuario actualizado
 
   ResultadoSP actualizarFoto(Integer idUsuario, MultipartFile foto);
 
-  ResultadoSP verificarUsername(String username, Integer idUsuario);
+  void verificarUsername(String username, Integer idUsuario); // void — lanza si no disponible
+
+  // ─── Consultas ────────────────────────────────────────────────────────────
+  List<UsuarioDTO> listarUsuarios();
+
+  PaginaResultado<UsuarioDTO> listarUsuariosPaginados(int pagina, int limite);
+
+  List<UsuarioDTO> filtrarUsuario(String terminoBusqueda);
 
   Usuario obtenerPorId(Integer idUsuario);
 

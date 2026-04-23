@@ -4,7 +4,6 @@ import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 
@@ -130,11 +129,11 @@ public abstract class SimpleJdbcDAOBase {
 
   // ─── Paginación en memoria ────────────────────────────────────────────────
   protected <T> List<T> paginarLista(List<T> lista, int pagina, int limite) {
-   int offset = (pagina - 1) * limite;
-   if (offset >= lista.size()) return Collections.emptyList();
+    int offset = (pagina - 1) * limite;
+    if (offset >= lista.size()) return Collections.emptyList();
     return lista.subList(offset, Math.min(offset + limite, lista.size()));
   }
 
 
 
-  }
+}

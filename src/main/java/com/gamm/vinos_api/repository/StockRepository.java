@@ -1,15 +1,15 @@
 package com.gamm.vinos_api.repository;
 
-import com.gamm.vinos_api.dto.view.StockView;
+import com.gamm.vinos_api.dto.view.StockDTO;
 
 import java.util.List;
 
 public interface StockRepository {
-  List<StockView> listarStockSucursal();
+  List<StockDTO> listarStockSucursal();
 
-  List<StockView> listarStockSucursalDetalladoPorSucursal(Integer idSucursal);
+  List<StockDTO> listarStockSucursalDetalladoPorSucursal(Integer idSucursal);
 
-  List<StockView> listarStockPorSucursal(Integer idSucursal);
+  List<StockDTO> listarStockPorSucursal(Integer idSucursal);
 
-  List<StockView> listarStockVenta (Integer idSucursal);
+  List<StockDTO> listarStockVenta (Integer idSucursal);
 }

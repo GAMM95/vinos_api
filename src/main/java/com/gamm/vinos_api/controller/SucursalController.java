@@ -27,8 +27,7 @@ public class SucursalController extends AbstractRestController {
   @SoloAdministrador
   public ResponseEntity<ResponseVO> registrarSucursal(@RequestBody Sucursal sucursal) {
     ResultadoSP resultado = sucursalService.registrarSucursal(sucursal);
-    ResponseVO.validar(resultado);
-    return ok(resultado.getMensaje(), null);
+    return created(resultado.getMensaje(), resultado.getData());
   }
 
   // Actualizar sucursales
@@ -37,7 +36,6 @@ public class SucursalController extends AbstractRestController {
   public ResponseEntity<ResponseVO> actualizarSucursal(@PathVariable Integer id, @RequestBody Sucursal sucursal) {
     sucursal.setIdSucursal(id);
     ResultadoSP resultado = sucursalService.actualizarSucursal(sucursal);
-    ResponseVO.validar(resultado);
     return  ok(resultado.getMensaje(), null);
   }
 
@@ -53,7 +51,6 @@ public class SucursalController extends AbstractRestController {
     } else {
       resultado = sucursalService.darDeBajaSucursal(id);
     }
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -62,7 +59,6 @@ public class SucursalController extends AbstractRestController {
   public ResponseEntity<ResponseVO> filtrarSucursalPorNombre(
       @RequestParam String nombre) {
     ResultadoSP resultado = sucursalService.filtrarSucursal(nombre);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData());
   }
 

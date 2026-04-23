@@ -1,6 +1,8 @@
 package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.domain.model.Categoria;
+import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.dto.view.CategoriaDTO;
 import com.gamm.vinos_api.repository.CategoriaRepository;
 import com.gamm.vinos_api.service.CategoriaService;
 import com.gamm.vinos_api.util.ResultadoSP;
@@ -17,27 +19,28 @@ public class CategoriaServiceImpl implements CategoriaService {
 
   @Override
   public ResultadoSP registrarCategoria(Categoria categoria) {
-    return categoriaRepository.registrarCategoria(categoria);
+    ResultadoSP resultado = categoriaRepository.registrarCategoria(categoria);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
   public ResultadoSP actualizarCategoria(Categoria categoria) {
-    return categoriaRepository.actualizarCategoria(categoria);
+    ResultadoSP resultado =  categoriaRepository.actualizarCategoria(categoria);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
   public ResultadoSP cambiarEstado(Integer idCategoria) {
-    return categoriaRepository.cambiarEstado(idCategoria);
+    ResultadoSP resultado = categoriaRepository.cambiarEstado(idCategoria);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
-  public List<Categoria> listarCategorias() {
+  public List<CategoriaDTO> listarCategorias() {
     return categoriaRepository.listarCategorias();
-  }
-
-  @Override
-  public List<Categoria> comboCategoria() {
-    return categoriaRepository.comboCategorias();
   }
 
 }

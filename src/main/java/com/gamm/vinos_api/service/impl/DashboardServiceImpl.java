@@ -1,9 +1,9 @@
 package com.gamm.vinos_api.service.impl;
 
-import com.gamm.vinos_api.dto.view.DashboardAdminView;
-import com.gamm.vinos_api.dto.view.DashboardUserView;
+import com.gamm.vinos_api.dto.view.DashboardAdminDTO;
+import com.gamm.vinos_api.dto.view.DashboardUserDTO;
 import com.gamm.vinos_api.repository.DashboardRepository;
-import com.gamm.vinos_api.service.BaseService;
+import com.gamm.vinos_api.service.base.BaseService;
 import com.gamm.vinos_api.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,10 +15,10 @@ public class DashboardServiceImpl extends BaseService implements DashboardServic
   private final DashboardRepository dashboardRepository;
 
   @Override
-  public DashboardUserView getDashboardUser() {
+  public DashboardUserDTO getDashboardUser() {
     Integer idUsuario = getIdUsuarioAutenticado();
     Integer idSucursal = getIdSucursalAutenticada();
-    DashboardUserView dto = new DashboardUserView();
+    DashboardUserDTO dto = new DashboardUserDTO();
     // Agregar datos
     dto.setIngresoVentas(dashboardRepository.getIngresoVentasUser(idUsuario));
     dto.setCantidadVentas(dashboardRepository.getCantidadVentasUser(idUsuario));
@@ -34,8 +34,8 @@ public class DashboardServiceImpl extends BaseService implements DashboardServic
   }
 
   @Override
-  public DashboardAdminView getDashboardAdmin() {
-    DashboardAdminView dto = new DashboardAdminView();
+  public DashboardAdminDTO getDashboardAdmin() {
+    DashboardAdminDTO dto = new DashboardAdminDTO();
     // Agregar datos
     dto.setResumen(dashboardRepository.getVentaResumenAdmin());
     dto.setTotales(dashboardRepository.getVentasTotalAdmin());

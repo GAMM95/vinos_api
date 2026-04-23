@@ -1,8 +1,8 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.Vino;
-import com.gamm.vinos_api.dto.view.VinoView;
-import com.gamm.vinos_api.dto.view.VinosCompraView;
+import com.gamm.vinos_api.dto.queries.VinosCompraDTO;
+import com.gamm.vinos_api.dto.view.VinoDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.VinoRowMapper;
 import com.gamm.vinos_api.jdbc.rowmapper.VinosCompraViewMapper;
@@ -26,8 +26,8 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
   private static final String VIEW_VINOS = "SELECT * FROM vw_vinos";
   private static final String VIEW_VINOS_COMPRA = "SELECT * FROM vw_listaVinosCompra";
 
-  private SimpleJdbcCall spCall;
-  private SimpleJdbcCall spCallCompra;
+  private SimpleJdbcCall spVinoCall;
+  private SimpleJdbcCall spCompraCall;
 
   public VinoRepositoryImpl(DataSource dataSource) {
     super(dataSource);
@@ -35,8 +35,8 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
 
   @PostConstruct
   private void init() {
-    spCall = crearSimpleJdbcCall(new VinoRowMapper());
-    spCallCompra = crearSimpleJdbcCall(new VinosCompraViewMapper());
+    spVinoCall = crearSimpleJdbcCall(new VinoRowMapper());
+    spCompraCall = crearSimpleJdbcCall(new VinosCompraViewMapper());
   }
 
   private SimpleJdbcCall crearSimpleJdbcCall(RowMapper<?> rowMapper) {
@@ -74,25 +74,23 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
 
   @Override
   public ResultadoSP eliminarVinoPorId(Integer idVino) {
-    Vino vino = new Vino();
-    vino.setIdVino(idVino);
-    return ejecutarSP(3, vino);
+    return ejecutarSP(spVinoCall,construirParametros(3, null, idVino, null, null, null, null, null, null, null));
   }
 
   // ─── Consultas simples ────────────────────────────────────────────────────
 
   @Override
   public ResultadoSP filtrarVinoPorNombre(String nombre) {
-    return ejecutarSPConLista(spCall, construirParametrosBasicos(nombre));
+    return ejecutarSPConLista(spVinoCall, construirParametrosBasicos(nombre));
   }
 
   @Override
-  public List<VinoView> listarVinos() {
+  public List<VinoDTO> listarVinos() {
     return jdbcTemplate.query(VIEW_VINOS, new VinoRowMapper());
   }
 
   @Override
-  public List<VinoView> listarVinosPaginados(int pagina, int limite) {
+  public List<VinoDTO> listarVinosPaginados(int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     return jdbcTemplate.query(VIEW_VINOS + " LIMIT ? OFFSET ?", new VinoRowMapper(), limite, offset);
   }
@@ -105,12 +103,12 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
   // ─── Compra ───────────────────────────────────────────────────────────────
 
   @Override
-  public List<VinosCompraView> listarVinosParaCompra() {
+  public List<VinosCompraDTO> listarVinosParaCompra() {
     return jdbcTemplate.query(VIEW_VINOS_COMPRA, new VinosCompraViewMapper());
   }
 
   @Override
-  public List<VinosCompraView> listarVinosParaCompraPaginados(int pagina, int limite) {
+  public List<VinosCompraDTO> listarVinosParaCompraPaginados(int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     return jdbcTemplate.query(VIEW_VINOS_COMPRA + " LIMIT ? OFFSET ?", new VinosCompraViewMapper(), limite, offset);
   }
@@ -125,16 +123,16 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
       String nombre, String proveedores, String categorias,
       String presentaciones, String tiposVino, String origenVino
   ) {
-    return ejecutarSPConLista(spCallCompra, construirParametrosCompra(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino));
+    return ejecutarSPConLista(spCompraCall, construirParametrosCompra(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino));
   }
 
   @Override
-  public List<VinosCompraView> filtrarVinosParaCompraPaginados(
+  public List<VinosCompraDTO> filtrarVinosParaCompraPaginados(
       String nombre, String proveedores, String categorias,
       String presentaciones, String tiposVino, String origenVino,
       int pagina, int limite
   ) {
-    List<VinosCompraView> filtrados = ejecutarSPYObtenerLista(spCallCompra,
+    List<VinosCompraDTO> filtrados = ejecutarSPYObtenerLista(spCompraCall,
         construirParametrosCompra(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino));
     return paginarLista(filtrados, pagina, limite);
   }
@@ -144,7 +142,7 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
       String nombre, String proveedores, String categorias,
       String presentaciones, String tiposVino, String origenVino
   ) {
-    List<VinosCompraView> filtrados = ejecutarSPYObtenerLista(spCallCompra,
+    List<VinosCompraDTO> filtrados = ejecutarSPYObtenerLista(spCompraCall,
         construirParametrosCompra(nombre, proveedores, categorias, presentaciones, tiposVino, origenVino));
     return (long) filtrados.size();
   }
@@ -152,7 +150,7 @@ public class VinoRepositoryImpl extends SimpleJdbcDAOBase implements VinoReposit
   // ─── Helpers privados ─────────────────────────────────────────────────────
 
   private ResultadoSP ejecutarSP(int tipo, Vino vino) {
-    return ejecutarSP(spCall, construirParametros(tipo, vino));
+    return ejecutarSP(spVinoCall, construirParametros(tipo, vino));
   }
 
   private Map<String, Object> construirParametrosBasicos(String nombre) {

@@ -1,17 +1,17 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.dto.view.VinoView;
+import com.gamm.vinos_api.dto.view.VinoDTO;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class VinoRowMapper implements RowMapper<VinoView> {
+public class VinoRowMapper implements RowMapper<VinoDTO> {
   @Override
-  public VinoView mapRow(ResultSet rs, int rowNum) throws SQLException {
-    VinoView view = new VinoView();
+  public VinoDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+    VinoDTO view = new VinoDTO();
     view.setIdVino(rs.getInt("idVino"));
-    view.setNombre(rs.getString("nombre"));
+    view.setNombreVino(rs.getString("nombreVino"));
     view.setIdCategoria(rs.getInt("idCategoria"));
     view.setNombreCategoria(rs.getString("nombreCategoria"));
     view.setDescripcionVino(rs.getString("descripcionVino"));

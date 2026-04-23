@@ -1,16 +1,16 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.dto.view.UsuarioView;
+import com.gamm.vinos_api.dto.view.UsuarioDTO;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UsuarioViewRowMapper implements RowMapper<UsuarioView> {
+public class UsuarioViewRowMapper implements RowMapper<UsuarioDTO> {
 
   @Override
-  public UsuarioView mapRow(ResultSet rs, int rowNum) throws SQLException {
-    UsuarioView u = new UsuarioView();
+  public UsuarioDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+    UsuarioDTO u = new UsuarioDTO();
 
     u.setIdUsuario(rs.getInt("idUsuario"));
     u.setUsername(rs.getString("username"));

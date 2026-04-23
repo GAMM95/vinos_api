@@ -5,8 +5,8 @@ import com.gamm.vinos_api.domain.enums.Rol;
 import com.gamm.vinos_api.domain.model.Persona;
 import com.gamm.vinos_api.domain.model.Sucursal;
 import com.gamm.vinos_api.domain.model.Usuario;
-import com.gamm.vinos_api.dto.view.UsuarioView;
-import com.gamm.vinos_api.jdbc.rowmapper.BaseUsuarioSPRepository;
+import com.gamm.vinos_api.dto.view.UsuarioDTO;
+import com.gamm.vinos_api.jdbc.base.BaseUsuarioSPRepository;
 import com.gamm.vinos_api.jdbc.rowmapper.UsuarioViewRowMapper;
 import com.gamm.vinos_api.repository.UsuarioRepository;
 import com.gamm.vinos_api.util.ResultadoSP;
@@ -62,12 +62,12 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
   }
 
   @Override
-  public List<UsuarioView> listarUsuarios() {
+  public List<UsuarioDTO> listarUsuarios() {
     return jdbcTemplate.query(VIEW_USUARIOS, new UsuarioViewRowMapper());
   }
 
   @Override
-  public List<UsuarioView> listarUsuariosPaginados(int pagina, int limite) {
+  public List<UsuarioDTO> listarUsuariosPaginados(int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VIEW_USUARIOS + " LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, new UsuarioViewRowMapper(), limite, offset);
@@ -94,7 +94,7 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
 
     ResultadoSP resultado = ejecutarSPConLista(construirParametros(10, u), false);
 
-    if (!(resultado.getData() instanceof UsuarioView uv)) return null;
+    if (!(resultado.getData() instanceof UsuarioDTO uv)) return null;
 
     return mapUsuarioViewToUsuario(uv);
   }
@@ -137,13 +137,13 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
   }
 
   @Override
-  public List<UsuarioView> listarPorRolYSucursal(String rol, Integer idSucursal) {
+  public List<UsuarioDTO> listarPorRolYSucursal(String rol, Integer idSucursal) {
     String sql = VIEW_USUARIOS + " WHERE rol = ? AND idSucursal = ?";
     return jdbcTemplate.query(sql, new UsuarioViewRowMapper(), rol, idSucursal);
   }
 
   @Override
-  public UsuarioView obtenerUsuarioPorId(Integer idUsuario) {
+  public UsuarioDTO obtenerUsuarioPorId(Integer idUsuario) {
    String sql = VIEW_USUARIOS + " WHERE idUsuario = ?";
     return jdbcTemplate.queryForObject(sql, new UsuarioViewRowMapper(), idUsuario);
   }
@@ -169,7 +169,7 @@ public class UsuarioRepositoryImpl extends BaseUsuarioSPRepository implements Us
   }
 
 
-  private Usuario mapUsuarioViewToUsuario(UsuarioView uv) {
+  private Usuario mapUsuarioViewToUsuario(UsuarioDTO uv) {
     Persona persona = new Persona();
     persona.setIdPersona(uv.getIdPersona());
     persona.setNombres(uv.getNombres());

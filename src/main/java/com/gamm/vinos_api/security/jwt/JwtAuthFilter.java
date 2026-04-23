@@ -66,7 +66,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
       escribirError(response, HttpServletResponse.SC_UNAUTHORIZED, "Refresh token inválido.");
     }
 
-
   }
 
   // Usar sincronizando ResponseVO

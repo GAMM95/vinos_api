@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository;
 
 import com.gamm.vinos_api.domain.model.DistribucionSucursal;
-import com.gamm.vinos_api.dto.view.DistribucionView;
+import com.gamm.vinos_api.dto.view.DistribucionDTO;
 import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.time.LocalDate;
@@ -20,5 +20,5 @@ public interface DistribucionRepository {
   // Listar todos los repartos
   long contarRepartos();
 
-  List<DistribucionView> listarRepartosSucursal(int pagina, int limite);
+  List<DistribucionDTO> listarRepartosSucursal(int pagina, int limite);
 }

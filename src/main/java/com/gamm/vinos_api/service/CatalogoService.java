@@ -1,13 +1,14 @@
 package com.gamm.vinos_api.service;
 
-import com.gamm.vinos_api.dto.view.CatalogoView;
+import com.gamm.vinos_api.dto.common.PaginaResultado;
+import com.gamm.vinos_api.dto.view.CatalogoDTO;
 import com.gamm.vinos_api.domain.model.Catalogo;
-import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.util.List;
 
 public interface CatalogoService {
+  // Mutaciones
   ResultadoSP registrarCatalogo(Catalogo catalogo);
 
   ResultadoSP actualizarCatalogo(Catalogo catalogo);
@@ -16,11 +17,11 @@ public interface CatalogoService {
 
   ResultadoSP darDeAltaCatalogo(Integer idCatalogo);
 
-  List<CatalogoView> listarCatalogos();
-
-  ResponseVO listarCatalogosPaginadosPorProveedor(Integer idProveedor, int pagina, int limite);
-
   ResultadoSP filtrarPorProveedor(Integer idProveedor);
 
-//  ResultadoSP filtrarPorProveedorYTermino(Integer idProveedor, String termino);
+  // Consultas
+  List<CatalogoDTO> listarCatalogos();
+
+  PaginaResultado<CatalogoDTO> listarCatalogosPaginadosPorProveedor(Integer idProveedor, int pagina, int limite);
+
 }

@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.repository.impl;
 
-import com.gamm.vinos_api.dto.view.CatalogoView;
+import com.gamm.vinos_api.dto.view.CatalogoDTO;
 import com.gamm.vinos_api.domain.model.Catalogo;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.CatalogoRowMapper;
@@ -36,18 +36,17 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
         .withoutProcedureColumnMetaDataAccess()
         .withProcedureName(SP_CATALOGO)
         .declareParameters(
-            new SqlParameter("pTipo", Types.TINYINT),
-            new SqlParameter("pIdCatalogo", Types.SMALLINT),
-            new SqlParameter("pIdProveedor", Types.TINYINT),
-            new SqlParameter("pIdVino", Types.TINYINT),
-            new SqlParameter("pIdPresentacion", Types.TINYINT),
+            new SqlParameter("pTipo", Types.INTEGER),
+            new SqlParameter("pIdCatalogo", Types.INTEGER),
+            new SqlParameter("pIdProveedor", Types.INTEGER),
+            new SqlParameter("pIdVino", Types.INTEGER),
+            new SqlParameter("pIdPresentacion", Types.INTEGER),
             new SqlParameter("pPrecioUnidad", Types.DECIMAL),
             new SqlParameter("pTipoVino", Types.VARCHAR),
-//            new SqlParameter("pTermino", Types.VARCHAR),
-            new SqlOutParameter("pRespuesta", Types.TINYINT),
-            new SqlOutParameter("pMensaje", Types.VARCHAR)
+            new SqlOutParameter(PARAM_RESPUESTA, Types.INTEGER),
+            new SqlOutParameter(PARAM_MENSAJE, Types.VARCHAR)
         )
-        .returningResultSet("ResultSet", new CatalogoRowMapper());
+        .returningResultSet(DEFAULT_RESULTSET, new CatalogoRowMapper());
   }
 
   /// MÉTODOS CRUD
@@ -81,21 +80,22 @@ public class CatalogoRepositoryImpl extends SimpleJdbcDAOBase implements Catalog
 
   // Listar catalogos
   @Override
-  public List<CatalogoView> listarCatalogos() {
+  public List<CatalogoDTO> listarCatalogos() {
     return jdbcTemplate.query(VW_CATALOGOS, new CatalogoRowMapper());
   }
 
   @Override
-  public List<CatalogoView> listarCatalogosPaginados(Integer idProveedor, int pagina, int limite) {
+  public List<CatalogoDTO> listarCatalogosPaginados(Integer idProveedor, int pagina, int limite) {
     int offset = (pagina - 1) * limite;
-    String sql = VW_CATALOGOS + " WHERE idProveedor = ? ORDER BY vw_catalogo.nombreVino LIMIT ? OFFSET ?";
+    String sql = VW_CATALOGOS + " WHERE idProveedor = ? ORDER BY nombreVino LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, new CatalogoRowMapper(), idProveedor, limite, offset);
   }
 
   @Override
   public Long contarCatalogos(Integer idProveedor) {
     String sql = "SELECT COUNT(*) FROM vw_catalogo WHERE idProveedor = ?";
-    return jdbcTemplate.queryForObject(sql, Long.class, idProveedor);
+    Long total = jdbcTemplate.queryForObject(sql, Long.class, idProveedor);
+    return total != null ? total : 0L;
   }
 
   // Filtrar por codigo de algun proveedor

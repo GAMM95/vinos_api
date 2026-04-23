@@ -2,12 +2,13 @@ package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.config.WebSocketService;
 import com.gamm.vinos_api.domain.model.Compra;
-import com.gamm.vinos_api.dto.view.CarritoCompraView;
-import com.gamm.vinos_api.dto.view.CompraView;
-import com.gamm.vinos_api.dto.view.ProductosCarritoView;
+import com.gamm.vinos_api.dto.common.PaginaResultado;
+import com.gamm.vinos_api.dto.view.CarritoCompraDTO;
+import com.gamm.vinos_api.dto.view.CompraDTO;
+import com.gamm.vinos_api.dto.view.ProductosCarritoDTO;
 import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.repository.CompraRepository;
-import com.gamm.vinos_api.service.BaseService;
+import com.gamm.vinos_api.service.base.BaseService;
 import com.gamm.vinos_api.service.CompraService;
 import com.gamm.vinos_api.service.NotificacionService;
 import com.gamm.vinos_api.util.ResultadoSP;
@@ -25,148 +26,32 @@ public class CompraServiceImpl extends BaseService implements CompraService {
   private final WebSocketService webSocketService;
   private final NotificacionService notificacionService;
 
-  /* Helpers */
-  private ResponseVO listarDetalleCompra(Integer idCompra, Integer idUsuario) {
-    List<CompraView> detalles =
-        idUsuario != null
-            ? compraRepository.listarDetalleComprasUsuario(idUsuario, idCompra)
-            : compraRepository.listarDetalleCompraAdmin(idCompra);
-
-    return ResponseVO.success(detalles);
-  }
-
-  private ResponseVO paginar(List<CompraView> data, int pagina, int limite, long totalRegistros) {
-    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
-    return ResponseVO.paginated(data, pagina, limite, totalPaginas, totalRegistros);
-  }
+  // ─── Carrito ──────────────────────────────────────────────────────────────
 
   @Override
   public ResultadoSP agregarProductoCarrito(Compra compra) {
-    Integer idUsuario = getIdUsuarioAutenticado();
     return compraRepository.agregarProductoCarrito(
-        idUsuario,
+        getIdUsuarioAutenticado(),
         compra,
-        compra.getDetalles().get(0)
+        compra.getDetalles().getFirst()
     );
   }
 
   @Override
   public ResultadoSP eliminarProductoCarrito(Integer idDetalleCompra) {
-    Integer idUsuario = getIdUsuarioAutenticado();
-    return compraRepository.eliminarProductoCarrito(idUsuario, idDetalleCompra);
+    ResultadoSP resultado =  compraRepository.eliminarProductoCarrito(getIdUsuarioAutenticado(), idDetalleCompra);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
   public ResultadoSP actualizarCantidadProductoCarrito(Compra compra) {
-    Integer idUsuario = getIdUsuarioAutenticado();
-    return compraRepository.actualizarCantidadProductoCarrito(
-        idUsuario,
+    ResultadoSP resultado =  compraRepository.actualizarCantidadProductoCarrito(
+        getIdUsuarioAutenticado(),
         compra,
-        compra.getDetalles().get(0)
+        compra.getDetalles().getFirst()
     );
-  }
-
-  @Override
-  public ResultadoSP confirmarCompra(Compra compra) {
-    Integer idUsuario = getIdUsuarioAutenticado();
-
-    if (compra == null) {
-      compra = new Compra();
-    }
-    ResultadoSP resultado = compraRepository.confirmarCompra(idUsuario, compra);
-
-    if (!resultado.esExitoso()) {
-      return resultado;
-    }
-    CompraView c = compraRepository.obtenerCompraPorId(compra.getIdCompra());
-
-    webSocketService.notifyDashboardUpdate();
-    webSocketService.notifyCompraUpdate();
-    // notificar al administrador que el vendedor ha realizado una nueva compra
-    if (!esAdministrador()) {
-      notificacionService.notificarRol(
-          "Administrador",
-          "SUCCESS",
-          "Nueva compra registrada",
-          c.getUsuario() + " ha registrado la compra " + c.getCodCompra() + " en el sistema.",
-          "/compras/consultar-compra"
-      );
-    }
-      // Notificar a todos los vendedores que se ha realizado una compra
-    else if (esAdministrador()) {
-      notificacionService.notificarRol(
-          "Vendedor",
-          "INFO",
-          "Compra registrada por el administrador",
-          "El administrador ha registrado la compra " + c.getCodCompra() + " en el sistema.",
-          "/mercaderia/consultar-mercaderia"
-      );
-    }
-    return resultado;
-  }
-
-  @Override
-  public ResultadoSP cerrarCompra(Integer idCompra) {
-    ResultadoSP resultado = compraRepository.cerrarCompra(idCompra);
-    CompraView compra = compraRepository.obtenerCompraPorId(idCompra);
-
-    if (resultado.esExitoso()) {
-      webSocketService.notifyDashboardUpdate();
-      webSocketService.notifyCompraUpdate();
-
-      String rol = compra.getRol();
-      // Notificar a los vendedores en general
-      if (esAdministrador()) {
-        // La compra es del admin → notificar a todos los vendedores
-        notificacionService.notificarRol(
-            "Vendedor",
-            "INFO",
-            "Nueva mercadería disponible",
-            "Se ha recepcionado nueva mercadería en el almacén. Compra " + compra.getCodCompra() + " cerrada.",
-            "/mercaderia/consultar-mercaderia"
-        );
-      } else {
-        // La compra es de un vendedor → notificar solo a ese vendedor
-        notificacionService.notificarUsuario(
-            compra.getIdUsuario(),
-            compra.getUsername(),
-            "SUCCESS",
-            "Tu compra fue cerrada",
-            "Tu compra " + compra.getCodCompra() + " ha sido recepcionada en el almacén.",
-            "/mercaderia/mi-stock"
-        );
-      }
-    }
-    return resultado;
-  }
-
-  @Override
-  public ResultadoSP deshacerCerrarCompra(Integer idCompra) {
-    ResultadoSP resultado = compraRepository.deshacerCerrarCompra(idCompra);
-    CompraView compra = compraRepository.obtenerCompraPorId(idCompra);
-    if (resultado.esExitoso()) {
-      webSocketService.notifyDashboardUpdate();
-      webSocketService.notifyCompraUpdate();
-      // Notificar a todos los vendedores (stock puede cambiar)
-      notificacionService.notificarRol(
-          "Vendedor",
-          "WARNING",
-          "Reversión de cierre de compra",
-          "Se ha revertido el cierre de la compra " + compra.getCodCompra() + ". Puede haber cambios en el stock.",
-          "/mercaderia/consultar-mercaderia"
-      );
-      // Notificar específicamente al vendedor dueño de la compra
-      if (compra.getIdUsuario() != null) {
-        notificacionService.notificarUsuario(
-            compra.getIdUsuario(),
-            compra.getUsuario(),
-            "WARNING",
-            "Tu compra fue revertida",
-            "El administrador ha revertido el cierre de tu compra " + compra.getCodCompra() + ". Verifique el stock.",
-            "/mercaderia/mi-stock"
-        );
-      }
-    }
+    ResponseVO.validar(resultado);
     return resultado;
   }
 
@@ -180,7 +65,7 @@ public class CompraServiceImpl extends BaseService implements CompraService {
   }
 
   @Override
-  public List<ProductosCarritoView> listarProductosCarritoUsuario() {
+  public List<ProductosCarritoDTO> listarProductosCarritoUsuario() {
     Integer idUsuario = getIdUsuarioAutenticado();
     Compra carrito = compraRepository.obtenerCarritoPendiente(idUsuario);
     return carrito != null
@@ -189,167 +74,219 @@ public class CompraServiceImpl extends BaseService implements CompraService {
   }
 
   @Override
-  public ResultadoSP anularCompra(Integer idCompra) {
+  public List<CarritoCompraDTO> listarCarritosCompra() {
+    return compraRepository.listarCarritosCompra();
+  }
+
+  // ─── Operaciones de compra ────────────────────────────────────────────────
+
+  @Override
+  public ResultadoSP confirmarCompra(Compra compra) {
     Integer idUsuario = getIdUsuarioAutenticado();
-    ResultadoSP resultado = compraRepository.anularCompra(idUsuario, idCompra);
-    CompraView compra = compraRepository.obtenerCompraPorId(idCompra);
-    if (resultado.esExitoso()) {
-      webSocketService.notifyDashboardUpdate();
-      webSocketService.notifyCompraUpdate();
-      // Notificar al administrador que el usuario ha anulado compra
+    if (compra == null) compra = new Compra();
+
+    ResultadoSP resultado = compraRepository.confirmarCompra(idUsuario, compra);
+    ResponseVO.validar(resultado);
+
+    CompraDTO c = compraRepository.obtenerCompraPorId(compra.getIdCompra());
+    webSocketService.notifyDashboardUpdate();
+    webSocketService.notifyCompraUpdate();
+
+    if (esAdministrador()) {
       notificacionService.notificarRol(
-          "Administrador",
-          "WARNING",
-          "Compra anulada",
-          compra.getUsuario() + " ha anulado la compra " + compra.getCodCompra() + ".",
+          "Vendedor", "INFO", "Compra registrada por el administrador",
+          "El administrador ha registrado la compra " + c.getCodCompra() + " en el sistema.",
+          "/mercaderia/consultar-mercaderia"
+      );
+    } else {
+      notificacionService.notificarRol(
+          "Administrador", "SUCCESS", "Nueva compra registrada",
+          c.getUsuario() + " ha registrado la compra " + c.getCodCompra() + " en el sistema.",
           "/compras/consultar-compra"
       );
     }
+    return resultado;
+  }
+
+  @Override
+  public ResultadoSP cerrarCompra(Integer idCompra) {
+    ResultadoSP resultado = compraRepository.cerrarCompra(idCompra);
+    ResponseVO.validar(resultado);
+
+    CompraDTO compra = compraRepository.obtenerCompraPorId(idCompra);
+    webSocketService.notifyDashboardUpdate();
+    webSocketService.notifyCompraUpdate();
+
+    if (esAdministrador()) {
+      notificacionService.notificarRol(
+          "Vendedor", "INFO", "Nueva mercadería disponible",
+          "Se ha recepcionado nueva mercadería en el almacén. Compra " + compra.getCodCompra() + " cerrada.",
+          "/mercaderia/consultar-mercaderia"
+      );
+    } else {
+      notificacionService.notificarUsuario(
+          compra.getIdUsuario(), compra.getUsername(),
+          "SUCCESS", "Tu compra fue cerrada",
+          "Tu compra " + compra.getCodCompra() + " ha sido recepcionada en el almacén.",
+          "/mercaderia/mi-stock"
+      );
+    }
+    return resultado;
+  }
+
+  @Override
+  public ResultadoSP deshacerCerrarCompra(Integer idCompra) {
+    ResultadoSP resultado = compraRepository.deshacerCerrarCompra(idCompra);
+    ResponseVO.validar(resultado);
+
+    CompraDTO compra = compraRepository.obtenerCompraPorId(idCompra);
+    webSocketService.notifyDashboardUpdate();
+    webSocketService.notifyCompraUpdate();
+
+    notificacionService.notificarRol(
+        "Vendedor", "WARNING", "Reversión de cierre de compra",
+        "Se ha revertido el cierre de la compra " + compra.getCodCompra() + ". Puede haber cambios en el stock.",
+        "/mercaderia/consultar-mercaderia"
+    );
+
+    if (compra.getIdUsuario() != null) {
+      notificacionService.notificarUsuario(
+          compra.getIdUsuario(), compra.getUsuario(),
+          "WARNING", "Tu compra fue revertida",
+          "El administrador ha revertido el cierre de tu compra " + compra.getCodCompra() + ". Verifique el stock.",
+          "/mercaderia/mi-stock"
+      );
+    }
+    return resultado;
+  }
+
+  @Override
+  public ResultadoSP anularCompra(Integer idCompra) {
+    ResultadoSP resultado = compraRepository.anularCompra(getIdUsuarioAutenticado(), idCompra);
+    ResponseVO.validar(resultado);
+
+    CompraDTO compra = compraRepository.obtenerCompraPorId(idCompra);
+    webSocketService.notifyDashboardUpdate();
+    webSocketService.notifyCompraUpdate();
+
+    notificacionService.notificarRol(
+        "Administrador", "WARNING", "Compra anulada",
+        compra.getUsuario() + " ha anulado la compra " + compra.getCodCompra() + ".",
+        "/compras/consultar-compra"
+    );
     return resultado;
   }
 
   @Override
   public ResultadoSP revertirCompra(Integer idCompra) {
-    Integer idUsuario = getIdUsuarioAutenticado();
-    ResultadoSP resultado = compraRepository.revertirCompra(idUsuario, idCompra);
-    CompraView compra = compraRepository.obtenerCompraPorId(idCompra);
+    ResultadoSP resultado = compraRepository.revertirCompra(getIdUsuarioAutenticado(), idCompra);
+    ResponseVO.validar(resultado);
 
-    if (resultado.esExitoso()) {
-      webSocketService.notifyDashboardUpdate();
-      webSocketService.notifyCompraUpdate();
-      // Notificar al administrador que el usuario a revertido compra
-      notificacionService.notificarRol(
-          "Administrador",
-          "INFO",
-          "Reversión de compra",
-          compra.getUsuario() + " ha revertido la compra " + compra.getCodCompra() + ".",
-          "/compras/consultar-compra"
-      );
-    }
+    CompraDTO compra = compraRepository.obtenerCompraPorId(idCompra);
+    webSocketService.notifyDashboardUpdate();
+    webSocketService.notifyCompraUpdate();
+
+    notificacionService.notificarRol(
+        "Administrador", "INFO", "Reversión de compra",
+        compra.getUsuario() + " ha revertido la compra " + compra.getCodCompra() + ".",
+        "/compras/consultar-compra"
+    );
     return resultado;
   }
 
+  // ─── Consultas del usuario autenticado ────────────────────────────────────
+
   @Override
-  public ResponseVO filtrarMisComprasPorFechas(LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
+  public PaginaResultado<CompraDTO> listarComprasUsuario(int pagina, int limite) {
+    Integer idUsuario = getIdUsuarioAutenticado();
+    List<CompraDTO> data = compraRepository.listarComprasUsuario(idUsuario, pagina, limite);
+    long total = compraRepository.contarComprasUsuario(idUsuario);
+    return construirPagina(data, pagina, limite, total);
+  }
+
+
+  @Override
+  public List<CompraDTO> listarDetalleCompraUsuario(Integer idCompra) {
+    return compraRepository.listarDetalleComprasUsuario(getIdUsuarioAutenticado(), idCompra);
+  }
+
+  @Override
+  public PaginaResultado<CompraDTO> filtrarMisComprasPorFechas(
+      LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite
+  ) {
     Integer idUsuario = getIdUsuarioAutenticado();
     ResultadoSP resultado = compraRepository.filtrarMisComprasRangoFechas(idUsuario, fechaInicio, fechaFin);
-
-    if (!resultado.esExitoso()) {
-      return ResponseVO.error(resultado.getMensaje());
-    }
+    ResponseVO.validar(resultado);
 
     @SuppressWarnings("unchecked")
-    List<CompraView> data = resultado.getData() != null
-        ? (List<CompraView>) resultado.getData()
+    List<CompraDTO> todos = resultado.getData() != null
+        ? (List<CompraDTO>) resultado.getData()
         : List.of();
 
-    return paginar(
-        data,
-        pagina,
-        limite,
-        data.size()
-    );
+    // Paginación en memoria — el SP retorna todos los registros filtrados
+    List<CompraDTO> contenido = paginarEnMemoria(todos, pagina, limite);
+    long total = todos.size();
+    return construirPagina(contenido, pagina, limite, total);
+  }
+
+  // ─── Administración ───────────────────────────────────────────────────────
+
+  @Override
+  public List<CompraDTO> listarDetalleCompraAdmin(Integer idCompra) {
+    return compraRepository.listarDetalleCompraAdmin(idCompra);
   }
 
   @Override
-  public ResponseVO filtrarComprasPorUsuarioYFechas(Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin, int pagina, int limite) {
-
-    ResultadoSP resultado = compraRepository.filtrarComprasUsuarioFechas(idUsuario, fechaInicio, fechaFin);
-
-    if (!resultado.esExitoso()) {
-      return ResponseVO.error(resultado.getMensaje());
-    }
-
-    @SuppressWarnings("unchecked")
-    List<CompraView> data = resultado.getData() != null
-        ? (List<CompraView>) resultado.getData()
-        : List.of();
-
-    return paginar(data, pagina, limite, data.size());
-  }
-
-  @Override
-  public List<CarritoCompraView> listarCarritosCompra() {
-    return compraRepository.listarCarritosCompra();
-  }
-
-  @Override
-  public ResponseVO listarComprasUsuario(int pagina, int limite) {
-    Integer idUsuario = getIdUsuarioAutenticado();
-    // Obtener la lista de compras de cada usuario
-    List<CompraView> comprasPagina = compraRepository.listarComprasUsuario(idUsuario, pagina, limite);
-
-    // Obtener el total de registros para calcular las paginas
-    long totalRegistros = compraRepository.contarComprasUsuario(idUsuario);
-    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
-
-    // Retornar usando ResponseVO con paginación
-    return ResponseVO.paginated(
-        comprasPagina,
-        pagina,
-        limite,
-        totalPaginas,
-        totalRegistros
-    );
-  }
-
-  @Override
-  public ResponseVO listarDetalleCompraUsuario(Integer idCompra) {
-    return listarDetalleCompra(idCompra, getIdUsuarioAutenticado());
-  }
-
-  @Override
-  public ResponseVO listarDetalleCompraAdmin(Integer idCompra) {
-    return listarDetalleCompra(idCompra, null);
-  }
-
-  @Override
-  public ResponseVO listarTotalCompras(int pagina, int limite) {
-    //  Obtener la lista de la pagina
-    List<CompraView> comprasPagina = compraRepository.listarTotalCompras(pagina, limite);
-
-    // Obtener el total de registros para calcular páginas
-    long totalRegistros = compraRepository.contarTotalCompras();
-    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
-
-    // Retornar usando ResponseVO con paginación
-    return ResponseVO.paginated(
-        comprasPagina,
-        pagina,
-        limite,
-        totalPaginas,
-        totalRegistros
-    );
-  }
-
-  @Override
-  public ResponseVO listarComprasConfirmadas(int pagina, int limite) {
-    return paginar(
-        compraRepository.listarComprasConfirmadas(pagina, limite),
-        pagina,
-        limite,
-        compraRepository.contarComprasConfirmadas()
-    );
-  }
-
-  @Override
-  public List<CompraView> listarComprasPendientes() {
+  public List<CompraDTO> listarComprasPendientes() {
     return compraRepository.listarComprasPendientes();
   }
 
   @Override
-  public ResponseVO listarComprasAnuladas(int pagina, int limite) {
-    List<CompraView> comprasPagina = compraRepository.listarComprasAnuladas(pagina, limite);
-
-    long totalRegistros = compraRepository.contarComprasAnuladas();
-    int totalPaginas = (int) Math.ceil(totalRegistros / (double) limite);
-    return ResponseVO.paginated(
-        comprasPagina,
-        pagina,
-        limite,
-        totalPaginas,
-        totalRegistros
-    );
+  public PaginaResultado<CompraDTO> listarTotalCompras(int pagina, int limite) {
+    List<CompraDTO> data = compraRepository.listarTotalCompras(pagina, limite);
+    long total = compraRepository.contarTotalCompras();
+    return construirPagina(data, pagina, limite, total);
   }
 
+  @Override
+  public PaginaResultado<CompraDTO> listarComprasConfirmadas(int pagina, int limite) {
+    List<CompraDTO> data = compraRepository.listarComprasConfirmadas(pagina, limite);
+    long total = compraRepository.contarComprasConfirmadas();
+    return construirPagina(data, pagina, limite, total);
+  }
+
+  @Override
+  public PaginaResultado<CompraDTO> listarComprasAnuladas(int pagina, int limite) {
+    List<CompraDTO> contenido = compraRepository.listarComprasAnuladas(pagina, limite);
+    long total = compraRepository.contarComprasAnuladas();
+    return construirPagina(contenido, pagina, limite, total);
+  }
+
+  @Override
+  public PaginaResultado<CompraDTO> filtrarComprasPorUsuarioYFechas(
+      Integer idUsuario, LocalDate fechaInicio, LocalDate fechaFin,
+      int pagina, int limite
+  ) {
+    ResultadoSP resultado = compraRepository.filtrarComprasUsuarioFechas(
+        idUsuario, fechaInicio, fechaFin
+    );
+    ResponseVO.validar(resultado);
+
+    @SuppressWarnings("unchecked")
+    List<CompraDTO> todos = resultado.getData() != null
+        ? (List<CompraDTO>) resultado.getData()
+        : List.of();
+
+    List<CompraDTO> data = paginarEnMemoria(todos, pagina, limite);
+    long total = todos.size();
+
+    return construirPagina(data, pagina, limite, total);
+  }
+
+  // ✅ Paginación en memoria para SPs que retornan todos los registros de una vez
+  private <T> List<T> paginarEnMemoria(List<T> lista, int pagina, int limite) {
+    int offset = (pagina - 1) * limite;
+    if (offset >= lista.size()) return List.of();
+    return lista.subList(offset, Math.min(offset + limite, lista.size()));
+  }
 }

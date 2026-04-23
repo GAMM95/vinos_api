@@ -1,11 +1,5 @@
 package com.gamm.vinos_api.exception.security;
 
-//public class TokenInvalidoException extends RuntimeException {
-//  public TokenInvalidoException(String message) {
-//    super(message);
-//  }
-//}
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 

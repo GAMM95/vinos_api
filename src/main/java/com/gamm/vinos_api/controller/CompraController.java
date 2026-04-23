@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,6 @@ public class CompraController extends AbstractRestController {
   @PostMapping("/carrito")
   public ResponseEntity<ResponseVO> agregarProductoCarrito(@Valid @RequestBody Compra compra) {
     ResultadoSP resultado = compraService.agregarProductoCarrito(compra);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -38,7 +36,6 @@ public class CompraController extends AbstractRestController {
   @PutMapping("/carrito")
   public ResponseEntity<ResponseVO> actualizarCantidadProductoCarrito(@RequestBody Compra compra) {
     ResultadoSP resultado = compraService.actualizarCantidadProductoCarrito(compra);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -46,7 +43,6 @@ public class CompraController extends AbstractRestController {
   @DeleteMapping("/carrito/{idDetalleCompra}")
   public ResponseEntity<ResponseVO> eliminarProductoCarrito(@PathVariable Integer idDetalleCompra) {
     ResultadoSP resultado = compraService.eliminarProductoCarrito(idDetalleCompra);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -69,8 +65,7 @@ public class CompraController extends AbstractRestController {
   public ResponseEntity<ResponseVO> listarTotalCarritosCompra(
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "3") int limite) {
-    ResponseVO response = compraService.listarTotalCompras(pagina, limite);
-    return ok(response);
+    return okPaginado(compraService.listarTotalCompras(pagina, limite));
   }
 
   // ─── Compras del usuario autenticado ─────────────────────────────────────
@@ -81,38 +76,24 @@ public class CompraController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "5") int limite
   ) {
-    ResponseVO response = compraService.listarComprasUsuario(pagina, limite);
-    return ok(response);
+    return okPaginado(compraService.listarComprasUsuario(pagina, limite));
   }
 
   @Operation(summary = "Filtrar mis compras por rango de fechas")
   @GetMapping("/user/filtrar") // mias/filtro
   public ResponseEntity<ResponseVO> filtrarMisComprasPorFechas(
-//      @RequestParam LocalDate fechaInicio,
-//      @RequestParam LocalDate fechaFin,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "5") int limite
   ) {
-    ResponseVO response = compraService.filtrarMisComprasPorFechas(fechaInicio, fechaFin, pagina, limite);
-    return ResponseEntity.ok(response);
+    return okPaginado(compraService.filtrarMisComprasPorFechas(fechaInicio, fechaFin, pagina, limite));
   }
 
-
-  //  // Listar detalle de compras de cada usuario
-//  @GetMapping("/{idCompra}/detalle-user")
-//  public ResponseEntity<ResponseVO> detalleCompraUsuario(
-//      @PathVariable Integer idCompra
-//  ) {
-//    ResponseVO response = compraService.listarDetalleCompraUsuario(idCompra);
-//    return ResponseEntity.ok(response);
-//  }
-//
   @Operation(summary = "Ver detalle de una compra del usuario autenticado")
   @GetMapping("/{idCompra}/detalle")  // ✅ /detalle-user → /detalle
   public ResponseEntity<ResponseVO> detalleCompraUsuario(@PathVariable Integer idCompra) {
-    return ResponseEntity.ok(compraService.listarDetalleCompraUsuario(idCompra));
+    return ok(compraService.listarDetalleCompraUsuario(idCompra));
   }
 
   // ─── Compras pendientes ───────────────────────────────────────────────────
@@ -131,7 +112,6 @@ public class CompraController extends AbstractRestController {
       @RequestBody(required = false) Compra compra
   ) {
     ResultadoSP resultado = compraService.confirmarCompra(compra);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -144,7 +124,6 @@ public class CompraController extends AbstractRestController {
     ResultadoSP resultado = cerrada
         ? compraService.cerrarCompra(idCompra)
         : compraService.deshacerCerrarCompra(idCompra);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -152,7 +131,6 @@ public class CompraController extends AbstractRestController {
   @PatchMapping("/{idCompra}/anulacion") // ✅ PUT → PATCH + sustantivo
   public ResponseEntity<ResponseVO> anularCompra(@PathVariable Integer idCompra) {
     ResultadoSP resultado = compraService.anularCompra(idCompra);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -160,7 +138,6 @@ public class CompraController extends AbstractRestController {
   @PatchMapping("/{idCompra}/reversion") // ✅ PUT → PATCH + sustantivo
   public ResponseEntity<ResponseVO> revertirCompra(@PathVariable Integer idCompra) {
     ResultadoSP resultado = compraService.revertirCompra(idCompra);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -174,14 +151,13 @@ public class CompraController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "5") int limite
   ) {
-    ResponseVO response = compraService.filtrarComprasPorUsuarioYFechas(idUsuario, fechaInicio, fechaFin, pagina, limite);
-    return ResponseEntity.ok(response);
+    return okPaginado(compraService.filtrarComprasPorUsuarioYFechas(idUsuario, fechaInicio, fechaFin, pagina, limite));
   }
 
   @Operation(summary = "Ver detalle de una compra (vista administrador)")
   @GetMapping("/{idCompra}/detalle/admin")
   public ResponseEntity<ResponseVO> detalleCompraAdmin(@PathVariable Integer idCompra) {
-    return ResponseEntity.ok(compraService.listarDetalleCompraAdmin(idCompra));
+    return ok(compraService.listarDetalleCompraAdmin(idCompra));
   }
 
   @Operation(summary = "Listar compras confirmadas")
@@ -191,8 +167,7 @@ public class CompraController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "5") int limite
   ) {
-    ResponseVO response = compraService.listarComprasConfirmadas(pagina, limite);
-    return ResponseEntity.ok(response);
+    return okPaginado(compraService.listarComprasConfirmadas(pagina, limite));
   }
 
   @Operation(summary = "Listar compras anuladas")
@@ -202,8 +177,7 @@ public class CompraController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "5") int limite
   ) {
-    ResponseVO response = compraService.listarComprasAnuladas(pagina, limite);
-    return ResponseEntity.ok(response);
+    return okPaginado(compraService.listarComprasAnuladas(pagina, limite));
   }
 
 }

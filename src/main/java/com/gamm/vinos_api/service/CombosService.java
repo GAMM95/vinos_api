@@ -5,19 +5,17 @@ import com.gamm.vinos_api.dto.cbo.*;
 import java.util.List;
 
 public interface CombosService {
-  List<UnidadVolumenCbo> comboUnidadVolumen();
+  List<UnidadVolumenComboDTO> comboUnidadVolumen();
 
-  List<CategoriaCbo> comboCategoria();
+  List<CategoriaComboDTO> comboCategoria();
 
-  List<ProveedorCbo> comboProveedor();
+  List<ProveedorComboDTO> comboProveedor();
 
-  List<PresentacionCbo> comboPresentacion();
+  List<PresentacionComboDTO> comboPresentacion();
 
   List<VinoCbo> comboVino();
 
   List<SucursalCbo> comboSucursal();
-
-  List<PresentacionChk> checkBoxPresentacion();
 
   List<UsuarioCbo> comboUsuario();
 }

@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.repository;
 
-import com.gamm.vinos_api.dto.view.CatalogoView;
+import com.gamm.vinos_api.dto.view.CatalogoDTO;
 import com.gamm.vinos_api.domain.model.Catalogo;
 import com.gamm.vinos_api.util.ResultadoSP;
 
@@ -16,14 +16,12 @@ public interface CatalogoRepository {
 
   ResultadoSP darDeAltaCatalogo(Integer idCatalogo);
 
-  List<CatalogoView> listarCatalogos();
+  List<CatalogoDTO> listarCatalogos();
 
-  List<CatalogoView> listarCatalogosPaginados(Integer idProveedor, int pagina, int limite);
+  List<CatalogoDTO> listarCatalogosPaginados(Integer idProveedor, int pagina, int limite);
 
   Long contarCatalogos(Integer idProveedor);
 
   ResultadoSP filtrarPorProveedor(Integer idProveedor);
 
-
-//  ResultadoSP filtrarPorIDProveedorTermino (Integer idProveedor, String termino);
 }

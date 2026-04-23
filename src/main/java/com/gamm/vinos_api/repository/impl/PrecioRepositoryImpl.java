@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.PrecioSucursal;
-import com.gamm.vinos_api.dto.view.PrecioView;
+import com.gamm.vinos_api.dto.view.PrecioDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.PrecioStockDetalleRowMapper;
 import com.gamm.vinos_api.jdbc.rowmapper.PrecioStockRowMapper;
@@ -86,12 +86,12 @@ public class PrecioRepositoryImpl extends SimpleJdbcDAOBase implements PrecioRep
   }
 
   @Override
-  public List<PrecioView> listarTotalPreciosStock() {
+  public List<PrecioDTO> listarTotalPreciosStock() {
     return jdbcTemplate.query(VW_PRECIOS_STOCK, new PrecioStockRowMapper());
   }
 
   @Override
-  public List<PrecioView> listarPreciosStockSucursal(Integer idSucursal) {
+  public List<PrecioDTO> listarPreciosStockSucursal(Integer idSucursal) {
     String sql = VW_PRECIOS_STOCK + " WHERE idSucursal  = ? ";
     return jdbcTemplate.query(sql, new PrecioStockRowMapper(), idSucursal);
   }
@@ -103,7 +103,7 @@ public class PrecioRepositoryImpl extends SimpleJdbcDAOBase implements PrecioRep
   }
 
   @Override
-  public List<PrecioView> listarPreciosDetalle(Integer idVino, Integer idSucursal) {
+  public List<PrecioDTO> listarPreciosDetalle(Integer idVino, Integer idSucursal) {
     return jdbcTemplate.query(VW_PRECIOS_STOCK_DETALLE, new PrecioStockDetalleRowMapper(), idVino, idSucursal);
   }
 

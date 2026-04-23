@@ -1,13 +1,13 @@
 package com.gamm.vinos_api.repository;
 
 import com.gamm.vinos_api.domain.model.Sucursal;
-import com.gamm.vinos_api.dto.view.SucursalView;
+import com.gamm.vinos_api.dto.view.SucursalDTO;
 import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.util.List;
 
 public interface SucursalRepository {
-  List<SucursalView> listarSucursales();
+  List<SucursalDTO> listarSucursales();
 
   ResultadoSP registrarSucursal(Sucursal sucursal);
 

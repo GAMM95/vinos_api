@@ -1,15 +1,15 @@
 package com.gamm.vinos_api.service;
 
-
-import com.gamm.vinos_api.dto.view.VinoView;
+import com.gamm.vinos_api.dto.common.PaginaResultado;
+import com.gamm.vinos_api.dto.queries.VinosCompraDTO;
+import com.gamm.vinos_api.dto.view.VinoDTO;
 import com.gamm.vinos_api.domain.model.Vino;
-import com.gamm.vinos_api.dto.view.VinosCompraView;
-import com.gamm.vinos_api.dto.response.ResponseVO;
 import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.util.List;
 
 public interface VinoService {
+  // ─── Mutaciones ───────────────────────────────────────────────────────────
   ResultadoSP registrarVino(Vino vino);
 
   ResultadoSP actualizarVino(Vino vino);
@@ -18,35 +18,22 @@ public interface VinoService {
 
   ResultadoSP filtrarVinoPorNombre(String nombre);
 
-  List<VinoView> listarVinos();
+  ResultadoSP filtrarVinosParaCompra(String nombre, String proveedores, String categorias,
+                                     String presentaciones, String tiposVino, String origenVino);
 
-  ResponseVO listarVinosPaginados(int pagina, int limite);
+  // ─── Consultas simples ────────────────────────────────────────────────────
+  List<VinoDTO> listarVinos();
 
-  List<VinosCompraView> listarVinosParaCompra();
+  List<VinosCompraDTO> listarVinosParaCompra();
 
-  ResponseVO listarVinosParaCompraPaginados(int pagina, int limite);
+  // ─── Consultas paginadas — devuelven PaginaResultado, el controller arma ResponseVO
+  PaginaResultado<VinoDTO> listarVinosPaginados(int pagina, int limite);
 
-  ResultadoSP filtrarVinosParaCompra(String nombre, String proveedores, String categorias, String presentaciones, String tiposVino, String origenVino);
+  PaginaResultado<VinosCompraDTO> listarVinosParaCompraPaginados(int pagina, int limite);
 
-  // Nuevo filtrado paginado y conteo
-  ResponseVO filtrarVinosParaCompraPaginados(
-      String nombre,
-      String proveedores,
-      String categorias,
-      String presentaciones,
-      String tiposVino,
-      String origenVino,
-      int pagina,
-      int limite
-  );
-
-  // 🔹 Conteo filtrado (opcional si quieres total de registros para paginación)
-  Long contarVinosParaCompraFiltrados(
-      String nombre,
-      String proveedores,
-      String categorias,
-      String presentaciones,
-      String tiposVino,
-      String origenVino
+  PaginaResultado<VinosCompraDTO> filtrarVinosParaCompraPaginados(
+      String nombre, String proveedores, String categorias,
+      String presentaciones, String tiposVino, String origenVino,
+      int pagina, int limite
   );
 }

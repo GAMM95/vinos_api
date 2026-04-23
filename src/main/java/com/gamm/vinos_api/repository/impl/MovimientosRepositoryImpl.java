@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.repository.impl;
 
-import com.gamm.vinos_api.dto.view.MovimientosView;
+import com.gamm.vinos_api.dto.view.MovimientosDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.MovimientosRowMapper;
 import com.gamm.vinos_api.repository.MovimientoRepository;
@@ -109,7 +109,7 @@ public class MovimientosRepositoryImpl extends SimpleJdbcDAOBase implements Movi
   }
 
   @Override
-  public List<MovimientosView> listarMisMovimientos(Integer idUsuario, int pagina, int limite) {
+  public List<MovimientosDTO> listarMisMovimientos(Integer idUsuario, int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VW_MIS_MOVIMIENTOS + " LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, new MovimientosRowMapper(), idUsuario, limite, offset);
@@ -122,19 +122,19 @@ public class MovimientosRepositoryImpl extends SimpleJdbcDAOBase implements Movi
   }
 
   @Override
-  public List<MovimientosView> listarTotalMovimientos(int pagina, int limite) {
+  public List<MovimientosDTO> listarTotalMovimientos(int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VW_MOVIMIENTOS + " LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, new MovimientosRowMapper(), limite, offset);
   }
 
   @Override
-  public List<MovimientosView> listarDetalleMovimientoUsuario(Integer idUsuario, Integer idCaja) {
+  public List<MovimientosDTO> listarDetalleMovimientoUsuario(Integer idUsuario, Integer idCaja) {
     return jdbcTemplate.query(VW_DETALLE_MOVIMIENTOS_USUARIO, new MovimientosRowMapper(), idUsuario, idCaja);
   }
 
   @Override
-  public List<MovimientosView> listarDetalleMovimiento(Integer idCaja) {
+  public List<MovimientosDTO> listarDetalleMovimiento(Integer idCaja) {
     return jdbcTemplate.query(VW_DETALLE_MOVIMIENTOS, new MovimientosRowMapper(), idCaja);
   }
 

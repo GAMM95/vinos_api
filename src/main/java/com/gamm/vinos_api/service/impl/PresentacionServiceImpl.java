@@ -2,7 +2,8 @@ package com.gamm.vinos_api.service.impl;
 
 
 import com.gamm.vinos_api.domain.model.Presentacion;
-import com.gamm.vinos_api.dto.view.PresentacionView;
+import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.dto.view.PresentacionDTO;
 import com.gamm.vinos_api.repository.PresentacionRepository;
 import com.gamm.vinos_api.service.PresentacionService;
 import com.gamm.vinos_api.util.ResultadoSP;
@@ -19,31 +20,41 @@ public class PresentacionServiceImpl implements PresentacionService {
 
   @Override
   public ResultadoSP guardarPresentacion(Presentacion presentacion) {
-    return presentacionRepository.guardarPresentacion(presentacion);
+    ResultadoSP resultado = presentacionRepository.guardarPresentacion(presentacion);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
   public ResultadoSP actualizarPresentacion(Presentacion presentacion) {
-    return presentacionRepository.actualizarPresentacion(presentacion);
+    ResultadoSP resultado = presentacionRepository.actualizarPresentacion(presentacion);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
   public ResultadoSP darBaja(Integer idPresentacion) {
-    return presentacionRepository.darBaja(idPresentacion);
+    ResultadoSP resultado = presentacionRepository.darBaja(idPresentacion);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
   public ResultadoSP darAlta(Integer idPresentacion) {
-    return presentacionRepository.darAlta(idPresentacion);
+    ResultadoSP resultado = presentacionRepository.darAlta(idPresentacion);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
   public ResultadoSP filtrarPresentacion(String descripcion) {
-    return presentacionRepository.filtrarPresentacion(descripcion);
+    ResultadoSP resultado = presentacionRepository.filtrarPresentacion(descripcion);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
-  public List<PresentacionView> listarPresentaciones() {
+  public List<PresentacionDTO> listarPresentaciones() {
     return presentacionRepository.listarPresentaciones();
   }
 }

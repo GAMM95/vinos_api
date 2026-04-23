@@ -1,20 +1,20 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.dto.view.CatalogoView;
+import com.gamm.vinos_api.dto.view.CatalogoDTO;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CatalogoRowMapper implements RowMapper<CatalogoView> {
+public class CatalogoRowMapper implements RowMapper<CatalogoDTO> {
 
   @Override
-  public CatalogoView mapRow(ResultSet rs, int rowNum) throws SQLException {
-    CatalogoView catalogoView = new CatalogoView();
+  public CatalogoDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+    CatalogoDTO catalogoView = new CatalogoDTO();
     catalogoView.setIdCatalogo(rs.getInt("idCatalogo"));
     catalogoView.setIdProveedor(rs.getInt("idProveedor"));
     catalogoView.setCodProveedor(rs.getString("codProveedor"));
-    catalogoView.setNombreProveedor(rs.getString("nombreProveedor"));
+    catalogoView.setRazonSocial(rs.getString("razonSocial"));
     catalogoView.setIdVino(rs.getInt("idVino"));
     catalogoView.setNombreVino(rs.getString("nombreVino"));
     catalogoView.setIdPresentacion(rs.getInt("idPresentacion"));

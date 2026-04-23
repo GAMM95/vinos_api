@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.service;
 
 import com.gamm.vinos_api.domain.model.Presentacion;
-import com.gamm.vinos_api.dto.view.PresentacionView;
+import com.gamm.vinos_api.dto.view.PresentacionDTO;
 import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.util.List;
@@ -17,5 +17,5 @@ public interface PresentacionService {
 
   ResultadoSP filtrarPresentacion(String descripcion);
 
-  List<PresentacionView> listarPresentaciones();
+  List<PresentacionDTO> listarPresentaciones();
 }

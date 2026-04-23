@@ -24,8 +24,7 @@ public class PresentacionController extends AbstractRestController {
   @PostMapping
   public ResponseEntity<ResponseVO> guardarPresentacion(@Valid @RequestBody Presentacion presentacion) {
     ResultadoSP resultado = presentacionService.guardarPresentacion(presentacion);
-    ResponseVO.validar(resultado);
-    return ok(resultado.getMensaje(), null);
+    return ok(resultado.getMensaje(), resultado.getData());
   }
 
   @Operation(summary = "Actualizar presentación")
@@ -36,7 +35,6 @@ public class PresentacionController extends AbstractRestController {
   ) {
     presentacion.setIdPresentacion(id);
     ResultadoSP resultado = presentacionService.actualizarPresentacion(presentacion);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -49,7 +47,6 @@ public class PresentacionController extends AbstractRestController {
     ResultadoSP resultado = disponible
         ? presentacionService.darAlta(id)
         : presentacionService.darBaja(id);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -57,7 +54,6 @@ public class PresentacionController extends AbstractRestController {
   @GetMapping("/filtro") // ✅ /filtrar → /filtro
   public ResponseEntity<ResponseVO> filtrarPresentaciones(@RequestParam String descripcion) {
     ResultadoSP resultado = presentacionService.filtrarPresentacion(descripcion);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData());
   }
 

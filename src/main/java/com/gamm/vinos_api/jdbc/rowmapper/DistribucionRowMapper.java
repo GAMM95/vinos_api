@@ -1,15 +1,15 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.dto.view.DistribucionView;
+import com.gamm.vinos_api.dto.view.DistribucionDTO;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DistribucionRowMapper implements RowMapper<DistribucionView> {
+public class DistribucionRowMapper implements RowMapper<DistribucionDTO> {
   @Override
-  public DistribucionView mapRow(ResultSet rs, int rowNum) throws SQLException {
-    DistribucionView view = new DistribucionView();
+  public DistribucionDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+    DistribucionDTO view = new DistribucionDTO();
     view.setIdDistribucion(rs.getInt("idDistribucion"));
     view.setIdAlmacen(rs.getInt("idAlmacen"));
     view.setIdSucursal(rs.getInt("idSucursal"));

@@ -1,7 +1,8 @@
 package com.gamm.vinos_api.service.impl;
 
 import com.gamm.vinos_api.domain.model.Sucursal;
-import com.gamm.vinos_api.dto.view.SucursalView;
+import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.dto.view.SucursalDTO;
 import com.gamm.vinos_api.repository.SucursalRepository;
 import com.gamm.vinos_api.service.SucursalService;
 import com.gamm.vinos_api.util.ResultadoSP;
@@ -18,28 +19,36 @@ public class SucursalServiceImpl implements SucursalService {
   private final SucursalRepository sucursalRepository;
 
   @Override
-  public List<SucursalView> listarSucursales() {
+  public List<SucursalDTO> listarSucursales() {
     return sucursalRepository.listarSucursales();
   }
 
   @Override
   public ResultadoSP registrarSucursal(Sucursal sucursal) {
-    return sucursalRepository.registrarSucursal(sucursal);
+    ResultadoSP resultado = sucursalRepository.registrarSucursal(sucursal);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
   public ResultadoSP actualizarSucursal(Sucursal sucursal) {
-    return sucursalRepository.actualizarSucursal(sucursal);
+    ResultadoSP resultado = sucursalRepository.actualizarSucursal(sucursal);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
   public ResultadoSP darDeBajaSucursal(Integer idSucursal) {
-    return sucursalRepository.darDeBajaSucursal(idSucursal);
+    ResultadoSP resultado = sucursalRepository.darDeBajaSucursal(idSucursal);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override
   public ResultadoSP darDeAltaSucursal(Integer idSucursal) {
-    return sucursalRepository.darDeAltaSucursal(idSucursal);
+    ResultadoSP resultado = sucursalRepository.darDeAltaSucursal(idSucursal);
+    ResponseVO.validar(resultado);
+    return resultado;
   }
 
   @Override

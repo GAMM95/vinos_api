@@ -1,18 +1,18 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.dto.view.CajaView;
+import com.gamm.vinos_api.dto.view.CajaDTO;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-public class CajaRowMapper implements RowMapper<CajaView> {
+public class CajaRowMapper implements RowMapper<CajaDTO> {
 
   @Override
-  public CajaView mapRow(ResultSet rs, int rowNum) throws SQLException {
+  public CajaDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-    CajaView cajaView = new CajaView();
+    CajaDTO cajaView = new CajaDTO();
     cajaView.setIdCaja(rs.getInt("idCaja"));
     cajaView.setCodCaja(rs.getString("codCaja"));
     cajaView.setIdSucursal(rs.getInt("idSucursal"));

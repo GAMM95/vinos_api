@@ -25,11 +25,10 @@ public class DistribucionController extends AbstractRestController {
   @Operation(summary = "Registrar distribución de producto a sucursal")
   @PostMapping
   @SoloAdministrador
-  public ResponseEntity<ResponseVO> distribuirProducto      (
+  public ResponseEntity<ResponseVO> distribuirProducto(
       @Valid @RequestBody DistribucionSucursal distribucionSucursal
   ) {
     ResultadoSP resultado = distribucionService.distribuirProducto(distribucionSucursal);
-    ResponseVO.validar(resultado);
     return created(resultado.getMensaje(), resultado.getData());
   }
 
@@ -40,8 +39,7 @@ public class DistribucionController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    ResponseVO response = distribucionService.listarRepartoSucursal(pagina, limite);
-    return ResponseEntity.ok(response);
+    return okPaginado(distribucionService.listarRepartoSucursal(pagina, limite));
   }
 
   @Operation(summary = "Filtrar repartos por sucursal y/o rango de fechas")
@@ -54,7 +52,6 @@ public class DistribucionController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    ResponseVO response = distribucionService.filtrarRepartosPorSucursalORango(idSucursal, fechaInicio, fechaFin, pagina, limite);
-    return ResponseEntity.ok(response);
+    return okPaginado(distribucionService.filtrarRepartosPorSucursalORango(idSucursal, fechaInicio, fechaFin, pagina, limite));
   }
 }

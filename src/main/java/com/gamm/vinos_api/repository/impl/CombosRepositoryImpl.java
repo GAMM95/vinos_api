@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public class CombosRepositoryImpl implements CombosRepository {
+
   private static final String CBO_UNIDAD_VOLUMEN = "SELECT * FROM cbo_unidadVolumen";
   private static final String CBO_CATEGORIA = "SELECT * FROM cbo_categoria";
   private static final String CBO_PROVEEDOR = "SELECT * FROM cbo_proveedor";
@@ -18,6 +19,7 @@ public class CombosRepositoryImpl implements CombosRepository {
   private static final String CBO_SUCURSAL = "SELECT * FROM cbo_sucursal";
   private static final String CHK_PRESENTACION = "SELECT * FROM chk_presentacion";
   private static final String CBO_USUARIO = "SELECT * FROM cbo_usuario";
+
   private final JdbcTemplate jdbcTemplate;
 
   public CombosRepositoryImpl(JdbcTemplate jdbcTemplate) {
@@ -25,23 +27,23 @@ public class CombosRepositoryImpl implements CombosRepository {
   }
 
   @Override
-  public List<UnidadVolumenCbo> comboUnidadVolumen() {
+  public List<UnidadVolumenComboDTO> comboUnidadVolumen() {
     return jdbcTemplate.query(CBO_UNIDAD_VOLUMEN, new UnidadVolumenRowMapper());
   }
 
   @Override
-  public List<CategoriaCbo> comboCategoria() {
-    return jdbcTemplate.query(CBO_CATEGORIA, new CategoriaRowMapper());
+  public List<CategoriaComboDTO> comboCategoria() {
+    return jdbcTemplate.query(CBO_CATEGORIA, new CategoriaComboRowMapper());
   }
 
   @Override
-  public List<ProveedorCbo> comboProveedor() {
-    return jdbcTemplate.query(CBO_PROVEEDOR, new ProveedorCboRowMapper());
+  public List<ProveedorComboDTO> comboProveedor() {
+    return jdbcTemplate.query(CBO_PROVEEDOR, new ProveedorComboRowMapper());
   }
 
   @Override
-  public List<PresentacionCbo> comboPresentacion() {
-    return jdbcTemplate.query(CBO_PRESENTACION, new PresentacionCboRowMapper());
+  public List<PresentacionComboDTO> comboPresentacion() {
+    return jdbcTemplate.query(CBO_PRESENTACION, new PresentacionComboRowMapper());
   }
 
   @Override
@@ -52,11 +54,6 @@ public class CombosRepositoryImpl implements CombosRepository {
   @Override
   public List<SucursalCbo> comboSucursal() {
     return jdbcTemplate.query(CBO_SUCURSAL, new SucursalCboRowMapper());
-  }
-
-  @Override
-  public List<PresentacionChk> checkBoxPresentacion() {
-    return jdbcTemplate.query(CHK_PRESENTACION, new PresentacionChkRowMapper());
   }
 
   @Override

@@ -22,25 +22,25 @@ public class AlmacenController extends AbstractRestController {
   private final AlmacenService almacenService;
 
   @Operation(summary = "Lista el stock detallado que hay en el almacén antes de la distribución a cada sucursal")
-  @GetMapping("/stock-detallado")
+  @GetMapping("/stock/detallado")
   public ResponseEntity<ResponseVO> listarStockDetallado() {
     return ok(almacenService.listarStockDetallado());
   }
 
   @Operation(summary = "Lista el stock que hay en el almacén antes de la distribución por nombre de vino")
-  @GetMapping("/stock-vino")
+  @GetMapping("/stock/por-vino")
   public ResponseEntity<ResponseVO> listarStockPorVino() {
     return ok(almacenService.listarStockPorVino());
   }
 
   @Operation(summary = "Lista el stock que hay en el almacén antes de la distribución por origen o procedencia del vino")
-  @GetMapping("/stock-origen")
+  @GetMapping("/stock/por-origen")
   public ResponseEntity<ResponseVO> listarStockPorOrigen() {
     return ok(almacenService.listarStockPorOrigen());
   }
 
   @Operation(summary = "Lista el stock que hay en el almacén para su distribución")
-  @GetMapping("/stock-distribuir")
+  @GetMapping("/stock/distribucion")
   public ResponseEntity<ResponseVO> listarStockADistribuir() {
     return ok(almacenService.listarStockADistribuir());
   }

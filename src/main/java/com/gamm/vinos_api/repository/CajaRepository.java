@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository;
 
 import com.gamm.vinos_api.domain.model.Caja;
-import com.gamm.vinos_api.dto.view.CajaView;
+import com.gamm.vinos_api.dto.view.CajaDTO;
 import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ public interface CajaRepository {
   // Tipo 1: Abrir caja
   ResultadoSP abrirCaja(Caja caja);
 
-  CajaView obtenerUltimaCajaAbiertaUsuario(Integer idUsuario);
+  CajaDTO obtenerUltimaCajaAbiertaUsuario(Integer idUsuario);
 
   // Tipo 2: Cerrar caja
   ResultadoSP cerrarCaja(Integer idCaja);
@@ -31,17 +31,17 @@ public interface CajaRepository {
   // Listar mis cajas
   long contarMisCajas(Integer idUsuario);
 
-  List<CajaView> listarMisCajas(Integer idUsuario, int pagina, int limite);
+  List<CajaDTO> listarMisCajas(Integer idUsuario, int pagina, int limite);
 
   // Listar todas las cajas
 
   long contarTotalCajas();
 
-  List<CajaView> listarTotalCajas(int pagina, int limite);
+  List<CajaDTO> listarTotalCajas(int pagina, int limite);
 
-  List<CajaView> mostrarMiUltimaCajaAbierta (Integer idUsuario);
+  List<CajaDTO> mostrarMiUltimaCajaAbierta (Integer idUsuario);
 
   ResultadoSP obtenerSiguienteCodigoCaja(Integer idSucursal);
 
-  CajaView obtenerCajaPorId(Integer idCaja);
+  CajaDTO obtenerCajaPorId(Integer idCaja);
 }

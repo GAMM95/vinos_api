@@ -26,7 +26,6 @@ public class CatalogoController extends AbstractRestController {
   @SoloAdministrador
   public ResponseEntity<ResponseVO> registrarCatalogo(@Valid @RequestBody Catalogo catalogo) {
     ResultadoSP resultado = catalogoService.registrarCatalogo(catalogo);
-    ResponseVO.validar(resultado);
     return created(resultado.getMensaje(), resultado.getData());
   }
 
@@ -39,7 +38,6 @@ public class CatalogoController extends AbstractRestController {
   ) {
     catalogo.setIdCatalogo(id);
     ResultadoSP resultado = catalogoService.actualizarCatalogo(catalogo);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData()); // ✅ ok, no created — es actualización
   }
 
@@ -53,15 +51,7 @@ public class CatalogoController extends AbstractRestController {
     ResultadoSP resultado = activo
         ? catalogoService.darDeAltaCatalogo(id)
         : catalogoService.darDeBajaCatalogo(id);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
-  }
-
-  @Operation(summary = "Listar catálogos")
-  @GetMapping
-  @Publico
-  public ResponseEntity<ResponseVO> listarCatalogos() {
-    return ok(catalogoService.listarCatalogos());
   }
 
   @Operation(summary = "Filtrar catálogos por proveedor")
@@ -69,8 +59,14 @@ public class CatalogoController extends AbstractRestController {
   @Publico
   public ResponseEntity<ResponseVO> filtrarPorProveedor(@RequestParam Integer idProveedor) {
     ResultadoSP resultado = catalogoService.filtrarPorProveedor(idProveedor);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData());
+  }
+
+  @Operation(summary = "Listar catálogos")
+  @GetMapping
+  @Publico
+  public ResponseEntity<ResponseVO> listarCatalogos() {
+    return ok(catalogoService.listarCatalogos());
   }
 
   @Operation(summary = "Listar catálogos paginados por proveedor")
@@ -81,20 +77,7 @@ public class CatalogoController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    return ResponseEntity.ok(catalogoService.listarCatalogosPaginadosPorProveedor(idProveedor, pagina, limite)
-    );
+    return okPaginado(catalogoService.listarCatalogosPaginadosPorProveedor(idProveedor, pagina, limite));
   }
 
-  // Tipo 6 → proveedor + término
-//  @GetMapping("/buscar")
-//  @Publico
-//  public ResponseEntity<ResponseVO> filtrarPorProveedorYTermino(
-//      @RequestParam Integer idProveedor,
-//      @RequestParam String termino) {
-//    ResultadoSP resultado =
-//        catalogoService.filtrarPorProveedorYTermino(idProveedor, termino);
-//    return resultado.esExitoso()
-//        ? ok(resultado.getMensaje(), resultado.getData())
-//        : badRequest(resultado.getMensaje());
-//  }
 }

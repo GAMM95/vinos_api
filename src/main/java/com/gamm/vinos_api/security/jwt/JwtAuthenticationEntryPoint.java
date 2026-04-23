@@ -35,22 +35,3 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     );
   }
 }
-
-//  @Override
-//  public void commence(HttpServletRequest request,
-//                       HttpServletResponse response,
-//                       AuthenticationException authException) throws IOException {
-//    response.setContentType("application/json");
-//    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//
-//    String message;
-//    if (authException instanceof BadCredentialsException) {
-//      message = "Usuario o contraseña inválidos";
-//    } else if (authException.getCause() instanceof ExpiredJwtException) {
-//      message = "El token ha expirado";
-//    } else {
-//      message = "Acceso no autorizado";
-//    }
-//
-//    response.getWriter().write("{\"success\": false, \"message\": \"" + message + "\"}");
-//  }

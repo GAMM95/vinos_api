@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.DistribucionSucursal;
-import com.gamm.vinos_api.dto.view.DistribucionView;
+import com.gamm.vinos_api.dto.view.DistribucionDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.DistribucionRowMapper;
 import com.gamm.vinos_api.repository.DistribucionRepository;
@@ -112,7 +112,7 @@ public class DistribucionRepositoryImpl extends SimpleJdbcDAOBase implements Dis
   }
 
   @Override
-  public List<DistribucionView> listarRepartosSucursal(int pagina, int limite) {
+  public List<DistribucionDTO> listarRepartosSucursal(int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VW_DISTRIBUICION + " LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, new DistribucionRowMapper(), limite, offset);

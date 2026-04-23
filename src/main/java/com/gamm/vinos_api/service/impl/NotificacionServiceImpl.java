@@ -3,10 +3,10 @@ package com.gamm.vinos_api.service.impl;
 import com.gamm.vinos_api.domain.model.Notificacion;
 import com.gamm.vinos_api.dto.queries.NotificacionDTO;
 import com.gamm.vinos_api.dto.response.ResponseVO;
-import com.gamm.vinos_api.dto.view.UsuarioView;
+import com.gamm.vinos_api.dto.view.UsuarioDTO;
 import com.gamm.vinos_api.repository.NotificacionRepository;
 import com.gamm.vinos_api.repository.UsuarioRepository;
-import com.gamm.vinos_api.service.BaseService;
+import com.gamm.vinos_api.service.base.BaseService;
 import com.gamm.vinos_api.service.NotificacionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -104,7 +104,7 @@ public class NotificacionServiceImpl extends BaseService implements Notificacion
       String rol, Integer idSucursal,
       String tipo, String titulo, String mensaje, String ruta
   ) {
-    List<UsuarioView> usuarios = usuarioRepository.listarPorRolYSucursal(rol, idSucursal);
+    List<UsuarioDTO> usuarios = usuarioRepository.listarPorRolYSucursal(rol, idSucursal);
     usuarios.forEach(u ->
         notificarUsuario(u.getIdUsuario(), u.getUsername(), tipo, titulo, mensaje, ruta)
     );

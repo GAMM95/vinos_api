@@ -1,16 +1,16 @@
 package com.gamm.vinos_api.repository;
 
-import com.gamm.vinos_api.dto.view.AlmacenView;
+import com.gamm.vinos_api.dto.view.AlmacenDTO;
 
 import java.util.List;
 
 public interface AlmacenRepository {
 
-  List<AlmacenView> listarStockDetallado();
+  List<AlmacenDTO> listarStockDetallado();
 
-  List<AlmacenView> listarStockPorVino();
+  List<AlmacenDTO> listarStockPorVino();
 
-  List<AlmacenView> listarStockPorOrigen();
+  List<AlmacenDTO> listarStockPorOrigen();
 
-  List<AlmacenView> listarStockADistribuir();
+  List<AlmacenDTO> listarStockADistribuir();
 }

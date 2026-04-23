@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.repository;
 
-import com.gamm.vinos_api.dto.view.MovimientosView;
+import com.gamm.vinos_api.dto.view.MovimientosDTO;
 import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.time.LocalDate;
@@ -22,16 +22,16 @@ public interface MovimientoRepository {
   // Listar mis movimientos
   long contarMisMovimientos(Integer idUsuario);
 
-  List<MovimientosView> listarMisMovimientos(Integer idUsuario, int pagina, int limite);
+  List<MovimientosDTO> listarMisMovimientos(Integer idUsuario, int pagina, int limite);
 
   // Listar todos los movimientos
   long contarTotalMovimientos();
 
-  List<MovimientosView> listarTotalMovimientos(int pagina, int limite);
+  List<MovimientosDTO> listarTotalMovimientos(int pagina, int limite);
 
-  List<MovimientosView> listarDetalleMovimientoUsuario(Integer idUsuario, Integer idCaja);
+  List<MovimientosDTO> listarDetalleMovimientoUsuario(Integer idUsuario, Integer idCaja);
 
-  List<MovimientosView> listarDetalleMovimiento(Integer idCaja);
+  List<MovimientosDTO> listarDetalleMovimiento(Integer idCaja);
 
   ResultadoSP filtrarPorCaja(Integer idCaja);
 }

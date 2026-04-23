@@ -1,8 +1,8 @@
 package com.gamm.vinos_api.repository;
 
-import com.gamm.vinos_api.dto.view.VinoView;
+import com.gamm.vinos_api.dto.queries.VinosCompraDTO;
+import com.gamm.vinos_api.dto.view.VinoDTO;
 import com.gamm.vinos_api.domain.model.Vino;
-import com.gamm.vinos_api.dto.view.VinosCompraView;
 import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.util.List;
@@ -18,23 +18,23 @@ public interface VinoRepository {
 
   // ─── Catálogo ─────────────────────────────────────────────────────────────
 
-  List<VinoView> listarVinos();
+  List<VinoDTO> listarVinos();
 
-  List<VinoView> listarVinosPaginados(int pagina, int limite);
+  List<VinoDTO> listarVinosPaginados(int pagina, int limite);
 
   ResultadoSP filtrarVinoPorNombre(String nombre);
 
   Long contarVinos();
 
-  List<VinosCompraView> listarVinosParaCompra();
+  List<VinosCompraDTO> listarVinosParaCompra();
 
-  List<VinosCompraView> listarVinosParaCompraPaginados(int pagina, int limite);
+  List<VinosCompraDTO> listarVinosParaCompraPaginados(int pagina, int limite);
 
   Long contarVinosParaCompra();
 
   ResultadoSP filtrarVinosParaCompra(String nombre, String proveedores, String categorias, String presentaciones, String tiposVino, String origenVino);
 
-  List<VinosCompraView> filtrarVinosParaCompraPaginados(String nombre, String proveedores, String categorias, String presentaciones, String tiposVino, String origenVino, int pagina, int limite);
+  List<VinosCompraDTO> filtrarVinosParaCompraPaginados(String nombre, String proveedores, String categorias, String presentaciones, String tiposVino, String origenVino, int pagina, int limite);
 
   Long contarVinosParaCompraFiltrados(String nombre, String proveedores, String categorias, String presentaciones, String tiposVino, String origenVino);
 

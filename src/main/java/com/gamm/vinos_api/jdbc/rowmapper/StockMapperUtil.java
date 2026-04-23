@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.dto.view.StockView;
+import com.gamm.vinos_api.dto.view.StockDTO;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,18 +8,18 @@ import java.sql.SQLException;
 public class StockMapperUtil {
 
   // Campos base comunes
-  public static void mapStockBase (StockView v, ResultSet rs) throws SQLException {
+  public static void mapStockBase (StockDTO v, ResultSet rs) throws SQLException {
     v.setIdSucursal(rs.getInt("idSucursal"));
     v.setSucursal(rs.getString("sucursal"));
   }
 
   // Vista: vw_stock_sucursal
-  public static void mapStockTotal(StockView v, ResultSet rs) throws SQLException {
+  public static void mapStockTotal(StockDTO v, ResultSet rs) throws SQLException {
     v.setTotalLitros(rs.getBigDecimal("totalLitros"));
   }
 
   // Vista: vw_stock_sucursal_detallado
-  public static void mapStockDetallado(StockView v, ResultSet rs) throws SQLException {
+  public static void mapStockDetallado(StockDTO v, ResultSet rs) throws SQLException {
     v.setIdStock(rs.getInt("idStock"));
     v.setIdVino(rs.getInt("idVino"));
     v.setNombreVino(rs.getString("nombreVino"));
@@ -32,7 +32,7 @@ public class StockMapperUtil {
   }
 
   // Vista: vw_stock_venta
-  public static void mapStockVenta(StockView v, ResultSet rs) throws SQLException {
+  public static void mapStockVenta(StockDTO v, ResultSet rs) throws SQLException {
     v.setIdVino(rs.getInt("idVino"));
     v.setIdSucursal(rs.getInt("idSucursal"));
     v.setNombreVino(rs.getString("nombreVino"));

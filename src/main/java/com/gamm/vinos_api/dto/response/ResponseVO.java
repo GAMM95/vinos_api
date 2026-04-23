@@ -1,6 +1,7 @@
 package com.gamm.vinos_api.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.gamm.vinos_api.dto.common.PaginaResultado;
 import com.gamm.vinos_api.exception.business.BusinessException;
 import com.gamm.vinos_api.util.ResultadoSP;
 import lombok.Data;
@@ -49,12 +50,12 @@ public class ResponseVO implements Serializable {
   }
 
   // --- Fábrica: paginado ---
-  public static ResponseVO paginated(Object data, int pagina, int limite, int totalPaginas, long totalRegistros) {
-    ResponseVO vo = new ResponseVO(true, "Operación exitosa", data);
-    vo.pagina = pagina;
-    vo.limite = limite;
-    vo.totalPaginas = totalPaginas;
-    vo.totalRegistros = totalRegistros;
+  public static <T> ResponseVO paginated(PaginaResultado<T> result) {
+    ResponseVO vo = new ResponseVO(true, "Operación exitosa", result.getData());
+    vo.pagina = result.getPagina();
+    vo.limite = result.getLimite();
+    vo.totalPaginas = result.getTotalPaginas();
+    vo.totalRegistros = result.getTotalRegistros();
     return vo;
   }
 

@@ -1,6 +1,7 @@
 package com.gamm.vinos_api.service;
 
 import com.gamm.vinos_api.domain.model.Categoria;
+import com.gamm.vinos_api.dto.view.CategoriaDTO;
 import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.util.List;
@@ -13,9 +14,5 @@ public interface CategoriaService {
 
   ResultadoSP cambiarEstado(Integer idCategoria);
 
-  // Opcional: agregar métodos de consulta
-  List<Categoria> listarCategorias();
-
-  // Listar combo
-  List<Categoria> comboCategoria();
+  List<CategoriaDTO> listarCategorias();
 }

@@ -11,25 +11,26 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CombosServiceImpl implements CombosService {
+
   private final CombosRepository combosRepository;
 
   @Override
-  public List<UnidadVolumenCbo> comboUnidadVolumen() {
+  public List<UnidadVolumenComboDTO> comboUnidadVolumen() {
     return combosRepository.comboUnidadVolumen();
   }
 
   @Override
-  public List<CategoriaCbo> comboCategoria() {
+  public List<CategoriaComboDTO> comboCategoria() {
     return combosRepository.comboCategoria();
   }
 
   @Override
-  public List<ProveedorCbo> comboProveedor() {
+  public List<ProveedorComboDTO> comboProveedor() {
     return combosRepository.comboProveedor();
   }
 
   @Override
-  public List<PresentacionCbo> comboPresentacion() {
+  public List<PresentacionComboDTO> comboPresentacion() {
     return combosRepository.comboPresentacion();
   }
 
@@ -41,11 +42,6 @@ public class CombosServiceImpl implements CombosService {
   @Override
   public List<SucursalCbo> comboSucursal() {
     return combosRepository.comboSucursal();
-  }
-
-  @Override
-  public List<PresentacionChk> checkBoxPresentacion() {
-    return combosRepository.checkBoxPresentacion();
   }
 
   @Override

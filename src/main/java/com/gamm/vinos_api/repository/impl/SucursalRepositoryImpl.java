@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.Sucursal;
-import com.gamm.vinos_api.dto.view.SucursalView;
+import com.gamm.vinos_api.dto.view.SucursalDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.SucursalRowMapper;
 import com.gamm.vinos_api.repository.SucursalRepository;
@@ -54,7 +54,7 @@ public class SucursalRepositoryImpl extends SimpleJdbcDAOBase implements Sucursa
 
   // Listar sucursales
   @Override
-  public List<SucursalView> listarSucursales() {
+  public List<SucursalDTO> listarSucursales() {
     return jdbcTemplate.query(VIEW_SUCURSAL, new SucursalRowMapper());
   }
 

@@ -23,8 +23,7 @@ public class ProveedorController extends AbstractRestController {
   @PostMapping
   public ResponseEntity<ResponseVO> registrarProveedor(@Valid @RequestBody Proveedor proveedor) {
     ResultadoSP resultado = proveedorService.registrarProveedor(proveedor);
-    ResponseVO.validar(resultado);
-    return ok(resultado.getMensaje(), resultado.getData());
+    return created(resultado.getMensaje(), resultado.getData());
   }
 
   @Operation(summary = "Actualizar proveedor")
@@ -35,7 +34,6 @@ public class ProveedorController extends AbstractRestController {
   ) {
     proveedor.setIdProveedor(id);
     ResultadoSP resultado = proveedorService.actualizarProveedor(proveedor);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData());
   }
 
@@ -48,7 +46,6 @@ public class ProveedorController extends AbstractRestController {
     ResultadoSP resultado = activo
         ? proveedorService.darDeAltaProveedor(id)
         : proveedorService.darDeBajaProveedor(id);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -56,7 +53,6 @@ public class ProveedorController extends AbstractRestController {
   @GetMapping("/filtro") // ✅ /filtrar → /filtro
   public ResponseEntity<ResponseVO> filtrarProveedor(@RequestParam String termino) {
     ResultadoSP resultado = proveedorService.filtrarProveedor(termino);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData());
   }
 

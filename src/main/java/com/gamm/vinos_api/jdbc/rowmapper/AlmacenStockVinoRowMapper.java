@@ -1,15 +1,16 @@
 package com.gamm.vinos_api.jdbc.rowmapper;
 
-import com.gamm.vinos_api.dto.view.AlmacenView;
+import com.gamm.vinos_api.dto.view.AlmacenDTO;
+import com.gamm.vinos_api.jdbc.rowmapper.utils.AlmacenMapperUtil;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class AlmacenStockVinoRowMapper implements RowMapper<AlmacenView> {
+public class AlmacenStockVinoRowMapper implements RowMapper<AlmacenDTO> {
   @Override
-  public AlmacenView mapRow(ResultSet rs, int rowNum) throws SQLException {
-    AlmacenView v = new AlmacenView();
+  public AlmacenDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+    AlmacenDTO v = new AlmacenDTO();
     AlmacenMapperUtil.mapAlmacenBase(v, rs);
     AlmacenMapperUtil.mapPorVino(v, rs);
     return v;

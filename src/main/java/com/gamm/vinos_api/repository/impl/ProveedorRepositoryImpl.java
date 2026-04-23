@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.Proveedor;
-import com.gamm.vinos_api.dto.view.ProveedorView;
+import com.gamm.vinos_api.dto.view.ProveedorDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.ProveedorRowMapper;
 import com.gamm.vinos_api.repository.ProveedorRepository;
@@ -42,10 +42,10 @@ public class ProveedorRepositoryImpl extends SimpleJdbcDAOBase implements Provee
             new SqlParameter("pContacto", Types.VARCHAR),
             new SqlParameter("pOrigen", Types.VARCHAR),
             new SqlParameter("pUbicacion", Types.VARCHAR),
-            new SqlOutParameter("pRespuesta", Types.TINYINT),
-            new SqlOutParameter("pMensaje", Types.VARCHAR)
+            new SqlOutParameter(PARAM_RESPUESTA, Types.TINYINT),
+            new SqlOutParameter(PARAM_MENSAJE, Types.VARCHAR)
         )
-        .returningResultSet("ResultSet", new ProveedorRowMapper());
+        .returningResultSet(DEFAULT_RESULTSET, new ProveedorRowMapper());
   }
 
   /// MÉTODOS CRUD SIMPLIFICADOS
@@ -88,7 +88,7 @@ public class ProveedorRepositoryImpl extends SimpleJdbcDAOBase implements Provee
   }
 
   @Override
-  public List<ProveedorView> listarProveedores() {
+  public List<ProveedorDTO> listarProveedores() {
     return jdbcTemplate.query(VW_PROVEEDORES, new ProveedorRowMapper());
   }
 

@@ -2,9 +2,9 @@ package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.DetalleVenta;
 import com.gamm.vinos_api.domain.model.Venta;
-import com.gamm.vinos_api.dto.view.CarritoVentaView;
-import com.gamm.vinos_api.dto.view.DetalleVentaView;
-import com.gamm.vinos_api.dto.view.VentaView;
+import com.gamm.vinos_api.dto.view.CarritoVentaDTO;
+import com.gamm.vinos_api.dto.view.DetalleVentaDTO;
+import com.gamm.vinos_api.dto.view.VentaDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.CarritoVentaRowMapper;
 import com.gamm.vinos_api.jdbc.rowmapper.DetalleVentaRowMapper;
@@ -137,7 +137,7 @@ public class VentaRepositoryImpl extends SimpleJdbcDAOBase implements VentaRepos
   }
 
   @Override
-  public List<VentaView> listarVentasUsuario(Integer idUsuario, int pagina, int limite) {
+  public List<VentaDTO> listarVentasUsuario(Integer idUsuario, int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VW_VENTAS + " WHERE idUsuario = ? LIMIT ? OFFSET ? ";
     return jdbcTemplate.query(
@@ -151,31 +151,31 @@ public class VentaRepositoryImpl extends SimpleJdbcDAOBase implements VentaRepos
   }
 
   @Override
-  public VentaView obtenerVentaPorId(Integer idVenta) {
+  public VentaDTO obtenerVentaPorId(Integer idVenta) {
     String sql = "SELECT * FROM vw_ventas WHERE idVenta = ?";
     return jdbcTemplate.queryForObject(sql, new VentaRowMapper(), idVenta);
   }
 
   @Override
-  public List<VentaView> listarTotalVentas(int pagina, int limite) {
+  public List<VentaDTO> listarTotalVentas(int pagina, int limite) {
     int offset = (pagina - 1) * limite;
     String sql = VW_VENTAS + " LIMIT ? OFFSET ?";
     return jdbcTemplate.query(sql, new VentaRowMapper(), limite, offset);
   }
 
   @Override
-  public List<DetalleVentaView> listarDetalleVenta(Integer idVenta) {
+  public List<DetalleVentaDTO> listarDetalleVenta(Integer idVenta) {
     return jdbcTemplate.query(VW_DETALLE_VENTAS, new DetalleVentaRowMapper(), idVenta);
   }
 
   @Override
-  public List<CarritoVentaView> listarCarritoVentaUsuario(Integer idUsuario) {
+  public List<CarritoVentaDTO> listarCarritoVentaUsuario(Integer idUsuario) {
     String sql = VW_CARRITO_VENTAS + " WHERE idUsuario = ? AND estado = 'Pendiente'";
     return jdbcTemplate.query(sql, new CarritoVentaRowMapper(), idUsuario);
   }
 
   @Override
-  public List<CarritoVentaView> listarCarritoVentaAdmin(Integer idVenta) {
+  public List<CarritoVentaDTO> listarCarritoVentaAdmin(Integer idVenta) {
     String sql = VW_CARRITO_VENTAS + " WHERE idVenta = ? ";
     return jdbcTemplate.query(sql, new CarritoVentaRowMapper(), idVenta);
   }

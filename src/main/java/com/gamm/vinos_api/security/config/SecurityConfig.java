@@ -56,7 +56,7 @@ public class SecurityConfig {
             .requestMatchers("/api/v1/auth/**").permitAll()
             .requestMatchers("/recuperar-password").permitAll()
             .requestMatchers("/FotosUsuarios/**").permitAll()
-            .requestMatchers(HttpMethod.POST,"/api/v1/usuarios/username/verificacion").permitAll()
+            .requestMatchers(HttpMethod.GET,"/api/v1/usuarios/username/disponibilidad").permitAll()
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             // 🔐 protegidos
             .requestMatchers(HttpMethod.POST, "/api/v1/usuarios/*/foto").authenticated()

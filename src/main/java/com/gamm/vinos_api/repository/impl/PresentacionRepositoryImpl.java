@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.Presentacion;
-import com.gamm.vinos_api.dto.view.PresentacionView;
+import com.gamm.vinos_api.dto.view.PresentacionDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.PresentacionRowMapper;
 import com.gamm.vinos_api.repository.PresentacionRepository;
@@ -87,7 +87,7 @@ public class PresentacionRepositoryImpl extends SimpleJdbcDAOBase implements Pre
 
   // Listar presentaciones
   @Override
-  public List<PresentacionView> listarPresentaciones() {
+  public List<PresentacionDTO> listarPresentaciones() {
     return jdbcTemplate.query(VW_PRESENTACIONES, new PresentacionRowMapper());
   }
 

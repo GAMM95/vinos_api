@@ -48,7 +48,6 @@ public class VentaController extends AbstractRestController {
       @Valid @RequestBody Venta venta
   ) {
     ResultadoSP resultado = ventaService.agregarCarritoVenta(venta);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -60,7 +59,6 @@ public class VentaController extends AbstractRestController {
       @RequestParam Integer idVino
   ) {
     ResultadoSP resultado = ventaService.retirarProductoCarrito(idVenta, idVino);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -83,7 +81,6 @@ public class VentaController extends AbstractRestController {
   @PatchMapping("/{idVenta}/anulacion") // ✅ POST /anular → PATCH /{id}/anulacion
   public ResponseEntity<ResponseVO> anularVenta(@PathVariable Integer idVenta) {
     ResultadoSP resultado = ventaService.anularVenta(idVenta);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), null);
   }
 
@@ -95,7 +92,7 @@ public class VentaController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "5") int limite
   ) {
-    return ResponseEntity.ok(ventaService.listarVentasUsuario(pagina, limite));
+    return okPaginado(ventaService.listarVentasUsuario(pagina, limite));
   }
 
   @Operation(summary = "Listar todas las ventas")
@@ -105,13 +102,13 @@ public class VentaController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    return ResponseEntity.ok(ventaService.listarTotalVenta(pagina, limite));
+    return okPaginado(ventaService.listarTotalVenta(pagina, limite));
   }
 
   @Operation(summary = "Ver detalle de una venta")
   @GetMapping("/{idVenta}/detalle") // ✅ /detalle-venta → /{id}/detalle
   public ResponseEntity<ResponseVO> listarDetalleVenta(@PathVariable Integer idVenta) {
-    return ResponseEntity.ok(ventaService.listarDetalleVenta(idVenta));
+    return ok(ventaService.listarDetalleVenta(idVenta));
   }
 
   @Operation(summary = "Filtrar mis ventas por rango de fechas")
@@ -123,7 +120,7 @@ public class VentaController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "5") int limite
   ) {
-    return ResponseEntity.ok(ventaService.filtrarMisVentasPorRango(fechaInicio, fechaFin, pagina, limite));
+    return okPaginado(ventaService.filtrarMisVentasPorRango(fechaInicio, fechaFin, pagina, limite));
   }
 
   @Operation(summary = "Filtrar ventas por usuario y/o rango de fechas")
@@ -136,8 +133,6 @@ public class VentaController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    return ResponseEntity.ok(ventaService.filtrarVentasPorUsuarioORango(
-        idUsuario, fechaInicio, fechaFin, pagina, limite
-    ));
+    return okPaginado(ventaService.filtrarVentasPorUsuarioORango(idUsuario, fechaInicio, fechaFin, pagina, limite));
   }
 }

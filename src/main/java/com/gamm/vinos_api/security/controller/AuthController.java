@@ -45,8 +45,6 @@ public class AuthController extends AbstractRestController {
 
     // registrarUsuario lanza BusinessException si el SP retorna pRespuesta=0
     ResultadoSP r = usuarioService.registrarUsuario(u);
-    ResponseVO.validar(r);
-
     return created(r.getMensaje(), r.getData());
   }
 
@@ -87,16 +85,14 @@ public class AuthController extends AbstractRestController {
       @Valid @RequestBody ResetPasswordRequest req
   ) {
     ResultadoSP resultado = usuarioService.resetearPassword(id, req.nuevaPassword());
-    ResponseVO.validar(resultado); // → "El usuario no existe." / "Debe especificar la nueva contraseña."
     return ok(resultado.getMensaje(), null);
   }
 
   @Operation(summary = "Cambiar contraseña del usuario autenticado")
   @PatchMapping("/usuarios/me/password")
   public ResponseEntity<ResponseVO> cambiarPassword(@Valid @RequestBody ChangePasswordRequest req) {
-    ResultadoSP resultado = usuarioService.cambiarPassword(req.actual(), req.nueva());
-    ResponseVO.validar(resultado); // → "La contraseña actual es incorrecta." / "Usuario no encontrado."
-    return ok(resultado.getMensaje(), null);
+    usuarioService.cambiarPassword(req.actual(), req.nueva());
+    return ok("Contraseña actualizada correctamente.", null);
   }
 
   @Operation(summary = "Solicitar email de recuperación de contraseña")

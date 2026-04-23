@@ -1,7 +1,9 @@
 package com.gamm.vinos_api.repository.impl;
 
 import com.gamm.vinos_api.domain.model.Categoria;
+import com.gamm.vinos_api.dto.view.CategoriaDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
+import com.gamm.vinos_api.jdbc.rowmapper.CategoriaRowMapper;
 import com.gamm.vinos_api.repository.CategoriaRepository;
 import com.gamm.vinos_api.util.ResultadoSP;
 import jakarta.annotation.PostConstruct;
@@ -20,79 +22,67 @@ import java.util.Map;
 @Repository
 public class CategoriaRepositoryImpl extends SimpleJdbcDAOBase implements CategoriaRepository {
 
-    private static final String SP_CATEGORIA = "sp_categoria";
-    private static final String VW_CATEGORIAS = "SELECT idCategoria, nombre, descripcion, estado FROM vw_categorias";
-    private static final String CBO_CATEGORIAS = "SELECT idCategoria, nombre FROM cbo_categoria";
+  private static final String SP_CATEGORIA = "sp_categoria";
+  private static final String VW_CATEGORIAS = "SELECT * FROM vw_categorias";
 
-    private SimpleJdbcCall spCall;
+  private SimpleJdbcCall spCall;
 
-    public CategoriaRepositoryImpl(DataSource dataSource) {
-        super(dataSource);
-    }
+  public CategoriaRepositoryImpl(DataSource dataSource) {
+    super(dataSource);
+  }
 
-    @PostConstruct
-    private void init() {
-        spCall = new SimpleJdbcCall(jdbcTemplate)
-            .withoutProcedureColumnMetaDataAccess()
-            .withProcedureName(SP_CATEGORIA)
-                .declareParameters(
-                        new SqlParameter("pTipo", Types.TINYINT),
-                        new SqlParameter("pIdCategoria", Types.TINYINT),
-                        new SqlParameter("pNombre", Types.VARCHAR),
-                        new SqlParameter("pDescripcion", Types.VARCHAR),
-                        new SqlOutParameter("pRespuesta", Types.TINYINT),
-                        new SqlOutParameter("pMensaje", Types.VARCHAR)
-                );
-    }
+  @PostConstruct
+  private void init() {
+    spCall = new SimpleJdbcCall(dataSource)
+        .withoutProcedureColumnMetaDataAccess()
+        .withProcedureName(SP_CATEGORIA)
+        .declareParameters(
+            new SqlParameter("pTipo", Types.INTEGER),
+            new SqlParameter("pIdCategoria", Types.INTEGER),
+            new SqlParameter("pNombre", Types.VARCHAR),
+            new SqlParameter("pDescripcion", Types.VARCHAR),
+            new SqlOutParameter(PARAM_RESPUESTA, Types.INTEGER),
+            new SqlOutParameter(PARAM_MENSAJE, Types.VARCHAR)
+        );
+  }
 
-    /// MÉTODOS CRUD
-    // Registrar categorias
-    @Override
-    public ResultadoSP registrarCategoria(Categoria categoria) {
-        return ejecutarSP(1, categoria);
-    }
+  // Registrar categorias
+  @Override
+  public ResultadoSP registrarCategoria(Categoria categoria) {
+    return ejecutarSP(spCall, construirParametros(1, categoria));
+  }
 
-    // Actualizar categorias
-    @Override
-    public ResultadoSP actualizarCategoria(Categoria categoria) {
-        return ejecutarSP(2, categoria);
-    }
+  // Actualizar categorias
+  @Override
+  public ResultadoSP actualizarCategoria(Categoria categoria) {
+    return ejecutarSP(spCall, construirParametros(2, categoria));
+  }
 
-    // Cambiar estado
-    @Override
-    public ResultadoSP cambiarEstado(Integer idCategoria) {
-        Categoria categoria = new Categoria();
-        categoria.setIdCategoria(idCategoria);
-        categoria.setNombre("");
-        categoria.setDescripcion("");
-        return ejecutarSP(3, categoria);
-    }
+  // Cambiar estado
+  @Override
+  public ResultadoSP cambiarEstado(Integer idCategoria) {
+    Map<String, Object> params = new HashMap<>();
+    params.put("pTipo", 3);
+    params.put("pIdCategoria", idCategoria);
+    params.put("pNombre", null);
+    params.put("pDescripcion", null);
 
-    // Listar categorias
-    @Override
-    public List<Categoria> listarCategorias() {
-        return jdbcTemplate.query(VW_CATEGORIAS, new BeanPropertyRowMapper<>(Categoria.class));
-    }
+    return ejecutarSP(spCall, params);
+  }
 
-    // Listar combo de categorías
-    @Override
-    public List<Categoria> comboCategorias() {
-        return jdbcTemplate.query(CBO_CATEGORIAS, new BeanPropertyRowMapper<>(Categoria.class));
-    }
+  // Listar categorias
+  @Override
+  public List<CategoriaDTO> listarCategorias() {
+    return jdbcTemplate.query(VW_CATEGORIAS, new CategoriaRowMapper());
+  }
 
-    /// MÉTODOS PRIVADOS AUXILIARES
-    // Ejecuta el procedimiento almacenado con los parámetros dados
-    private ResultadoSP ejecutarSP(int tipo, Categoria categoria) {
-        return ejecutarSP(spCall, construirParametros(tipo, categoria));
-    }
-
-    // Arma los parámetros comunes del SP
-    private Map<String, Object> construirParametros(int tipo, Categoria categoria) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("pTipo", tipo);
-        params.put("pIdCategoria", categoria.getIdCategoria());
-        params.put("pNombre", categoria.getNombre());
-        params.put("pDescripcion", categoria.getDescripcion());
-        return params;
-    }
+  /// MÉTODOS PRIVADOS AUXILIARES
+  private Map<String, Object> construirParametros(int tipo, Categoria categoria) {
+    Map<String, Object> params = new HashMap<>();
+    params.put("pTipo", tipo);
+    params.put("pIdCategoria", categoria.getIdCategoria());
+    params.put("pNombre", categoria.getNombre());
+    params.put("pDescripcion", categoria.getDescripcion());
+    return params;
+  }
 }

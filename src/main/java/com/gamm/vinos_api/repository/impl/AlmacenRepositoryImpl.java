@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.repository.impl;
 
-import com.gamm.vinos_api.dto.view.AlmacenView;
+import com.gamm.vinos_api.dto.view.AlmacenDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.AlmacenDetalladoRowMapper;
 import com.gamm.vinos_api.jdbc.rowmapper.AlmacenStockOrigenRowMapper;
@@ -26,22 +26,22 @@ public class AlmacenRepositoryImpl extends SimpleJdbcDAOBase implements AlmacenR
   }
 
   @Override
-  public List<AlmacenView> listarStockDetallado() {
+  public List<AlmacenDTO> listarStockDetallado() {
     return jdbcTemplate.query(VW_STOCK_DETALLADO, new AlmacenDetalladoRowMapper());
   }
 
   @Override
-  public List<AlmacenView> listarStockPorVino() {
+  public List<AlmacenDTO> listarStockPorVino() {
     return jdbcTemplate.query(VW_STOCK_VINO, new AlmacenStockVinoRowMapper());
   }
 
   @Override
-  public List<AlmacenView> listarStockPorOrigen() {
+  public List<AlmacenDTO> listarStockPorOrigen() {
     return jdbcTemplate.query(VW_STOCK_ORIGEN, new AlmacenStockOrigenRowMapper());
   }
 
   @Override
-  public List<AlmacenView> listarStockADistribuir() {
+  public List<AlmacenDTO> listarStockADistribuir() {
     return jdbcTemplate.query(VW_STOCK_A_DISTRIBUIR, new StockDistribuirRowMapper());
   }
 }

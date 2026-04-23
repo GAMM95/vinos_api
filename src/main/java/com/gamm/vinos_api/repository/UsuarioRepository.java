@@ -1,7 +1,7 @@
 package com.gamm.vinos_api.repository;
 
 import com.gamm.vinos_api.domain.model.Usuario;
-import com.gamm.vinos_api.dto.view.UsuarioView;
+import com.gamm.vinos_api.dto.view.UsuarioDTO;
 import com.gamm.vinos_api.util.ResultadoSP;
 
 import java.util.List;
@@ -16,9 +16,9 @@ public interface UsuarioRepository {
 
   ResultadoSP filtrarUsuario(String terminoBusqueda);
 
-  List<UsuarioView> listarUsuarios();
+  List<UsuarioDTO> listarUsuarios();
 
-  List<UsuarioView> listarUsuariosPaginados(int pagina, int limite);
+  List<UsuarioDTO> listarUsuariosPaginados(int pagina, int limite);
 
   Long contarUsuarios();
 
@@ -32,7 +32,7 @@ public interface UsuarioRepository {
 
   Usuario obtenerUsuarioPorEmail(String email);
 
-  List<UsuarioView> listarPorRolYSucursal(String rol, Integer idSucursal);
+  List<UsuarioDTO> listarPorRolYSucursal(String rol, Integer idSucursal);
 
-  UsuarioView obtenerUsuarioPorId(Integer idUsuario);
+  UsuarioDTO obtenerUsuarioPorId(Integer idUsuario);
 }

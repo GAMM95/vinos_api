@@ -1,9 +1,8 @@
 package com.gamm.vinos_api.service.impl;
 
-import com.gamm.vinos_api.dto.view.StockView;
-import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.dto.view.StockDTO;
 import com.gamm.vinos_api.repository.StockRepository;
-import com.gamm.vinos_api.service.BaseService;
+import com.gamm.vinos_api.service.base.BaseService;
 import com.gamm.vinos_api.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,26 +16,22 @@ public class StockServiceImpl extends BaseService implements StockService {
   private final StockRepository stockRepository;
 
   @Override
-  public ResponseVO listarStockSucursal() {
-    List<StockView> data = stockRepository.listarStockSucursal();
-    return ResponseVO.success(data);
+  public List<StockDTO> listarStockSucursal() {
+    return stockRepository.listarStockSucursal();
   }
 
   @Override
-  public ResponseVO listarStockSucursalDetalladoPorSucursal(Integer idSucursal) {
-    List<StockView> data = stockRepository.listarStockSucursalDetalladoPorSucursal(idSucursal);
-    return ResponseVO.success(data);
+  public List<StockDTO> listarStockSucursalDetalladoPorSucursal(Integer idSucursal) {
+    return stockRepository.listarStockSucursalDetalladoPorSucursal(idSucursal);
   }
 
   @Override
-  public ResponseVO listarStockPorSucursal() {
-    List<StockView> data = stockRepository.listarStockPorSucursal(getIdSucursalAutenticada());
-    return ResponseVO.success(data);
+  public List<StockDTO> listarStockPorSucursal() {
+    return stockRepository.listarStockPorSucursal(getIdSucursalAutenticada());
   }
 
   @Override
-  public ResponseVO listarStockVenta() {
-    List<StockView> data = stockRepository.listarStockVenta(getIdSucursalAutenticada());
-    return ResponseVO.success(data);
+  public List<StockDTO> listarStockVenta() {
+    return stockRepository.listarStockVenta(getIdSucursalAutenticada());
   }
 }

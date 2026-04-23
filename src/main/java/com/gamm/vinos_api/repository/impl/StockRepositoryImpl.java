@@ -1,6 +1,6 @@
 package com.gamm.vinos_api.repository.impl;
 
-import com.gamm.vinos_api.dto.view.StockView;
+import com.gamm.vinos_api.dto.view.StockDTO;
 import com.gamm.vinos_api.jdbc.base.SimpleJdbcDAOBase;
 import com.gamm.vinos_api.jdbc.rowmapper.StockSucursalDetalladoRowMapper;
 import com.gamm.vinos_api.jdbc.rowmapper.StockSucursalRowMapper;
@@ -24,22 +24,22 @@ public class StockRepositoryImpl extends SimpleJdbcDAOBase implements StockRepos
   }
 
   @Override
-  public List<StockView> listarStockSucursal() {
+  public List<StockDTO> listarStockSucursal() {
     return jdbcTemplate.query(VW_STOCK, new StockSucursalRowMapper());
   }
 
   @Override
-  public List<StockView> listarStockSucursalDetalladoPorSucursal(Integer idSucursal) {
+  public List<StockDTO> listarStockSucursalDetalladoPorSucursal(Integer idSucursal) {
     return jdbcTemplate.query(VW_STOCK_SUCURSAL, new StockSucursalDetalladoRowMapper(), idSucursal);
   }
 
   @Override
-  public List<StockView> listarStockPorSucursal(Integer idSucursal) {
+  public List<StockDTO> listarStockPorSucursal(Integer idSucursal) {
     return jdbcTemplate.query(VW_STOCK_SUCURSAL, new StockSucursalDetalladoRowMapper(), idSucursal);
   }
 
   @Override
-  public List<StockView> listarStockVenta(Integer idSucursal) {
+  public List<StockDTO> listarStockVenta(Integer idSucursal) {
     return jdbcTemplate.query(VW_STOCK_VENTA, new StockVentaRowMapper(), idSucursal);
   }
 }

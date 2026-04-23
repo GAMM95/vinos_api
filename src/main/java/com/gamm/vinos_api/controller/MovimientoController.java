@@ -29,7 +29,7 @@ public class MovimientoController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    return ResponseEntity.ok(movimientoService.listarMisMovimientos(pagina, limite));
+    return okPaginado(movimientoService.listarMisMovimientos(pagina, limite));
   }
 
   @Operation(summary = "Filtrar mis movimientos por rango de fechas")
@@ -40,22 +40,19 @@ public class MovimientoController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    return ResponseEntity.ok(
-        movimientoService.filtrarMisMovimientosPorRango(fechaInicio, fechaFin, pagina, limite)
-    );
+    return okPaginado(movimientoService.filtrarMisMovimientosPorRango(fechaInicio, fechaFin, pagina, limite));
   }
 
   @Operation(summary = "Ver detalle de movimientos de una caja (vendedor)")
   @GetMapping("/cajas/{idCaja}")
   public ResponseEntity<ResponseVO> detalleMovimientosUsuario(@PathVariable Integer idCaja) {
-    return ResponseEntity.ok(movimientoService.listarDetalleMovimientoUsuario(idCaja));
+    return ok(movimientoService.listarDetalleMovimientoUsuario(idCaja));
   }
 
   @Operation(summary = "Filtrar movimientos por caja")
   @GetMapping("/cajas/filtro")
   public ResponseEntity<ResponseVO> filtrarPorCaja(@RequestParam Integer idCaja) {
     ResultadoSP resultado = movimientoService.filtrarPorCaja(idCaja);
-    ResponseVO.validar(resultado);
     return ok(resultado.getMensaje(), resultado.getData());
   }
 
@@ -68,7 +65,7 @@ public class MovimientoController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    return ResponseEntity.ok(movimientoService.listarTotalMovimientos(pagina, limite));
+    return okPaginado(movimientoService.listarTotalMovimientos(pagina, limite));
   }
 
   @Operation(summary = "Filtrar movimientos por usuario y/o rango de fechas")
@@ -81,16 +78,13 @@ public class MovimientoController extends AbstractRestController {
       @RequestParam(defaultValue = "1") int pagina,
       @RequestParam(defaultValue = "10") int limite
   ) {
-    return ResponseEntity.ok(movimientoService.filtrarMovimientosPorUsuarioORango(
-        idUsuario, fechaInicio, fechaFin, pagina, limite
-    ));
+    return okPaginado(movimientoService.filtrarMovimientosPorUsuarioORango(idUsuario, fechaInicio, fechaFin, pagina, limite));
   }
 
   @Operation(summary = "Ver detalle de movimientos de una caja (administrador)")
   @GetMapping("/cajas/{idCaja}/admin")
   @SoloAdministrador
   public ResponseEntity<ResponseVO> detalleMovimientosAdmin(@PathVariable Integer idCaja) {
-    return ResponseEntity.ok(movimientoService.listarDetalleMovimientoAdmin(idCaja));
+    return ok(movimientoService.listarDetalleMovimientoAdmin(idCaja));
   }
-
 }
