@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="ticket_venta" language="java" pageWidth="226" pageHeight="2000" columnWidth="216" leftMargin="5"
+              rightMargin="5" topMargin="8" bottomMargin="8" uuid="8226367f-b162-4d0f-8e60-a6f295ca9877"
+              ignorePagination="true">
+    <style name="base" default="true" fontName="Courier New" fontSize="7.0"/>
+    <style name="bold" style="base" bold="true"/>
+    <style name="smallBold" style="base" fontSize="6.0" bold="true"/>
+    <style name="titulo" style="base" fontSize="9.0" bold="true"/>
+    <style name="subtitulo" style="base" fontSize="8.0" bold="true"/>
+    <style name="small" style="base" fontSize="6.0"/>
+    <style name="totalBox" style="base" mode="Opaque" forecolor="#FFFFFF" backcolor="#6B1414" fontSize="8.0"
+           bold="true"/>
+    <style name="totalSimple" style="base" forecolor="#6B1414" fontName="Arial Black" fontSize="9.0" bold="true"/>
+    <parameter name="logo" class="java.io.InputStream"/>
+    <parameter name="empresaNombre" class="java.lang.String"/>
+    <parameter name="empresaRuc" class="java.lang.String"/>
+    <parameter name="empresaTelefono" class="java.lang.String"/>
+    <parameter name="empresaDireccion" class="java.lang.String"/>
+    <parameter name="numeroComprobante" class="java.lang.String"/>
+    <parameter name="tipoComprobante" class="java.lang.String"/>
+    <parameter name="fecha" class="java.lang.String"/>
+    <parameter name="hora" class="java.lang.String"/>
+    <parameter name="estadoSunat" class="java.lang.String"/>
+    <parameter name="codVenta" class="java.lang.String"/>
+    <parameter name="metodoPago" class="java.lang.String"/>
+    <parameter name="descuento" class="java.math.BigDecimal"/>
+    <parameter name="total" class="java.math.BigDecimal"/>
+    <parameter name="totalEnLetras" class="java.lang.String"/>
+    <parameter name="sucursalNombre" class="java.lang.String"/>
+    <parameter name="sucursalDireccion" class="java.lang.String"/>
+    <parameter name="vendedor" class="java.lang.String"/>
+    <parameter name="clienteNombre" class="java.lang.String"/>
+    <parameter name="clienteCelular" class="java.lang.String"/>
+    <parameter name="clienteDireccion" class="java.lang.String"/>
+    <query language="sql"><![CDATA[SELECT *
+        FROM vw_comprobante_venta
+        WHERE numeroComprobante = $P{numeroComprobante}
+    ]]></query>
+    <field name="nombreVino" class="java.lang.String"/>
+    <field name="cantidadLitros" class="java.math.BigDecimal"/>
+    <field name="precioLitro" class="java.math.BigDecimal"/>
+    <field name="subtotal" class="java.math.BigDecimal"/>
+    <title height="210">
+        <element kind="rectangle" uuid="215b0154-0e3e-4eae-85d2-f7c0963f2dfb" mode="Opaque" x="0" y="0" width="216"
+                 height="3" forecolor="#6B1414" backcolor="#6B1414"/>
+        <element kind="image" uuid="c02acb58-0290-4aa9-8358-94f5a1c0edca" x="62" y="9" width="92" height="42"
+                 scaleImage="RetainShape" hImageAlign="Center">
+            <expression><![CDATA[$P{logo}]]></expression>
+        </element>
+        <element kind="textField" uuid="c56c8b92-242e-41f2-8f30-c140129f5de7" x="0" y="55" width="216" height="14"
+                 hTextAlign="Center" style="titulo">
+            <expression><![CDATA[$P{empresaNombre}]]></expression>
+        </element>
+        <element kind="textField" uuid="03d04b48-c3d9-42ae-8530-b9caed25bfc2" x="0" y="68" width="216" height="11"
+                 hTextAlign="Center" style="base">
+            <expression><![CDATA["RUC: " + $P{empresaRuc}]]></expression>
+        </element>
+        <element kind="textField" uuid="1d344a60-fe30-4e1c-94d9-2b84ad702de3" x="0" y="90" width="216" height="11"
+                 textAdjust="StretchHeight" hTextAlign="Center" style="small">
+            <expression><![CDATA[$P{empresaDireccion}]]></expression>
+        </element>
+        <element kind="textField" uuid="f88dbfb0-d059-47f0-933b-d24c3e93a6d7" x="0" y="102" width="216" height="11"
+                 hTextAlign="Center" style="small">
+            <expression><![CDATA["Sucursal: " + $P{sucursalNombre}]]></expression>
+        </element>
+        <element kind="staticText" uuid="c96a53b6-0748-4f34-9a57-7b8a0cc94c4c" x="0" y="117" width="216" height="8"
+                 hTextAlign="Center" style="small">
+            <text><![CDATA[--------------------------------]]></text>
+        </element>
+        <element kind="textField" uuid="df55a82a-d894-4d65-991d-e28539cef396" x="0" y="125" width="216" height="13"
+                 hTextAlign="Center" style="subtitulo">
+            <expression><![CDATA[$P{tipoComprobante}.toUpperCase() + " DE VENTA ELECTRÓNICA"]]></expression>
+        </element>
+        <element kind="textField" uuid="df55a82a-d894-4d65-991d-e28539cef396" x="0" y="137" width="216" height="13"
+                 hTextAlign="Center" style="subtitulo">
+            <expression><![CDATA[$P{numeroComprobante}]]></expression>
+        </element>
+        <element kind="staticText" uuid="01c84b88-2ec4-41d7-860a-11b371e48662" x="0" y="149" width="216" height="8"
+                 hTextAlign="Center" style="small">
+            <text><![CDATA[--------------------------------]]></text>
+        </element>
+        <element kind="textField" uuid="5848374c-558c-463a-b025-efd7c9da4b3e" x="0" y="157" width="108" height="10"
+                 style="small">
+            <paragraph leftIndent="10"/>
+            <expression><![CDATA["Fecha : " + $P{fecha}]]></expression>
+        </element>
+        <element kind="textField" uuid="7283c54d-aa5b-4371-97a1-4714460ee6d3" x="113" y="157" width="103" height="10"
+                 style="small">
+            <expression><![CDATA["Hora  : " + $P{hora}]]></expression>
+        </element>
+        <element kind="textField" uuid="4734a5eb-3db0-4f6e-a187-b27eaccce889" x="0" y="167" width="216" height="10"
+                 style="small">
+            <paragraph leftIndent="10"/>
+            <expression><![CDATA["Cod.    : " + $P{codVenta}]]></expression>
+        </element>
+        <element kind="textField" uuid="9d6e333f-c70d-4f8f-a933-0bec96f6b85f" x="0" y="177" width="216" height="10"
+                 style="small">
+            <paragraph leftIndent="10"/>
+            <expression><![CDATA["Pago    : " + $P{metodoPago}]]></expression>
+        </element>
+        <element kind="textField" uuid="4a5958ef-ec63-4577-ad9e-cd2f926da7a7" x="0" y="187" width="216" height="10"
+                 style="small">
+            <paragraph leftIndent="10"/>
+            <expression><![CDATA["Cliente : " + $P{clienteNombre}]]></expression>
+        </element>
+        <element kind="textField" uuid="adc51159-ba97-4ea6-8ae9-1d7eae045270" x="0" y="197" width="216" height="10"
+                 style="small">
+            <paragraph leftIndent="10"/>
+            <expression><![CDATA["Vendedor: " + $P{vendedor}]]></expression>
+        </element>
+        <element kind="textField" uuid="e037f37b-26a2-41bb-867c-f772e977ebeb" x="0" y="79" width="216" height="11"
+                 textAdjust="StretchHeight" hTextAlign="Center" style="small">
+            <expression><![CDATA["Teléfono: " + $P{empresaTelefono}]]></expression>
+        </element>
+    </title>
+    <columnHeader height="26">
+        <element kind="staticText" uuid="1d2adb99-5a73-4a02-ab98-f7ebc629ffa6" x="0" y="2" width="90" height="18"
+                 hTextAlign="Left" vTextAlign="Middle" style="bold">
+            <paragraph leftIndent="2"/>
+            <text><![CDATA[Producto]]></text>
+        </element>
+        <element kind="staticText" uuid="8a1fba94-aa7f-4403-b988-4bbf737b5567" x="90" y="2" width="36" height="18"
+                 hTextAlign="Center" vTextAlign="Middle" style="bold">
+            <text><![CDATA[Litros]]></text>
+        </element>
+        <element kind="staticText" uuid="d9218eec-7237-43bc-921c-a98396470694" x="126" y="2" width="45" height="18"
+                 hTextAlign="Center" vTextAlign="Middle" style="bold">
+            <text><![CDATA[Precio/Lt]]></text>
+        </element>
+        <element kind="staticText" uuid="cb5046a1-5575-49eb-aa78-f889d95d468f" x="172" y="2" width="45" height="18"
+                 hTextAlign="Right" vTextAlign="Middle" style="bold">
+            <paragraph rightIndent="1"/>
+            <text><![CDATA[Importe]]></text>
+        </element>
+        <element kind="line" uuid="4009709a-37b9-4fc8-88ce-2dd90540ab4f" x="0" y="1" width="216" height="1"
+                 forecolor="#030303">
+            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+        </element>
+        <element kind="line" uuid="bfb5e803-abf8-4965-8352-24291b379716" x="0" y="20" width="216" height="1"
+                 forecolor="#030303">
+            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+        </element>
+    </columnHeader>
+    <detail>
+        <band height="16" splitType="Stretch">
+            <element kind="rectangle" uuid="8bf24324-9cf3-4836-94bc-dcb790e91ff8" mode="Opaque" x="0" y="0" width="216"
+                     height="16" forecolor="#FDF5F5" backcolor="#FDF5F5">
+                <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 1]]></printWhenExpression>
+            </element>
+            <element kind="textField" uuid="d46af124-5fe9-45fc-a681-82a831dbb11a" x="0" y="0" width="90" height="16"
+                     textAdjust="StretchHeight" blankWhenNull="true" vTextAlign="Middle" style="base">
+                <paragraph leftIndent="2"/>
+                <expression><![CDATA[$F{nombreVino}]]></expression>
+            </element>
+            <element kind="textField" uuid="ad20252b-6775-4713-a48c-a4a131b4e706" x="90" y="0" width="36" height="16"
+                     pattern="#,##0.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle" style="base">
+                <expression><![CDATA[$F{cantidadLitros}]]></expression>
+            </element>
+            <element kind="textField" uuid="c929c3a7-2afd-47e0-a072-1bd4e331e16e" x="126" y="0" width="46" height="16"
+                     pattern="S/ #,##0.00" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle" style="base">
+                <expression><![CDATA[$F{precioLitro}]]></expression>
+            </element>
+            <element kind="textField" uuid="21a4e38e-4ed6-4d96-8e8e-b82c2f1cbaa7" x="172" y="0" width="44" height="16"
+                     pattern="S/ #,##0.00" blankWhenNull="true" hTextAlign="Right" vTextAlign="Middle" style="base">
+                <paragraph rightIndent="2"/>
+                <expression><![CDATA[$F{subtotal}]]></expression>
+            </element>
+        </band>
+    </detail>
+    <summary height="220" splitType="Stretch">
+        <element kind="staticText" uuid="da411530-de5b-4a78-ada2-ecfa8c7a18ea" x="0" y="2" width="216" height="8"
+                 hTextAlign="Center" style="small">
+            <text>
+                <![CDATA[----------------------------------------------------------------------------------------------------]]></text>
+        </element>
+        <element kind="staticText" uuid="9fd29cab-c82f-4404-8ba8-2471ad88f3c9" x="0" y="12" width="140" height="12"
+                 hTextAlign="Right" style="bold">
+            <text><![CDATA[Subtotal:]]></text>
+        </element>
+        <element kind="textField" uuid="44040bb1-c2be-4e44-a7bf-58a623e03875" x="142" y="12" width="74" height="12"
+                 pattern="S/ #,##0.00" hTextAlign="Right" style="base">
+            <paragraph rightIndent="2"/>
+            <expression><![CDATA[
+                $P{total}.add($P{descuento} != null ? $P{descuento} : java.math.BigDecimal.ZERO)]]></expression>
+        </element>
+        <element kind="staticText" uuid="53ef2dc7-f071-4a0c-ab8e-185c8e72f367" x="0" y="26" width="140" height="12"
+                 hTextAlign="Right" style="bold">
+            <text><![CDATA[Descuento:]]></text>
+        </element>
+        <element kind="textField" uuid="524912b1-95f8-4dd5-8023-999011afc24c" x="142" y="26" width="74" height="12"
+                 blankWhenNull="true" hTextAlign="Right" style="base">
+            <paragraph rightIndent="2"/>
+            <expression><![CDATA[
+                "- S/ " + ($P{descuento} != null ? $P{descuento} : java.math.BigDecimal.ZERO).toPlainString()]]></expression>
+        </element>
+        <element kind="staticText" uuid="3949bd73-8d7a-46cc-9b9c-7e9c60adf0d9" x="0" y="36" width="216" height="8"
+                 hTextAlign="Center" style="small">
+            <text><![CDATA[----------------------------------------------------------------------------------]]></text>
+        </element>
+        <element kind="staticText" uuid="ae9010df-4a6c-4280-8f18-e958ad487e46" x="10" y="45" width="100" height="20"
+                 hTextAlign="Left" vTextAlign="Middle" style="totalSimple">
+            <text><![CDATA[TOTAL A PAGAR:]]></text>
+        </element>
+        <element kind="textField" uuid="6e1df7c9-d169-4b63-90f4-5be87af0ae99" x="102" y="45" width="112" height="20"
+                 pattern="S/ #,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle" style="totalSimple">
+            <expression><![CDATA[$P{total}]]></expression>
+        </element>
+        <element kind="textField" uuid="43060451-1551-4ec2-a160-91636ddc77f3" x="0" y="65" width="216" height="12"
+                 fontSize="6.0" hTextAlign="Center" style="smallBold">
+            <expression><![CDATA["SON: " + $P{totalEnLetras}]]></expression>
+        </element>
+        <element kind="textField" uuid="98a49253-f1c4-4aeb-901b-9c297557bc71" x="0" y="79" width="216" height="10"
+                 forecolor="#999999" hTextAlign="Center" style="small">
+            <expression><![CDATA["SUNAT: " + $P{estadoSunat}]]></expression>
+        </element>
+        <element kind="staticText" uuid="dd5dc9dc-f09b-4cdd-9429-68ebfd0c3a79" x="0" y="86" width="216" height="8"
+                 hTextAlign="Center" style="small">
+            <text><![CDATA[================================]]></text>
+        </element>
+        <element kind="staticText" uuid="21bf55cf-1733-44e2-b96b-e7d778a0d410" x="0" y="98" width="216" height="9"
+                 hTextAlign="Center" style="smallBold">
+            <text><![CDATA[GUARDA TU VOUCHER]]></text>
+        </element>
+        <element kind="staticText" uuid="d41ef4d6-32a1-4c05-ba36-8c9f5fc9909a" x="0" y="110" width="216" height="16"
+                 hTextAlign="Center" style="small">
+            <text><![CDATA[Es indispensable presentarlo como sustento para validar tu compra.]]></text>
+        </element>
+        <element kind="staticText" uuid="5893e2ac-6275-4b44-a4a0-0a50a8c1911a" x="0" y="119" width="216" height="20"
+                 hTextAlign="Center" style="small">
+            <text>
+                <![CDATA[Todo cambio del producto debe efectuarse dentro de los 7 días posteriores a la compra.]]></text>
+        </element>
+        <element kind="staticText" uuid="b10b46ef-99ad-4159-a210-47fdaacc88f9" x="0" y="136" width="216" height="8"
+                 hTextAlign="Center" style="small">
+            <text><![CDATA[--------------------------------]]></text>
+        </element>
+        <element kind="staticText" uuid="b0ffe1bc-5142-40f7-b785-7076c0c6da0f" x="0" y="146" width="216" height="10"
+                 hTextAlign="Center" style="bold">
+            <text><![CDATA[¡Gracias por su compra!]]></text>
+        </element>
+        <element kind="staticText" uuid="7320fb84-dc69-445f-8516-072b8f6351ce" x="0" y="157" width="216" height="10"
+                 hTextAlign="Center" style="bold">
+            <text><![CDATA[¡Regrese pronto! 🍷]]></text>
+        </element>
+        <element kind="staticText" uuid="24523725-e742-41ee-9b46-ddc2f33c51c2" x="0" y="169" width="216" height="8"
+                 hTextAlign="Center" style="small">
+            <text><![CDATA[================================]]></text>
+        </element>
+        <element kind="staticText" uuid="0a5594b5-c142-4cc9-a35a-927dccc15d91" x="0" y="210" width="216" height="8"
+                 forecolor="#999999" hTextAlign="Center" style="small">
+            <text><![CDATA[Sistema de Gestión de Vinos]]></text>
+        </element>
+    </summary>
+</jasperReport>

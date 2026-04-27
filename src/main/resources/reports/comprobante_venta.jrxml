@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="comprobante_venta" language="java" pageWidth="595" pageHeight="842" columnWidth="535"
+              leftMargin="30" rightMargin="30" topMargin="25" bottomMargin="25"
+              uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL vinos"/>
+    <style name="estiloBase" fontName="SansSerif" fontSize="8.0"/>
+    <style name="estiloTitulo" style="estiloBase" fontSize="14.0" bold="true"/>
+    <style name="estiloSubtitulo" style="estiloBase" fontSize="11.0" bold="true"/>
+    <style name="estiloEtiqueta" style="estiloBase" bold="true"/>
+    <style name="estiloValor" style="estiloBase"/>
+    <style name="estiloCabeceraTbl" style="estiloBase" mode="Opaque" forecolor="#FFFFFF" backcolor="#6B1414"
+           bold="true"/>
+    <style name="estiloFilaImpar" style="estiloBase" mode="Opaque" backcolor="#FDF5F5"/>
+    <style name="estiloFilaPar" style="estiloBase" mode="Opaque" backcolor="#FFFFFF"/>
+    <style name="estiloTotal" style="estiloBase" fontSize="9.0" bold="true"/>
+    <parameter name="logo" class="java.io.InputStream"/>
+    <parameter name="empresaNombre" class="java.lang.String"/>
+    <parameter name="empresaRuc" class="java.lang.String"/>
+    <parameter name="empresaTelefono" class="java.lang.String"/>
+    <parameter name="empresaDireccion" class="java.lang.String"/>
+    <parameter name="numeroComprobante" class="java.lang.String"/>
+    <parameter name="tipoComprobante" class="java.lang.String"/>
+    <parameter name="fecha" class="java.lang.String"/>
+    <parameter name="hora" class="java.lang.String"/>
+    <parameter name="estadoSunat" class="java.lang.String"/>
+    <parameter name="codVenta" class="java.lang.String"/>
+    <parameter name="metodoPago" class="java.lang.String"/>
+    <parameter name="descuento" class="java.math.BigDecimal"/>
+    <parameter name="total" class="java.math.BigDecimal"/>
+    <parameter name="sucursalNombre" class="java.lang.String"/>
+    <parameter name="sucursalDireccion" class="java.lang.String"/>
+    <parameter name="vendedor" class="java.lang.String"/>
+    <parameter name="clienteNombre" class="java.lang.String"/>
+    <parameter name="clienteCelular" class="java.lang.String"/>
+    <parameter name="clienteDireccion" class="java.lang.String"/>
+    <query language="sql"><![CDATA[SELECT *
+        FROM vw_comprobante_venta
+        WHERE numeroComprobante = $P{numeroComprobante}
+    ]]></query>
+    <field name="nombreVino" class="java.lang.String"/>
+    <field name="cantidadLitros" class="java.math.BigDecimal"/>
+    <field name="precioLitro" class="java.math.BigDecimal"/>
+    <field name="subtotal" class="java.math.BigDecimal"/>
+    <title height="220" splitType="Stretch">
+        <element kind="rectangle" uuid="6251264e-8f69-4aac-9958-c373ed882a35" mode="Opaque" x="0" y="0" width="535"
+                 height="6" forecolor="#6B1414" backcolor="#6B1414"/>
+        <element kind="image" uuid="7dbf6dae-6840-4ab0-9fac-2933dad29569" x="2" y="21" width="84" height="70"
+                 scaleImage="RetainShape" hImageAlign="Center" vImageAlign="Middle">
+            <expression><![CDATA[$P{logo}]]></expression>
+        </element>
+        <element kind="textField" uuid="ad299e19-7542-4e87-abdf-98b57ec2c9ea" x="90" y="14" width="244" height="22"
+                 style="estiloTitulo">
+            <expression><![CDATA[$P{empresaNombre}]]></expression>
+        </element>
+        <element kind="staticText" uuid="35526cef-b17b-438b-bbc4-6a1af19851db" x="90" y="38" width="46" height="14"
+                 style="estiloEtiqueta">
+            <text><![CDATA[RUC:]]></text>
+        </element>
+        <element kind="textField" uuid="6cf7f30f-dc55-48da-a646-cc09951d6e75" x="136" y="38" width="74" height="14"
+                 fontSize="9.0" style="estiloValor">
+            <expression><![CDATA[$P{empresaRuc}]]></expression>
+        </element>
+        <element kind="staticText" uuid="ecc8a838-ef31-4673-b450-d0bd2e5a5cfb" x="90" y="58" width="46" height="14"
+                 fontSize="9.0" style="estiloEtiqueta">
+            <text><![CDATA[Dirección:]]></text>
+        </element>
+        <element kind="textField" uuid="2f9e9b8a-94b9-4bb0-b27a-fabf84fee0ea" x="136" y="58" width="198" height="20"
+                 fontSize="9.0" textAdjust="StretchHeight" style="estiloValor">
+            <expression><![CDATA[$P{empresaDireccion}]]></expression>
+        </element>
+        <element kind="staticText" uuid="41c7ac7e-f2c7-4590-8598-434b53ebf498" x="90" y="82" width="46" height="14"
+                 fontSize="9.0" style="estiloEtiqueta">
+            <text><![CDATA[Sucursal:]]></text>
+        </element>
+        <element kind="textField" uuid="165cb6e4-4c2d-4a29-a94a-b037a96a4fe4" x="136" y="82" width="198" height="20"
+                 fontSize="9.0" textAdjust="StretchHeight" style="estiloValor">
+            <expression><![CDATA[$P{sucursalNombre} + " — " + $P{sucursalDireccion}]]></expression>
+            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+        </element>
+        <element kind="rectangle" uuid="8afb174d-d56f-4048-b2fa-1ed19ba521e9" mode="Opaque" x="340" y="17" width="195"
+                 height="80" forecolor="#6B1414" backcolor="#FDF5F5" radius="4"/>
+        <element kind="textField" uuid="05f8f742-c2ad-4629-91c8-c15c6d001c8d" x="347" y="23" width="180" height="18"
+                 hTextAlign="Center" style="estiloSubtitulo">
+            <expression><![CDATA["COMPROBANTE DE VENTA"]]></expression>
+        </element>
+        <element kind="textField" uuid="8f91f9e8-b9b9-49e6-810d-1cd0a269dffb" x="347" y="43" width="180" height="18"
+                 hTextAlign="Center" style="estiloSubtitulo">
+            <expression><![CDATA[$P{numeroComprobante}]]></expression>
+        </element>
+        <element kind="staticText" uuid="b9a46976-318c-4f39-9294-a2622145df8c" x="360" y="64" width="56" height="14"
+                 style="estiloEtiqueta">
+            <text><![CDATA[Cod. Venta:]]></text>
+        </element>
+        <element kind="textField" uuid="fe2e3465-abfe-4dc1-9e1e-ab9a08796ee0" x="417" y="64" width="108" height="14"
+                 bold="true" style="estiloValor">
+            <expression><![CDATA[$P{codVenta}]]></expression>
+        </element>
+        <element kind="textField" uuid="ecf0f967-dfe3-4623-bc43-7f99bc0c0d27" x="389" y="81" width="62" height="14"
+                 style="estiloEtiqueta">
+            <paragraph leftIndent="10"/>
+            <expression><![CDATA[$P{fecha}]]></expression>
+        </element>
+        <element kind="textField" uuid="ca119982-3a7a-4b9b-b955-57fd7b5416f3" x="476" y="81" width="50" height="14"
+                 style="estiloValor">
+            <expression><![CDATA[$P{hora}]]></expression>
+        </element>
+        <element kind="line" uuid="c8429f23-6f7e-4185-930e-66d9ac4c43ca" x="0" y="109" width="535" height="1"
+                 forecolor="#6B1414"/>
+        <element kind="staticText" uuid="30de77d9-cbcc-4a01-b737-66cfcb6b79b7" x="0" y="117" width="535" height="16"
+                 fontSize="11.0" style="estiloSubtitulo">
+            <text><![CDATA[Datos del Cliente]]></text>
+        </element>
+        <element kind="staticText" uuid="15c49d16-5b9c-4e84-b45e-d1efcea993c7" x="18" y="138" width="55" height="14"
+                 fontSize="10.0" style="estiloEtiqueta">
+            <text><![CDATA[Cliente:]]></text>
+        </element>
+        <element kind="textField" uuid="2495ae07-f2a5-42b5-9319-4690c8d2767c" x="74" y="138" width="460" height="14"
+                 fontSize="10.0" blankWhenNull="true" style="estiloValor">
+            <expression><![CDATA[$P{clienteNombre}]]></expression>
+        </element>
+        <element kind="staticText" uuid="7a72d32c-0161-4c03-8923-7d6a83418ee8" x="18" y="154" width="55" height="14"
+                 fontSize="10.0" style="estiloEtiqueta">
+            <text><![CDATA[Celular:]]></text>
+        </element>
+        <element kind="textField" uuid="a7952c8d-d2eb-4933-b7cf-b25eafc35906" x="74" y="154" width="164" height="14"
+                 fontSize="10.0" blankWhenNull="true" style="estiloValor">
+            <expression><![CDATA[$P{clienteCelular} != null ? $P{clienteCelular} : "—"]]></expression>
+        </element>
+        <element kind="staticText" uuid="dbb428a7-20d7-4295-9cd7-e95c09bc8b8f" x="250" y="154" width="55" height="14"
+                 fontSize="10.0" style="estiloEtiqueta">
+            <text><![CDATA[Dirección:]]></text>
+        </element>
+        <element kind="textField" uuid="eaa59b4c-8e90-4093-bf73-f938473d969a" x="308" y="154" width="226" height="14"
+                 fontSize="10.0" blankWhenNull="true" style="estiloValor">
+            <expression><![CDATA[$P{clienteDireccion} != null ? $P{clienteDireccion} : "—"]]></expression>
+        </element>
+        <element kind="staticText" uuid="758dc18a-0145-4ede-813e-03f87270e3ff" x="18" y="170" width="75" height="14"
+                 fontSize="10.0" style="estiloEtiqueta">
+            <text><![CDATA[Método pago:]]></text>
+        </element>
+        <element kind="textField" uuid="2c0cbfc2-af13-41a1-a62a-09848814213a" x="93" y="170" width="144" height="14"
+                 fontSize="10.0" style="estiloValor">
+            <expression><![CDATA[$P{metodoPago}]]></expression>
+        </element>
+        <element kind="staticText" uuid="41e755ee-52c5-425c-b33a-2d561d0f7e6e" x="250" y="170" width="55" height="14"
+                 fontSize="10.0" style="estiloEtiqueta">
+            <text><![CDATA[Atendido:]]></text>
+        </element>
+        <element kind="textField" uuid="e52204f6-fa81-48e9-bbb2-cd185a517dcb" x="308" y="170" width="212" height="14"
+                 fontSize="10.0" style="estiloValor">
+            <expression><![CDATA[$P{vendedor}]]></expression>
+        </element>
+        <element kind="line" uuid="3e8ced5f-204c-42d4-a090-6a63b5b6dd41" x="0" y="193" width="535" height="1"
+                 forecolor="#CCCCCC"/>
+        <element kind="staticText" uuid="b6924cb4-6536-4d5f-a519-cc1813e5deb8" x="380" y="200" width="75" height="12"
+                 hTextAlign="Right" style="estiloEtiqueta">
+            <text><![CDATA[Estado SUNAT:]]></text>
+        </element>
+        <element kind="textField" uuid="4483bb4d-fb6b-49e6-8936-3a8f11232ec8" x="458" y="200" width="77" height="12"
+                 hTextAlign="Right" style="estiloValor">
+            <expression><![CDATA[$P{estadoSunat}]]></expression>
+        </element>
+        <element kind="staticText" uuid="f0571854-9440-43fc-8b80-3df580e584ed" x="360" y="81" width="28" height="14"
+                 style="estiloEtiqueta">
+            <text><![CDATA[Fecha:]]></text>
+        </element>
+        <element kind="staticText" uuid="43c0685e-89f3-45f3-a794-9078b8113c24" x="453" y="81" width="22" height="14"
+                 style="estiloEtiqueta">
+            <text><![CDATA[Hora:]]></text>
+        </element>
+        <element kind="textField" uuid="dc8bbe0b-419d-4329-b494-6f6c0d0c61ae" x="260" y="38" width="74" height="14"
+                 fontSize="9.0" style="estiloValor">
+            <expression><![CDATA[$P{empresaTelefono}]]></expression>
+        </element>
+        <element kind="staticText" uuid="fb2e71e0-602e-4682-912e-483fd3675333" x="214" y="38" width="46" height="14"
+                 fontSize="10.0" style="estiloEtiqueta">
+            <text><![CDATA[Teléfono:]]></text>
+        </element>
+    </title>
+    <columnHeader height="22" splitType="Stretch">
+        <element kind="rectangle" uuid="c889df26-8c74-4fe6-9591-911b233fa12c" mode="Opaque" x="0" y="0" width="535"
+                 height="22" forecolor="#6B1414" backcolor="#6B1414"/>
+        <element kind="staticText" uuid="d6ba1440-c751-4c4d-bce9-ea90579e9676" x="0" y="0" width="220" height="22"
+                 fontSize="10.0" hTextAlign="Left" vTextAlign="Middle" style="estiloCabeceraTbl">
+            <paragraph leftIndent="4"/>
+            <text><![CDATA[Producto (Vino)]]></text>
+        </element>
+        <element kind="staticText" uuid="14685708-3c5c-46af-aff7-c6fd0fe1ff7e" x="220" y="0" width="90" height="22"
+                 fontSize="10.0" hTextAlign="Center" vTextAlign="Middle" style="estiloCabeceraTbl">
+            <text><![CDATA[Cantidad (L)]]></text>
+        </element>
+        <element kind="staticText" uuid="465c14e3-e994-4706-8060-34357d2c0f05" x="310" y="0" width="110" height="22"
+                 fontSize="10.0" hTextAlign="Center" vTextAlign="Middle" style="estiloCabeceraTbl">
+            <text><![CDATA[Precio x Litro (S/)]]></text>
+        </element>
+        <element kind="staticText" uuid="dfe02044-1c28-443d-a870-32c00b694a3e" x="420" y="0" width="115" height="22"
+                 fontSize="10.0" hTextAlign="Right" vTextAlign="Middle" style="estiloCabeceraTbl">
+            <paragraph rightIndent="4"/>
+            <text><![CDATA[Importe (S/)]]></text>
+        </element>
+    </columnHeader>
+    <detail>
+        <band height="20" splitType="Stretch">
+            <element kind="rectangle" uuid="6a50d7ef-4a8e-463b-a445-c7fe9df066fa" mode="Opaque" x="0" y="0" width="535"
+                     height="20" forecolor="#FDF5F5" backcolor="#FDF5F5">
+                <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 1]]></printWhenExpression>
+            </element>
+            <element kind="textField" uuid="488d8be9-eb4f-4fa5-933f-b1ebb6b81689" x="0" y="0" width="220" height="20"
+                     fontSize="10.0" textAdjust="StretchHeight" blankWhenNull="true" vTextAlign="Middle"
+                     style="estiloValor">
+                <paragraph leftIndent="4"/>
+                <expression><![CDATA[$F{nombreVino}]]></expression>
+            </element>
+            <element kind="textField" uuid="23dc3bdb-a6cb-445b-bfd1-422edcd76a9d" x="220" y="0" width="90" height="20"
+                     fontSize="10.0" pattern="#,##0.00" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle"
+                     style="estiloValor">
+                <expression><![CDATA[$F{cantidadLitros}]]></expression>
+            </element>
+            <element kind="textField" uuid="2b6b8dff-0919-4d23-bc28-d015c5494143" x="310" y="0" width="110" height="20"
+                     fontSize="10.0" pattern="#,##0.00" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle"
+                     style="estiloValor">
+                <expression><![CDATA[$F{precioLitro}]]></expression>
+            </element>
+            <element kind="textField" uuid="ff62cf44-04d9-4fff-87c4-28bcb2af4813" x="420" y="0" width="115" height="20"
+                     fontSize="10.0" pattern="#,##0.00" blankWhenNull="true" hTextAlign="Right" vTextAlign="Middle"
+                     style="estiloValor">
+                <paragraph rightIndent="4"/>
+                <expression><![CDATA[$F{subtotal}]]></expression>
+            </element>
+            <element kind="line" uuid="63ba4ed0-e689-4a57-a489-ded4c05fb1e0" x="0" y="19" width="535" height="1"
+                     forecolor="#E8D5D5"/>
+        </band>
+    </detail>
+    <summary height="130" splitType="Stretch">
+        <element kind="line" uuid="a37a4d83-c9d9-40cd-8624-f9d71818a2bb" x="0" y="10" width="535" height="1"
+                 forecolor="#6B1414"/>
+        <element kind="staticText" uuid="dd78c20d-cf5b-47ed-884c-c67470fe55c1" x="330" y="18" width="110" height="16"
+                 fontSize="10.0" hTextAlign="Right" style="estiloEtiqueta">
+            <text><![CDATA[Subtotal:]]></text>
+        </element>
+        <element kind="textField" uuid="8c4288b8-70a0-4a2a-b693-16fcf86afe5b" x="444" y="18" width="91" height="16"
+                 fontSize="10.0" pattern="S/ #,##0.00" hTextAlign="Right" style="estiloValor">
+            <paragraph rightIndent="4"/>
+            <expression><![CDATA[
+                $P{total}.add($P{descuento} != null ? $P{descuento} : java.math.BigDecimal.ZERO)]]></expression>
+        </element>
+        <element kind="staticText" uuid="a567f6ad-08c8-4123-b244-486f12abcfe6" x="330" y="36" width="110" height="16"
+                 fontSize="10.0" hTextAlign="Right" style="estiloEtiqueta">
+            <text><![CDATA[Descuento:]]></text>
+        </element>
+        <element kind="textField" uuid="11bfd915-9add-40f1-afef-640331be8503" x="444" y="36" width="91" height="16"
+                 fontSize="10.0" pattern="- S/ #,##0.00" blankWhenNull="true" hTextAlign="Right" style="estiloValor">
+            <paragraph rightIndent="4"/>
+            <expression><![CDATA[$P{descuento} != null ? $P{descuento} : java.math.BigDecimal.ZERO]]></expression>
+        </element>
+        <element kind="line" uuid="c129c0ec-d5c1-4a71-8258-1c5d7b6695dd" x="330" y="56" width="205" height="1"
+                 forecolor="#6B1414"/>
+        <element kind="rectangle" uuid="da6cf463-3f01-43f6-8248-aa3cdf626384" mode="Opaque" x="330" y="60" width="205"
+                 height="26" forecolor="#6B1414" backcolor="#6B1414" radius="3"/>
+        <element kind="staticText" uuid="bef5c990-28b3-4406-8db4-d2424cbd74e0" x="335" y="62" width="100" height="22"
+                 forecolor="#FFFFFF" hTextAlign="Left" vTextAlign="Middle" style="estiloTotal">
+            <text><![CDATA[TOTAL A PAGAR:]]></text>
+        </element>
+        <element kind="textField" uuid="3f5c70ca-fea7-4783-bceb-f5f1d4903b94" x="400" y="62" width="130" height="22"
+                 forecolor="#FFFFFF" fontSize="11.0" pattern="S/ #,##0.00" bold="true" hTextAlign="Right"
+                 vTextAlign="Middle" style="estiloTotal">
+            <paragraph rightIndent="4"/>
+            <expression><![CDATA[$P{total}]]></expression>
+        </element>
+        <element kind="line" uuid="11f49443-731e-4635-99b1-80eef52500ad" x="0" y="98" width="535" height="1"
+                 forecolor="#CCCCCC"/>
+        <element kind="staticText" uuid="30ccd752-086c-475a-b1fb-7c550a2652fc" x="0" y="104" width="535" height="14"
+                 hTextAlign="Center" style="estiloValor">
+            <text><![CDATA[
+                ¡Gracias por su compra! Este comprobante es válido como constancia de su adquisición.]]></text>
+        </element>
+        <element kind="staticText" uuid="008c9417-c067-41f8-a130-a9e7a35278e8" x="0" y="118" width="535" height="12"
+                 forecolor="#999999" fontSize="7.0" hTextAlign="Center" style="estiloValor">
+            <text><![CDATA[Documento generado electrónicamente — Sistema de Gestión de Vinos]]></text>
+        </element>
+    </summary>
+</jasperReport>

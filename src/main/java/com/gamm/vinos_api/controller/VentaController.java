@@ -2,8 +2,10 @@ package com.gamm.vinos_api.controller;
 
 import com.gamm.vinos_api.domain.model.Venta;
 import com.gamm.vinos_api.dto.response.ResponseVO;
+import com.gamm.vinos_api.dto.request.ResultadoComprobante;
 import com.gamm.vinos_api.security.annotations.SoloAdministrador;
 import com.gamm.vinos_api.security.annotations.SoloVendedor;
+import com.gamm.vinos_api.service.ComprobanteService;
 import com.gamm.vinos_api.service.VentaService;
 import com.gamm.vinos_api.util.ResultadoSP;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +28,7 @@ import java.time.LocalDate;
 public class VentaController extends AbstractRestController {
 
   private final VentaService ventaService;
+  private final ComprobanteService comprobanteService;
 
   // ─── Carrito ──────────────────────────────────────────────────────────────
 
@@ -64,17 +69,33 @@ public class VentaController extends AbstractRestController {
 
   // ─── Ventas ───────────────────────────────────────────────────────────────
 
-  @Operation(summary = "Confirmar venta")
-  @PostMapping("/confirmacion") // ✅ /confirmar → /confirmacion — sustantivo
+  @Operation(summary = "Confirmar venta — devuelve ticket para imprimir")
+  @PostMapping("/confirmacion")
   @SoloVendedor
-  public ResponseEntity<ResponseVO> confirmarVenta(
+  public ResponseEntity<?> confirmarVenta(
       @RequestParam Integer idVenta,
       @RequestParam String metodoPago,
       @RequestParam BigDecimal descuento
   ) {
+    // 1. Confirmar venta en BD (SP Tipo 5 → INSERT comprobante_venta)
     ResultadoSP resultado = ventaService.confirmarVenta(idVenta, metodoPago, descuento);
-    ResponseVO.validar(resultado);
-    return ok(resultado.getMensaje(), null);
+    ResponseVO.validar(resultado);  // lanza excepción si pRespuesta = 0
+
+    // 2. Generar ambos PDFs + guardar A4 y ticket en disco
+    ResultadoComprobante comprobante =
+        comprobanteService.generarAmbos(idVenta);
+
+    // 3. Devolver el TICKET al frontend para impresión inmediata
+    String filename = "ticket-" + comprobante.numeroComprobante() + ".pdf";
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=" + filename)
+        .header("X-Numero-Comprobante", comprobante.numeroComprobante())
+        .header("X-Id-Comprobante", comprobante.idComprobante().toString())
+        .header("X-Mensaje", resultado.getMensaje())
+        .contentType(MediaType.APPLICATION_PDF)
+        .body(comprobante.pdfTicket());
   }
 
   @Operation(summary = "Anular venta")
@@ -134,5 +155,16 @@ public class VentaController extends AbstractRestController {
       @RequestParam(defaultValue = "10") int limite
   ) {
     return okPaginado(ventaService.filtrarVentasPorUsuarioORango(idUsuario, fechaInicio, fechaFin, pagina, limite));
+  }
+
+  @GetMapping("/venta/{idVenta}/pdf-view")
+  public ResponseEntity<byte[]> verComprobante(@PathVariable Integer idVenta) {
+    byte[] pdf = comprobanteService.generarPdfPorVenta(idVenta);
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION,
+            "inline; filename=comprobante-" + idVenta + ".pdf") // 🔥 CLAVE
+        .contentType(MediaType.APPLICATION_PDF)
+        .body(pdf);
   }
 }
