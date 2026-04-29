@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 public class CompraDTO {
   private Integer idCompra;
   private String codCompra;
+  private String proveedor;
+  private String ruc;
   private LocalDateTime fechaCompra;
   private LocalDateTime fechaCarrito;
   private String estado;

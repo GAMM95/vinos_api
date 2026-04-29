@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="reporte_compras_general" language="java" pageWidth="842" pageHeight="595" columnWidth="782" leftMargin="30" rightMargin="30" topMargin="25" bottomMargin="25" uuid="c1a2b3d4-e5f6-7890-abcd-ef1234567000">
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL vinos"/>
+    <style name="base" fontName="SansSerif" fontSize="9.0"/>
+    <style name="titulo" style="base" fontSize="16.0" bold="true"/>
+    <style name="subtitulo" style="base" fontSize="11.0" bold="true"/>
+    <style name="label" style="base" bold="true"/>
+    <style name="tablaHeader" style="base" mode="Opaque" forecolor="#FFFFFF" backcolor="#6B1414" bold="true"/>
+    <style name="tablaPar" style="base" mode="Opaque" backcolor="#FFFFFF"/>
+    <style name="tablaImpar" style="base" mode="Opaque" backcolor="#FDF5F5"/>
+    <style name="total" style="base" bold="true"/>
+    <parameter name="logo" class="java.io.InputStream"/>
+    <parameter name="empresaNombre" class="java.lang.String"/>
+    <parameter name="empresaRuc" class="java.lang.String"/>
+    <parameter name="empresaTelefono" class="java.lang.String"/>
+    <parameter name="empresaDireccion" class="java.lang.String"/>
+    <parameter name="fechaGeneracion" class="java.lang.String"/>
+    <parameter name="subtitulo" class="java.lang.String"/>
+    <query language="sql"><![CDATA[
+        SELECT * FROM vw_compras_usuario
+    ]]></query>
+    <field name="codCompra" class="java.lang.String"/>
+    <field name="usuario" class="java.lang.String"/>
+    <field name="fechaCompra" class="java.time.LocalDateTime"/>
+    <field name="subtotalCalculado" class="java.math.BigDecimal"/>
+    <field name="costoLogistico" class="java.math.BigDecimal"/>
+    <field name="totalCompra" class="java.math.BigDecimal"/>
+    <field name="estado" class="java.lang.String"/>
+    <variable name="totalGeneral" calculation="Sum" class="java.math.BigDecimal">
+        <expression><![CDATA[$F{totalCompra}]]></expression>
+    </variable>
+    <title height="137">
+        <element kind="image" uuid="fc1b32dd-237d-405b-8c88-2158c709bc73" x="5" y="0" width="70" height="70">
+            <expression><![CDATA[$P{logo}]]></expression>
+            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+        </element>
+        <element kind="textField" uuid="2f9b7edb-ef4f-49e2-bf8f-5cd10b8dce35" x="81" y="37" width="300" height="15" forecolor="#2E2E2E" vTextAlign="Middle">
+            <expression><![CDATA["RUC: " + $P{empresaRuc}]]></expression>
+        </element>
+        <element kind="textField" uuid="64aa9ac2-2896-4a80-9446-a46378eacd1e" x="81" y="52" width="452" height="15" forecolor="#2E2E2E" vTextAlign="Middle">
+            <expression><![CDATA[$P{empresaDireccion}]]></expression>
+        </element>
+        <element kind="textField" uuid="1661643a-9eac-48e3-a77c-76857104ca74" x="0" y="90" width="782" height="20" hTextAlign="Center" vTextAlign="Middle" style="subtitulo">
+            <expression><![CDATA["REPORTE DE COMPRAS"]]></expression>
+            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+        </element>
+        <element kind="textField" uuid="d84084cc-b13e-42c8-bdb2-1aeea40c190b" x="0" y="119" width="370" height="15">
+            <expression><![CDATA[$P{subtitulo}]]></expression>
+        </element>
+        <element kind="textField" uuid="bbe08a8a-4ab7-4aac-95e1-83cbe20e1313" x="81" y="0" width="300" height="22" forecolor="#2E2E2E" fontSize="13.0" bold="true" vTextAlign="Middle">
+            <expression><![CDATA[$P{empresaNombre}]]></expression>
+        </element>
+        <element kind="textField" uuid="78660d63-0358-4887-917d-ebf12ea4ad8e" x="81" y="23" width="300" height="14" forecolor="#2E2E2E">
+            <expression><![CDATA["Teléfono: " +$P{empresaTelefono}]]></expression>
+        </element>
+        <element kind="line" uuid="bc049fb0-aa9a-4202-aa44-6f0fd4fea4fa" x="0" y="80" width="782" height="1" forecolor="#6B1414">
+            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+        </element>
+    </title>
+    <columnHeader height="20">
+        <element kind="staticText" uuid="64148155-ab30-421d-a751-1e47d0fbd49b" x="0" y="0" width="40" height="20" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[N°]]></text>
+        </element>
+        <element kind="staticText" uuid="3bbe8d6c-fb4a-45d5-ab89-ad92ab7ea970" x="40" y="0" width="80" height="20" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[Código]]></text>
+        </element>
+        <element kind="staticText" uuid="cef339c2-3404-4936-b05f-a3ee830bd677" x="120" y="0" width="225" height="20" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[Usuario]]></text>
+        </element>
+        <element kind="staticText" uuid="aac7983e-15b8-414e-85b9-33520e1f7672" x="345" y="0" width="120" height="20" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[Fecha]]></text>
+        </element>
+        <element kind="staticText" uuid="6f9f32a3-ebfe-4b95-b4e8-b4ba1164fe12" x="557" y="0" width="75" height="20" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[Subtotal]]></text>
+        </element>
+        <element kind="staticText" uuid="e49436be-2190-4b7d-90c2-72034ec0e32d" x="632" y="0" width="75" height="20" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[Logística]]></text>
+        </element>
+        <element kind="staticText" uuid="55ccc07b-a86b-42b3-9a34-536d8af17bed" x="707" y="0" width="75" height="20" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[Total]]></text>
+            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+        </element>
+        <element kind="staticText" uuid="55ccc07b-a86b-42b3-9a34-536d8af17bed" x="465" y="0" width="92" height="20" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[Estado]]></text>
+            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+        </element>
+    </columnHeader>
+    <detail>
+        <band height="18">
+            <element kind="rectangle" uuid="49f65d84-374d-4705-b1c1-e36431aa35a3" x="0" y="0" width="782" height="18" backcolor="#FDF5F5">
+                <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 1]]></printWhenExpression>
+                <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                <pen lineWidth="0.0"/>
+            </element>
+            <element kind="textField" uuid="7331b70f-d394-421e-9490-bbdd3b6f8a59" x="0" y="0" width="40" height="18" hTextAlign="Center" vTextAlign="Middle">
+                <expression><![CDATA[$V{REPORT_COUNT}]]></expression>
+            </element>
+            <element kind="textField" uuid="530f33d6-3d2f-4501-ab4f-2053685b5233" x="40" y="0" width="80" height="18" hTextAlign="Center" vTextAlign="Middle">
+                <expression><![CDATA[$F{codCompra}]]></expression>
+            </element>
+            <element kind="textField" uuid="bfe69cd5-de30-4c15-b94c-938c0e1d351d" x="120" y="0" width="225" height="18" hTextAlign="Center" vTextAlign="Middle">
+                <expression><![CDATA[$F{usuario}]]></expression>
+            </element>
+            <element kind="textField" uuid="a1c6f88e-acbe-4f52-96ab-f56a003ddfdc" x="345" y="0" width="120" height="18" hTextAlign="Center" vTextAlign="Middle">
+                <expression><![CDATA[
+                $F{fechaCompra}.format(
+                    java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a")
+                )
+                ]]></expression>
+            </element>
+            <element kind="textField" uuid="e89c7632-6808-4bbb-8016-ad75b6cffaa6" x="557" y="0" width="75" height="18" pattern="S/ #,##0.00" hTextAlign="Right" vTextAlign="Middle">
+                <paragraph rightIndent="4"/>
+                <expression><![CDATA[$F{subtotalCalculado}]]></expression>
+                <property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+            </element>
+            <element kind="textField" uuid="e18152fd-47f1-437a-ac46-c5e9b2716d4e" x="632" y="0" width="75" height="18" pattern="S/ #,##0.00" hTextAlign="Right" vTextAlign="Middle">
+                <paragraph rightIndent="4"/>
+                <expression><![CDATA[$F{costoLogistico}]]></expression>
+                <property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+                <property name="com.jaspersoft.studio.unit.width" value="px"/>
+            </element>
+            <element kind="textField" uuid="d0691417-5947-45a7-8254-3d7595fb42d3" x="707" y="0" width="75" height="18" pattern="S/ #,##0.00" hTextAlign="Right" vTextAlign="Middle">
+                <paragraph rightIndent="4"/>
+                <expression><![CDATA[$F{totalCompra}]]></expression>
+                <property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+                <property name="com.jaspersoft.studio.unit.width" value="px"/>
+            </element>
+            <element kind="textField" uuid="48921648-d999-4301-8ff2-d95b4e2260b2" x="465" y="0" width="92" height="18" hTextAlign="Center">
+                <expression><![CDATA[$F{estado}]]></expression>
+            </element>
+        </band>
+    </detail>
+    <summary height="50">
+        <element kind="line" uuid="c942505c-7136-4b84-b8c2-a037bfdbbe54" x="0" y="5" width="782" height="1">
+            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+        </element>
+        <element kind="staticText" uuid="c328c268-151d-4572-bbde-0ded76986abe" x="597" y="15" width="100" height="20" vTextAlign="Middle" style="total">
+            <text><![CDATA[TOTAL GENERAL:]]></text>
+        </element>
+        <element kind="textField" uuid="c017e643-be29-4935-bbbb-97f3f7c97051" x="0" y="15" width="300" height="20" vTextAlign="Middle" style="total">
+            <expression><![CDATA["Cantidad de registros: " + $V{REPORT_COUNT}]]></expression>
+        </element>
+        <element kind="textField" uuid="df1dc743-070e-4aa0-b1f5-313a6ae606aa" x="697" y="15" width="85" height="20" fontSize="10.0" pattern="S/ #,##0.00" hTextAlign="Right" vTextAlign="Middle" style="total">
+            <paragraph rightIndent="5"/>
+            <expression><![CDATA[$V{totalGeneral}]]></expression>
+            <property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+        </element>
+        <element kind="textField" uuid="579c2d8a-b96e-4363-a834-1cad7e314721" x="0" y="35" width="782" height="15" italic="true">
+            <expression><![CDATA["Generado el: " + $P{fechaGeneracion}]]></expression>
+            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+        </element>
+    </summary>
+</jasperReport>

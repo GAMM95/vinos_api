@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="reporte_compras_detalle" language="java" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="25" bottomMargin="25" uuid="9be2aff2-66da-4110-8836-5ff7c484e21a">
+    <style name="base" fontName="SansSerif" fontSize="9.0"/>
+    <style name="titulo" style="base" fontSize="16.0" bold="true"/>
+    <style name="subtitulo" style="base" fontSize="11.0" bold="true"/>
+    <style name="tablaHeader" style="base" mode="Opaque" forecolor="#FFFFFF" backcolor="#6B1414" bold="true"/>
+    <style name="box" mode="Opaque" backcolor="#F4F4F4"/>
+    <style name="total" style="base" bold="true"/>
+    <parameter name="logo" class="java.io.InputStream"/>
+    <parameter name="empresaNombre" class="java.lang.String"/>
+    <parameter name="empresaRuc" class="java.lang.String"/>
+    <parameter name="empresaTelefono" class="java.lang.String"/>
+    <parameter name="empresaDireccion" class="java.lang.String"/>
+    <parameter name="fechaGeneracion" class="java.lang.String"/>
+    <parameter name="idCompra" class="java.lang.Integer"/>
+    <query language="sql"><![CDATA[
+        SELECT *
+        FROM vw_compras
+        WHERE idCompra = $P{idCompra}
+        ORDER BY idDetCompra
+    ]]></query>
+    <field name="codCompra" class="java.lang.String"/>
+    <field name="estado" class="java.lang.String"/>
+    <field name="fechaCompra" class="java.time.LocalDateTime"/>
+    <field name="usuario" class="java.lang.String"/>
+    <field name="proveedor" class="java.lang.String"/>
+    <field name="ruc" class="java.lang.String"/>
+    <field name="nombreVino" class="java.lang.String"/>
+    <field name="presentacion" class="java.lang.String"/>
+    <field name="cantidad" class="java.lang.Integer"/>
+    <field name="subtotal" class="java.math.BigDecimal"/>
+    <field name="subtotalCalculado" class="java.math.BigDecimal"/>
+    <field name="costoTransporte" class="java.math.BigDecimal"/>
+    <field name="costoEmbalaje" class="java.math.BigDecimal"/>
+    <field name="costoEnvioAgencia" class="java.math.BigDecimal"/>
+    <field name="costoLogistico" class="java.math.BigDecimal"/>
+    <field name="totalCompra" class="java.math.BigDecimal"/>
+    <variable name="vSubtotal" calculation="First" class="java.math.BigDecimal">
+        <expression><![CDATA[$F{subtotalCalculado}]]></expression>
+    </variable>
+    <variable name="vCostoLogistico" calculation="First" class="java.math.BigDecimal">
+        <expression><![CDATA[$F{costoLogistico}]]></expression>
+    </variable>
+    <variable name="vTotal" calculation="First" class="java.math.BigDecimal">
+        <expression><![CDATA[$F{totalCompra}]]></expression>
+    </variable>
+    <variable name="vTransporte" calculation="First" class="java.math.BigDecimal">
+        <expression><![CDATA[$F{costoTransporte}]]></expression>
+    </variable>
+    <variable name="vEmbalaje" calculation="First" class="java.math.BigDecimal">
+        <expression><![CDATA[$F{costoEmbalaje}]]></expression>
+    </variable>
+    <variable name="vEnvio" calculation="First" class="java.math.BigDecimal">
+        <expression><![CDATA[$F{costoEnvioAgencia}]]></expression>
+    </variable>
+    <title height="190">
+        <element kind="image" uuid="fc1b32dd-237d-405b-8c88-2158c709bc73" x="5" y="0" width="70" height="70">
+            <expression><![CDATA[$P{logo}]]></expression>
+            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+        </element>
+        <element kind="textField" uuid="bbe08a8a-4ab7-4aac-95e1-83cbe20e1313" x="81" y="0" width="300" height="22" forecolor="#2E2E2E" fontSize="13.0" bold="true" vTextAlign="Middle">
+            <expression><![CDATA[$P{empresaNombre}]]></expression>
+        </element>
+        <element kind="textField" uuid="78660d63-0358-4887-917d-ebf12ea4ad8e" x="81" y="23" width="300" height="14" forecolor="#2E2E2E">
+            <expression><![CDATA["Teléfono: " +$P{empresaTelefono}]]></expression>
+        </element>
+        <element kind="textField" uuid="2f9b7edb-ef4f-49e2-bf8f-5cd10b8dce35" x="81" y="37" width="300" height="15" forecolor="#2E2E2E" vTextAlign="Middle">
+            <expression><![CDATA["RUC: " + $P{empresaRuc}]]></expression>
+        </element>
+        <element kind="textField" uuid="64aa9ac2-2896-4a80-9446-a46378eacd1e" x="81" y="52" width="452" height="15" forecolor="#2E2E2E" vTextAlign="Middle">
+            <expression><![CDATA[$P{empresaDireccion}]]></expression>
+        </element>
+        <element kind="line" uuid="bc049fb0-aa9a-4202-aa44-6f0fd4fea4fa" x="0" y="80" width="535" height="1" forecolor="#6B1414">
+            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+        </element>
+        <element kind="textField" uuid="1661643a-9eac-48e3-a77c-76857104ca74" x="0" y="90" width="535" height="20" hTextAlign="Center" vTextAlign="Middle" style="subtitulo">
+            <expression><![CDATA["DETALLE DE COMPRA"]]></expression>
+            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+        </element>
+        <element kind="textField" uuid="cbd61565-876c-4444-94ea-2631513af445" x="0" y="110" width="535" height="18" hTextAlign="Center" style="subtitulo">
+            <expression><![CDATA["Compra: " + $F{codCompra}]]></expression>
+        </element>
+        <element kind="textField" uuid="f3a866ad-824f-4fc3-8cce-ce169843d73e" x="0" y="138" width="260" height="15">
+            <expression><![CDATA["Estado: " + $F{estado}]]></expression>
+        </element>
+        <element kind="textField" uuid="83663ded-47e3-416b-995b-069fe30cd988" x="270" y="138" width="260" height="15">
+            <expression><![CDATA["Fecha: " +
+                $F{fechaCompra}.format(
+                    java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a")
+                )
+            ]]></expression>
+        </element>
+        <element kind="textField" uuid="fa9ad671-e20a-42ea-b71f-1678d3999311" x="0" y="153" width="260" height="15">
+            <expression><![CDATA["Proveedor: " + $F{proveedor}]]></expression>
+        </element>
+        <element kind="textField" uuid="785729e8-c370-4021-a2fe-ecc1f325f026" x="270" y="153" width="260" height="15">
+            <expression><![CDATA["RUC: " + $F{ruc}]]></expression>
+        </element>
+        <element kind="textField" uuid="1ff399bb-c01b-4f56-b329-083a33b5a5c1" x="0" y="168" width="535" height="15">
+            <expression><![CDATA["Comprador: " + $F{usuario}]]></expression>
+        </element>
+    </title>
+    <columnHeader height="20">
+        <element kind="staticText" uuid="285e1f22-9d97-48b2-b1c0-355eb4988b48" x="0" y="0" width="30" height="20" fontSize="11.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[N°]]></text>
+        </element>
+        <element kind="staticText" uuid="25c8ec59-acee-4e1e-a334-25b6c52b73d7" x="30" y="0" width="200" height="20" fontSize="11.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[Producto]]></text>
+        </element>
+        <element kind="staticText" uuid="ea2e70da-6ef4-467e-abc1-3599b70c4cb5" x="230" y="0" width="120" height="20" fontSize="11.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[Presentación]]></text>
+        </element>
+        <element kind="staticText" uuid="f14a3029-b285-4be3-b17e-1e8da1e56006" x="350" y="0" width="50" height="20" fontSize="11.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[Cant]]></text>
+        </element>
+        <element kind="staticText" uuid="6664bd76-c72d-4651-9a92-d636b8b6514f" x="400" y="0" width="135" height="20" fontSize="11.0" hTextAlign="Center" vTextAlign="Middle" style="tablaHeader">
+            <text><![CDATA[Subtotal]]></text>
+        </element>
+    </columnHeader>
+    <detail>
+        <band height="18">
+            <element kind="rectangle" uuid="e9786d3f-294c-42c7-8532-10b30b1a27d8" x="0" y="0" width="535" height="18" backcolor="#FDF5F5">
+                <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 1]]></printWhenExpression>
+                <pen lineWidth="0.0"/>
+            </element>
+            <element kind="textField" uuid="f3d6309a-46f3-49cf-9441-dff294e40545" x="0" y="0" width="30" height="18" hTextAlign="Center" vTextAlign="Middle">
+                <expression><![CDATA[$V{REPORT_COUNT}]]></expression>
+            </element>
+            <element kind="textField" uuid="d65bf1cd-fdc4-49ec-ad28-aaac3f79621a" x="30" y="0" width="200" height="18" vTextAlign="Middle">
+                <paragraph leftIndent="2"/>
+                <expression><![CDATA[$F{nombreVino}]]></expression>
+                <property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+            </element>
+            <element kind="textField" uuid="749f7861-eb69-4c95-b458-db6f3084746b" x="230" y="0" width="120" height="18" vTextAlign="Middle">
+                <paragraph leftIndent="2"/>
+                <expression><![CDATA[$F{presentacion}]]></expression>
+                <property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+            </element>
+            <element kind="textField" uuid="043df511-baf4-4739-9f48-75b92338a8e9" x="350" y="0" width="50" height="18" hTextAlign="Center" vTextAlign="Middle">
+                <expression><![CDATA[$F{cantidad}]]></expression>
+            </element>
+            <element kind="textField" uuid="0e0cbc96-f50c-4653-bfbe-f47cc898d477" x="400" y="0" width="135" height="18" pattern="S/ #,##0.00" hTextAlign="Right" vTextAlign="Middle">
+                <paragraph rightIndent="15"/>
+                <expression><![CDATA[$F{subtotal}]]></expression>
+                <property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+            </element>
+        </band>
+    </detail>
+    <summary height="165">
+        <element kind="rectangle" uuid="4fd8c28d-6654-4d85-912f-ede36dfbd6bf" x="0" y="20" width="250" height="80" forecolor="#C48684" backcolor="#FDF5F5" radius="4" style="box"/>
+        <element kind="textField" uuid="c025eba7-d118-4feb-9a29-43423de989e6" x="10" y="25" width="230" height="15" style="subtitulo">
+            <expression><![CDATA["Costos logísticos"]]></expression>
+        </element>
+        <element kind="textField" uuid="390014e4-696a-4331-b7e5-1f11e67a66d1" x="120" y="75" width="120" height="15" pattern="S/ #,##0.00" hTextAlign="Right" vTextAlign="Middle">
+            <paragraph rightIndent="10"/>
+            <expression><![CDATA[$V{vTransporte}]]></expression>
+            <property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+        </element>
+        <element kind="textField" uuid="0600b86f-79e7-4f9f-9263-c85ce0614344" x="120" y="45" width="120" height="15" pattern="S/ #,##0.00" hTextAlign="Right" vTextAlign="Middle">
+            <paragraph rightIndent="10"/>
+            <expression><![CDATA[$V{vEmbalaje}]]></expression>
+            <property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+        </element>
+        <element kind="textField" uuid="16d2b6a7-395d-46da-8a6b-8f116f454050" x="337" y="25" width="198" height="15" style="subtitulo">
+            <expression><![CDATA["Resumen final"]]></expression>
+        </element>
+        <element kind="textField" uuid="da6129cf-7c99-4d69-b500-bf187e158b54" x="336" y="44" width="104" height="20" pattern="S/ #,##0.00" hTextAlign="Right" vTextAlign="Middle">
+            <expression><![CDATA["Subtotal productos: "]]></expression>
+            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+        </element>
+        <element kind="textField" uuid="cae224e3-8478-4377-b1ef-1d6e225161da" x="336" y="66" width="104" height="20" hTextAlign="Right" vTextAlign="Middle">
+            <expression><![CDATA["Costo logístico: "]]></expression>
+            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+        </element>
+        <element kind="textField" uuid="dbd7d633-d56e-44bd-8b74-d3acf17c10c6" x="0" y="150" width="535" height="15">
+            <expression><![CDATA["Generado el: " + $P{fechaGeneracion}]]></expression>
+        </element>
+        <element kind="textField" uuid="1c3563a7-ce99-4bb9-812b-4c159d60ade2" x="20" y="60" width="100" height="15" vTextAlign="Middle">
+            <expression><![CDATA["• Envío a agencia: "  ]]></expression>
+        </element>
+        <element kind="textField" uuid="ce841ae2-20f0-4beb-9b32-900353c2f1ac" x="20" y="75" width="100" height="15" vTextAlign="Middle">
+            <expression><![CDATA["• Transporte: " ]]></expression>
+        </element>
+        <element kind="textField" uuid="878c8899-44aa-47d0-9cd9-b0608511569e" x="20" y="45" width="100" height="15" vTextAlign="Middle">
+            <expression><![CDATA["• Embalaje: " ]]></expression>
+        </element>
+        <element kind="textField" uuid="1cd068e9-e0de-44a5-9f80-3cdc65aa2193" x="120" y="60" width="120" height="15" pattern="S/ #,##0.00" hTextAlign="Right" vTextAlign="Middle">
+            <paragraph rightIndent="10"/>
+            <expression><![CDATA[$V{vEnvio}]]></expression>
+            <property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+        </element>
+        <element kind="line" uuid="c4772a9b-8dce-4288-b0c4-c7b2e25b4e16" x="0" y="9" width="535" height="1" forecolor="#6B1414"/>
+        <element kind="line" uuid="44a550ea-119d-40ec-bd3a-419df12fdb1e" x="330" y="94" width="205" height="1" forecolor="#6B1414"/>
+        <element kind="rectangle" uuid="34c1b022-4036-43e3-a3e9-65c9fcbcb8fe" mode="Opaque" x="330" y="102" width="205" height="26" forecolor="#6B1414" backcolor="#6B1414" radius="3"/>
+        <element kind="staticText" uuid="c4bec069-1baf-4158-a6dd-a26a5730e35f" x="335" y="104" width="100" height="22" forecolor="#FFFFFF" hTextAlign="Left" vTextAlign="Middle">
+            <text><![CDATA[TOTAL PAGADO:]]></text>
+        </element>
+        <element kind="textField" uuid="97aecaaf-6d4e-4d39-844d-8c83e9ec87fe" x="435" y="104" width="94" height="22" forecolor="#FFFFFF" fontSize="11.0" pattern="S/ #,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+            <paragraph rightIndent="4"/>
+            <expression><![CDATA[$V{vTotal}]]></expression>
+        </element>
+        <element kind="line" uuid="401b60ec-2ef0-4fa8-988e-068caafa59dc" x="0" y="140" width="535" height="1" forecolor="#CCCCCC"/>
+        <element kind="textField" uuid="c32655a1-53f3-4f3f-bd4c-7cae4dd20b39" x="440" y="66" width="94" height="20" pattern="S/ #,##0.00" hTextAlign="Right" vTextAlign="Middle">
+            <paragraph rightIndent="10"/>
+            <expression><![CDATA[$V{vCostoLogistico}]]></expression>
+            <property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+        </element>
+        <element kind="textField" uuid="3e249e95-7a0a-4a57-8034-1d12631aefd9" x="440" y="44" width="94" height="20" pattern="S/ #,##0.00" hTextAlign="Right" vTextAlign="Middle">
+            <paragraph rightIndent="10"/>
+            <expression><![CDATA[$V{vSubtotal}]]></expression>
+            <property name="com.jaspersoft.studio.unit.height" value="px"/>
+            <property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+        </element>
+    </summary>
+</jasperReport>

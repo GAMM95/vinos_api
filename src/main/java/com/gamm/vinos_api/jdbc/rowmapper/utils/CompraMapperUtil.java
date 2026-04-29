@@ -21,12 +21,19 @@ public class CompraMapperUtil {
   public static void mapUsuario(CompraDTO v, ResultSet rs) throws SQLException {
     v.setIdUsuario(rs.getInt("idUsuario"));
     v.setUsuario(rs.getString("usuario"));
-    v.setUsername(rs.getString("username"));
-    v.setRol(rs.getString("rol"));
+    try {
+      v.setUsername(rs.getString("username"));
+    } catch (SQLException ignored) {}
+
+    try {
+      v.setRol(rs.getString("rol"));
+    } catch (SQLException ignored) {}
   }
 
   public static void mapDetalleCompra(CompraDTO v, ResultSet rs) throws SQLException {
     v.setIdDetCompra(rs.getInt("idDetCompra"));
+    v.setProveedor(rs.getString("proveedor"));
+    v.setRuc(rs.getString("ruc"));
     v.setNombreVino(rs.getString("nombreVino"));
     v.setPresentacion(rs.getString("presentacion"));
     v.setCantidad(rs.getInt("cantidad"));

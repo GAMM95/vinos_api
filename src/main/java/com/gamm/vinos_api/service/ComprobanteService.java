@@ -19,6 +19,5 @@ public interface ComprobanteService {
   // Preparado para SUNAT — se activa cuando llegue el momento
   void enviarASunat(Integer idComprobante);
 
-
 }
 

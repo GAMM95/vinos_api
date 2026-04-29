@@ -157,7 +157,7 @@ public class VentaController extends AbstractRestController {
     return okPaginado(ventaService.filtrarVentasPorUsuarioORango(idUsuario, fechaInicio, fechaFin, pagina, limite));
   }
 
-  @GetMapping("/venta/{idVenta}/pdf-view")
+  @GetMapping("/{idVenta}/pdf-view")
   public ResponseEntity<byte[]> verComprobante(@PathVariable Integer idVenta) {
     byte[] pdf = comprobanteService.generarPdfPorVenta(idVenta);
 
